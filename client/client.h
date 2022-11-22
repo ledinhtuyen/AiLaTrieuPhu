@@ -115,7 +115,7 @@ int menu_start()
     printf("1. Bắt đầu.\n");
     printf("2. Cách chơi.\n");
     printf("3. Tác giả.\n");
-    printf("4. Kết thúc.\n");
+    printf("4. Thoát.\n");
     printf("Nhập lựa chọn của bạn: ");
     scanf(" %[^\n]", input);
     if (strlen(input) != 1 || !isdigit(input[0]))
@@ -135,7 +135,6 @@ int menu_not_login()
     printf("\t1. Đăng nhập\n");
     printf("\t2. Đăng ký\n");
     printf("\t3. Trở về\n");
-    printf("\t4. Thoát.\n");
     scanf(" %[^\n]", input);
     if (strlen(input) != 1 || !isdigit(input[0]))
       break;
@@ -258,7 +257,7 @@ int show_menu_not_login()
         {
           if (msg.type == ACCOUNT_EXIST)
           {
-            printf("Account exist!\n");
+            printf("%s!\n", msg.value);
             break;
           }
         }
@@ -304,6 +303,7 @@ int show_menu_logged()
 {
   int show_menu_login = 1;
   Message msg;
+  char pass[BUFF_SIZE], re_pass[BUFF_SIZE];
 
   while (show_menu_login)
   {
@@ -311,7 +311,32 @@ int show_menu_logged()
     switch (choice)
     {
     case 1:
-      printf("Thay đổi mật khẩu\n");
+      while (1)
+      {
+        printf("Mật khẩu mới: ");
+        scanf(" %[^\n]", pass);
+        printf("Nhập lại mật khẩu mới: ");
+        scanf(" %[^\n]", re_pass);
+        if (strcmp(pass, "") == 0 || strcmp(re_pass, "") == 0)
+        {
+          printf("Mật khẩu không được để trống\n");
+          continue;
+        }    
+
+        if (strcmp(pass, re_pass) == 0)
+        {
+          msg.type = CHANGE_PASS;
+          strcpy(msg.value, pass);
+          send(sockfd, &msg, sizeof(msg), 0);
+          recv(sockfd, &msg, sizeof(msg), 0);
+          printf("%s\n", msg.value);
+          break;
+        }
+        else
+        {
+          printf("Mật khẩu không khớp!\n");
+        }
+      }
       break;
     case 2:
       printf("Choi Offline\n");

@@ -98,6 +98,7 @@ Account *new_account();
 Client *new_client();
 void read_user_file();
 void read_question_file(char *file_name);
+void catch_ctrl_c_and_exit(int sig);
 void add_account(char username[BUFF_SIZE], char password[BUFF_SIZE], int status);
 void add_client(int conn_fd);
 void add_question(int index, int level, char question[BUFF_SIZE], char answerA[BUFF_SIZE], char answerB[BUFF_SIZE],
@@ -151,6 +152,20 @@ void read_user_file()
 
 void read_question_file(char *file_name)
 {
+}
+
+void catch_ctrl_c_and_exit(int sig) {
+    char mesg[] = "\nServer is closing...\n";
+    while (head_client != NULL) {
+        if (send(head_client->conn_fd, mesg, strlen(mesg), 0) < 0) {
+            perror("Send error");
+            delete_client(head_client->conn_fd);
+        }
+        printf("\nClose socketfd: %d\n", head_client->conn_fd);
+        delete_client(head_client->conn_fd);
+    }
+    printf("\nBye\n");
+    exit(0);
 }
 
 void add_account(char username[BUFF_SIZE], char password[BUFF_SIZE], int status)
@@ -325,6 +340,11 @@ void *thread_start(void *client_fd)
       switch (msg.type)
       {
       case CHANGE_PASS:
+        update_user_file(cli->login_account, msg.value, 1);
+        msg.type = CHANGE_PASS_SUCCESS;
+        strcpy(msg.value, "Change password successfully!");
+        send(conn_fd, &msg, sizeof(msg), 0);
+        printf("[%d] Change %s's password.\n", conn_fd, cli->login_account);
         break;
       case PLAY_OFFLINE:
         break;
@@ -340,13 +360,15 @@ void *thread_start(void *client_fd)
       switch (msg.type)
       {
       case LOGIN:
-        if (!login(conn_fd, msg.value)){
+        if (!login(conn_fd, msg.value))
+        {
           msg.type = LOGIN_FAIL;
           strcpy(msg.value, "Login failed");
           printf("[%d]: Login failed!\n", conn_fd);
           send(conn_fd, &msg, sizeof(msg), 0);
         }
-        else{
+        else
+        {
           msg.type = LOGIN_SUCCESS;
           strcpy(msg.value, "Login success");
           printf("[%d]: Hello %s\n", conn_fd, cli->login_account);
@@ -355,18 +377,21 @@ void *thread_start(void *client_fd)
         }
         break;
       case SIGNUP:
-        if (check_account_exist(msg.value) == 1){
+        if (check_account_exist(msg.value) == 1)
+        {
           msg.type = ACCOUNT_EXIST;
+          strcpy(msg.value, "Account exist");
           printf("[%d]: Account %s exist!\n", conn_fd, msg.value);
           send(conn_fd, &msg, sizeof(msg), 0);
         }
-        else{
+        else
+        {
           msg.type = SIGNUP_CONTINUE;
           send(conn_fd, &msg, sizeof(msg), 0);
 
           recv(conn_fd, &msg, sizeof(msg), 0);
           signup(msg.value);
-          
+
           msg.type = SIGNUP_SUCCESS;
           strcpy(msg.value, "Signup success");
           send(conn_fd, &msg, sizeof(msg), 0);
@@ -377,8 +402,12 @@ void *thread_start(void *client_fd)
       break;
     }
   }
+  if (recvBytes <= 0)
+  {
+    printf("[%d]: Client disconnected!\n", conn_fd);
+    close(conn_fd);
+    delete_client(conn_fd);
+  }
 
-  // printf("Thread %d is created\n", *((int *)client_fd));
-
-  // pthread_exit(NULL);
+  pthread_exit(NULL);
 }

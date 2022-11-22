@@ -15,6 +15,7 @@ int main(int argc, char const *argv[])
   }
 
   read_user_file();
+  signal(SIGINT, catch_ctrl_c_and_exit);
   // read_question_file("easy_quest.txt");
   // read_question_file("medium_quest.txt");
   // read_question_file("hard_quest.txt");
