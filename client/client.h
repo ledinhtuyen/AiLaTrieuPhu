@@ -20,7 +20,8 @@ struct sockaddr_in server, client;
 char serverIP[20];
 int serverPort;
 
-enum msg_type{
+enum msg_type
+{
   LOGIN,
   LOGIN_SUCCESS,
   LOGIN_FAIL,
@@ -34,7 +35,8 @@ enum msg_type{
   LOGOUT
 };
 
-typedef struct _message{
+typedef struct _message
+{
   enum msg_type type;
   char data_type[25];
   int length;
@@ -173,6 +175,8 @@ int connect_to_server()
 
 int show_menu_not_login()
 {
+  Message msg;
+  char username[100], password[100];
   int show_menu_start = 0;
   while (!show_menu_start)
   {
@@ -181,11 +185,11 @@ int show_menu_not_login()
     switch (choice)
     {
     case 1:
-      Message msg;
-      char username[100], password[100];
       msg.type = LOGIN;
-      printf("Username: "); scanf(" %[^\n]", username);
-      printf("Password: "); scanf(" %[^\n]", password);
+      printf("Username: ");
+      scanf(" %[^\n]", username);
+      printf("Password: ");
+      scanf(" %[^\n]", password);
       strcpy(msg.data_type, "string");
       strcpy(msg.value, username);
       strcat(msg.value, "|");
@@ -196,28 +200,28 @@ int show_menu_not_login()
       {
         printf("Send failed");
       }
-      else
-      {
-        recvBytes = recv(sockfd, &msg, sizeof(msg), 0);
-        if (recvBytes < 0)
-        {
-          printf("Receive failed");
-        }
-        else
-        {
-          if (msg.type == LOGIN_SUCCESS)
-          {
-            acc.login_status = 1;
-            strcpy(acc.username, username);
-            printf("Login success\n");
-            show_menu_logged();
-          }
-          else
-          {
-            printf("Login failed\n");
-          }
-        }
-      }
+      // else
+      // {
+      //   recvBytes = recv(sockfd, &msg, sizeof(msg), 0);
+      //   if (recvBytes < 0)
+      //   {
+      //     printf("Receive failed");
+      //   }
+      //   else
+      //   {
+      //     if (msg.type == LOGIN_SUCCESS)
+      //     {
+      //       acc.login_status = 1;
+      //       strcpy(acc.username, username);
+      //       printf("Login success\n");
+      //       show_menu_logged();
+      //     }
+      //     else
+      //     {
+      //       printf("Login failed\n");
+      //     }
+      //   }
+      // }
       break;
     case 2:
       printf("Đăng ký\n");

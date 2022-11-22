@@ -14,6 +14,11 @@ int main(int argc, char const *argv[])
     exit(-1);
   }
 
+  read_user_file();
+  // read_question_file("easy_quest.txt");
+  // read_question_file("medium_quest.txt");
+  // read_question_file("hard_quest.txt");
+
   struct sockaddr_in server; /* server's address information */
   struct sockaddr_in client; /* client's address information */
   const int PORT = atoi(argv[1]);
