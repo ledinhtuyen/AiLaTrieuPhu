@@ -59,17 +59,21 @@ int main(int argc, char const *argv[])
   if (listen(listen_fd, BACKLOG) == -1)
   { /* calls listen() */
     perror("\nError: ");
+    close(listen_fd);
     return 0;
   }
 
   sin_size = sizeof(struct sockaddr_in);
+  printf("Waiting for connections ...\n");
 
   while (1)
   {
     // accept request
     sin_size = sizeof(struct sockaddr_in);
-    if ((conn_fd = accept(listen_fd, (struct sockaddr *)&client, &sin_size)) == -1)
+    if ((conn_fd = accept(listen_fd, (struct sockaddr *)&client, &sin_size)) == -1){
       perror("\nError: ");
+      continue;
+    }
 
     printf("--------------\n");
     printf("New connection from [%s:%d] - (%d)\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port), conn_fd);

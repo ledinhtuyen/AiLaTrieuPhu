@@ -10,12 +10,13 @@ int main(int argc, char const *argv[])
   }
 
   strcpy(serverIP, argv[1]);
-  if (!validate_ip(argv[1]))
+  if (!validate_ip(serverIP))
   {
-    printf("\nInvalid server ip\n\n");
-    return 1;
+    printf("\nInvalid IP address\n");
+    exit(-1);
   }
-
+  strcpy(serverIP, argv[1]);
+  
   if ((!is_number(argv[2])) || atoi(argv[2]) > 65535 || atoi(argv[2]) < 0)
   {
     printf("\nInvalid port number\n\n");

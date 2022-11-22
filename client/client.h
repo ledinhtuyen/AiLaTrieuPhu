@@ -12,6 +12,7 @@
 #include <poll.h>
 
 #define MAX_LINE 1024
+#define BUFF_SIZE 1024
 
 int choice1, choice2, choice3, sockfd, show1, show2, show3;
 int recvBytes, sendBytes;
@@ -26,6 +27,8 @@ enum msg_type
   LOGIN_SUCCESS,
   LOGIN_FAIL,
   SIGNUP,
+  ACCOUNT_EXIST,
+  SIGNUP_CONTINUE,
   SIGNUP_SUCCESS,
   SIGNUP_FAIL,
   CHANGE_PASS,
@@ -40,7 +43,7 @@ typedef struct _message
   enum msg_type type;
   char data_type[25];
   int length;
-  char value[100];
+  char value[BUFF_SIZE];
 } Message;
 
 typedef struct _account
@@ -50,6 +53,17 @@ typedef struct _account
 } Account;
 Account acc;
 
+/*--------------------- Function Declaration -------------------------*/
+int is_number(const char *s);
+int validate_ip(char *ip);
+int menu_start();
+int menu_not_login();
+int menu_logged();
+int connect_to_server();
+int show_menu_not_login();
+int show_menu_logged();
+
+/*--------------------- Ultilities -------------------------*/
 int is_number(const char *s)
 {
   while (*s)
@@ -170,6 +184,7 @@ int connect_to_server()
     printf("\nConnection Failed \n");
     return 0;
   }
+  printf("Connected!\n");
   return 1;
 }
 
@@ -177,8 +192,8 @@ int show_menu_not_login()
 {
   Message msg;
   char username[100], password[100];
-  int show_menu_start = 0;
-  while (!show_menu_start)
+  int show_menu_not_login = 1;
+  while (show_menu_not_login)
   {
     int choice = menu_not_login();
 
@@ -192,47 +207,91 @@ int show_menu_not_login()
       scanf(" %[^\n]", password);
       strcpy(msg.data_type, "string");
       strcpy(msg.value, username);
-      strcat(msg.value, "|");
+      strcat(msg.value, " ");
       strcat(msg.value, password);
       msg.length = strlen(msg.value);
-      sendBytes = send(sockfd, &msg, sizeof(msg), 0);
-      if (sendBytes < 0)
+      if (send(sockfd, &msg, sizeof(msg), 0) < 0)
       {
-        printf("Send failed");
+        printf("Send failed\n");
       }
-      // else
-      // {
-      //   recvBytes = recv(sockfd, &msg, sizeof(msg), 0);
-      //   if (recvBytes < 0)
-      //   {
-      //     printf("Receive failed");
-      //   }
-      //   else
-      //   {
-      //     if (msg.type == LOGIN_SUCCESS)
-      //     {
-      //       acc.login_status = 1;
-      //       strcpy(acc.username, username);
-      //       printf("Login success\n");
-      //       show_menu_logged();
-      //     }
-      //     else
-      //     {
-      //       printf("Login failed\n");
-      //     }
-      //   }
-      // }
+      else
+      {
+        recvBytes = recv(sockfd, &msg, sizeof(msg), 0);
+        if (recvBytes < 0)
+        {
+          printf("Receive failed\n");
+        }
+        else
+        {
+          if (msg.type == LOGIN_SUCCESS)
+          {
+            acc.login_status = 1;
+            strcpy(acc.username, username);
+            printf("%s\n", msg.value);
+            show_menu_logged();
+          }
+          else
+          {
+            printf("%s\n", msg.value);
+          }
+        }
+      }
       break;
     case 2:
-      printf("Đăng ký\n");
+      msg.type = SIGNUP;
+      printf("Username: ");
+      scanf(" %[^\n]", username);
+      strcpy(msg.value, username);
+      strcpy(msg.data_type, "string");
+      if (send(sockfd, &msg, sizeof(msg), 0) < 0)
+      {
+        printf("Send failed\n");
+      }
+      else
+      {
+        recvBytes = recv(sockfd, &msg, sizeof(msg), 0);
+        if (recvBytes < 0)
+        {
+          printf("Receive failed\n");
+        }
+        else
+        {
+          if (msg.type == ACCOUNT_EXIST)
+          {
+            printf("Account exist!\n");
+            break;
+          }
+        }
+      }
+      printf("Password: ");
+      scanf(" %[^\n]", password);
+      strcat(msg.value, " ");
+      strcat(msg.value, password);
+      msg.length = strlen(msg.value);
+      if (send(sockfd, &msg, sizeof(msg), 0) < 0)
+      {
+        printf("Send failed\n");
+      }
+      else
+      {
+        recvBytes = recv(sockfd, &msg, sizeof(msg), 0);
+        if (recvBytes < 0)
+        {
+          printf("Receive failed\n");
+        }
+        else
+        {
+          if (msg.type == SIGNUP_SUCCESS)
+          {
+            printf("%s\n", msg.value);
+          }
+        }
+      }
       break;
     case 3:
       printf("Trở về\n");
-      show_menu_start = 1;
+      show_menu_not_login = 0;
       break;
-    case 4:
-      printf("Thoát\n");
-      exit(0);
     default:
       printf("Lựa chọn không hợp lệ\n");
       break;
@@ -243,8 +302,10 @@ int show_menu_not_login()
 
 int show_menu_logged()
 {
-  int show_menu_login = 0;
-  while (!show_menu_login)
+  int show_menu_login = 1;
+  Message msg;
+
+  while (show_menu_login)
   {
     int choice = menu_logged();
     switch (choice)
@@ -259,9 +320,11 @@ int show_menu_logged()
       printf("Choi Online\n");
       break;
     case 4:
+      msg.type = LOGOUT;
+      send(sockfd, &msg, sizeof(msg), 0);
       printf("Đăng xuất\n");
       acc.login_status = 0;
-      show_menu_login = 1;
+      show_menu_login = 0;
       break;
     default:
       printf("Lựa chọn không hợp lệ\n");

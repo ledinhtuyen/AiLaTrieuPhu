@@ -19,8 +19,15 @@
 enum msg_type
 {
   LOGIN,
+  LOGIN_SUCCESS,
+  LOGIN_FAIL,
   SIGNUP,
+  ACCOUNT_EXIST,
+  SIGNUP_CONTINUE,
+  SIGNUP_SUCCESS,
+  SIGNUP_FAIL,
   CHANGE_PASS,
+  CHANGE_PASS_SUCCESS,
   PLAY_OFFLINE,
   PLAY_ONLINE,
   LOGOUT
@@ -37,7 +44,7 @@ typedef struct _message
   enum msg_type type;
   char data_type[25];
   int length;
-  char value[100];
+  char value[BUFF_SIZE];
 } Message;
 
 typedef struct _account
@@ -101,7 +108,8 @@ void update_user_file(char name[BUFF_SIZE], char new_pass[BUFF_SIZE], int new_st
 int is_number(const char *s);
 void *thread_start(void *client_fd);
 int login(int conn_fd, char msg_data[BUFF_SIZE]);
-int signup(int conn_fd, char msg_data[BUFF_SIZE]);
+int check_account_exist(char msg_data[BUFF_SIZE]);
+int signup(char msg_data[BUFF_SIZE]);
 
 /*---------------- Utilities -------------------*/
 Account *new_account()
@@ -114,6 +122,8 @@ Account *new_account()
 Client *new_client()
 {
   Client *new = (Client *)malloc(sizeof(Client));
+  new->login_status = UN_AUTH;
+  new->room_id = 0;
   new->next = NULL;
   return new;
 }
@@ -238,6 +248,11 @@ int login(int conn_fd, char msg_data[BUFF_SIZE])
 {
   char *username = strtok(msg_data, " ");
   char *password = strtok(NULL, " ");
+
+  Client *cli = head_client;
+  while (cli->conn_fd != conn_fd && cli != NULL)
+    cli = cli->next;
+
   Account *tmp = head_account;
   while (tmp != NULL)
   {
@@ -245,22 +260,16 @@ int login(int conn_fd, char msg_data[BUFF_SIZE])
     {
       if (strcmp(tmp->password, password) == 0)
       {
-        Client *tmp_client = head_client;
-        while (tmp_client != NULL)
+        if (tmp->status == 0)
         {
-          if (tmp_client->conn_fd == conn_fd)
-          {
-            if (tmp->status == 0)
-            {
-              return 0;
-            }
-            tmp_client->login_status = AUTH;
-            strcpy(tmp_client->login_account, tmp->username);
-            break;
-          }
-          tmp_client = tmp_client->next;
+          return 0;
         }
-        return 1;
+        if (cli != NULL)
+        {
+          cli->login_status = AUTH;
+          strcpy(cli->login_account, tmp->username);
+          return 1;
+        }
       }
       else
         return 0;
@@ -270,7 +279,7 @@ int login(int conn_fd, char msg_data[BUFF_SIZE])
   return 0;
 }
 
-int signup(int conn_fd, char msg_data[BUFF_SIZE])
+int check_account_exist(char msg_data[BUFF_SIZE])
 {
   char *username = strtok(msg_data, " ");
   char *password = strtok(NULL, " ");
@@ -279,10 +288,18 @@ int signup(int conn_fd, char msg_data[BUFF_SIZE])
   {
     if (strcmp(tmp->username, username) == 0)
     {
-      return 0;
+      return 1;
     }
     tmp = tmp->next;
   }
+  return 0;
+}
+
+int signup(char msg_data[BUFF_SIZE])
+{
+  char *username = strtok(msg_data, " ");
+  char *password = strtok(NULL, " ");
+
   add_account(username, password, 1);
   update_user_file(username, password, 1);
   return 1;
@@ -290,10 +307,11 @@ int signup(int conn_fd, char msg_data[BUFF_SIZE])
 
 void *thread_start(void *client_fd)
 {
-  // pthread_detach(pthread_self());
+  pthread_detach(pthread_self());
+
   int recvBytes, sendBytes;
   Message msg;
-  int conn_fd = *(int *)client_fd;
+  int conn_fd = *((int *)client_fd);
   Client *cli = head_client;
 
   while (cli->conn_fd != conn_fd && cli != NULL)
@@ -301,47 +319,64 @@ void *thread_start(void *client_fd)
 
   while ((recvBytes = recv(conn_fd, &msg, sizeof(msg), 0)) > 0)
   {
-    printf("recvBytes: %d, buffer: %s", recvBytes, msg.value);
-  }
-  
-  printf("Error\n");
+    switch (cli->login_status)
+    {
+    case AUTH:
+      switch (msg.type)
+      {
+      case CHANGE_PASS:
+        break;
+      case PLAY_OFFLINE:
+        break;
+      case PLAY_ONLINE:
+        break;
+      case LOGOUT:
+        printf("[%d]: Bye %s\n", conn_fd, cli->login_account);
+        cli->login_status = UN_AUTH;
+        break;
+      }
+      break;
+    case UN_AUTH:
+      switch (msg.type)
+      {
+      case LOGIN:
+        if (!login(conn_fd, msg.value)){
+          msg.type = LOGIN_FAIL;
+          strcpy(msg.value, "Login failed");
+          printf("[%d]: Login failed!\n", conn_fd);
+          send(conn_fd, &msg, sizeof(msg), 0);
+        }
+        else{
+          msg.type = LOGIN_SUCCESS;
+          strcpy(msg.value, "Login success");
+          printf("[%d]: Hello %s\n", conn_fd, cli->login_account);
+          cli->login_status = AUTH;
+          send(conn_fd, &msg, sizeof(msg), 0);
+        }
+        break;
+      case SIGNUP:
+        if (check_account_exist(msg.value) == 1){
+          msg.type = ACCOUNT_EXIST;
+          printf("[%d]: Account %s exist!\n", conn_fd, msg.value);
+          send(conn_fd, &msg, sizeof(msg), 0);
+        }
+        else{
+          msg.type = SIGNUP_CONTINUE;
+          send(conn_fd, &msg, sizeof(msg), 0);
 
-  // Client *tmp = head_client; // assign head to p
-  // while (tmp->next != NULL)
-  // {
-  //   if (tmp->conn_fd == conn_fd)
-  //   {
-  //     switch (tmp->login_status)
-  //     {
-  //     case AUTH:
-  //       switch (msg.type)
-  //       {
-  //       case CHANGE_PASS:
-  //         break;
-  //       case PLAY_OFFLINE:
-  //         break;
-  //       case PLAY_ONLINE:
-  //         break;
-  //       case LOGOUT:
-  //         break;
-  //       }
-  //       break;
-  //     case UN_AUTH:
-  //       switch (msg.type)
-  //       {
-  //       case LOGIN:
-  //         if (!login(conn_fd, msg.value))
-  //           printf("Login failed\n");
-  //         break;
-  //       case SIGNUP:
-  //         signup(conn_fd, msg.value);
-  //         break;
-  //       }
-  //       break;
-  //     }
-  //   }
-  //   tmp = tmp->next; // traverse the list until the last node
-  // }
+          recv(conn_fd, &msg, sizeof(msg), 0);
+          signup(msg.value);
+          
+          msg.type = SIGNUP_SUCCESS;
+          strcpy(msg.value, "Signup success");
+          send(conn_fd, &msg, sizeof(msg), 0);
+          printf("[%d]: Signup success!\n", conn_fd);
+        }
+        break;
+      }
+      break;
+    }
+  }
 
   // printf("Thread %d is created\n", *((int *)client_fd));
 
