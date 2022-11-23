@@ -28,8 +28,8 @@ enum msg_type
   SIGNUP_FAIL,
   CHANGE_PASS,
   CHANGE_PASS_SUCCESS,
-  PLAY_OFFLINE,
-  PLAY_ONLINE,
+  PLAY_ALONE,
+  PLAY_PVP,
   LOGOUT
 };
 
@@ -79,17 +79,22 @@ typedef struct _question
   int reward;
 } Question;
 
-typedef struct _room_game
-{
-  int client_fd[2];
-  int status;
-  int count_player_entered;
-  int count_question;
+typedef struct _list_quest{
   Question easy_quest[5];
   Question medium_quest[5];
   Question hard_quest[5];
-} RoomGame;
-RoomGame room_game[3], room_offline[BUFF_SIZE];
+} ListQuest;
+
+typedef struct _room
+{
+  int client_fd[2];
+  int status; // 0: wait, 1: playing, 2: end
+  int count_player_entered; // min: 1; max: 2
+  int index_current_question; // start from 1 to 15
+  ListQuest list_quest;
+} Room;
+Room *room_pvp, *room_alone;
+int count_room_pvp = 0, count_room_alone = 0;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -111,6 +116,8 @@ void *thread_start(void *client_fd);
 int login(int conn_fd, char msg_data[BUFF_SIZE]);
 int check_account_exist(char msg_data[BUFF_SIZE]);
 int signup(char msg_data[BUFF_SIZE]);
+// int play_alone(int);
+// int play_pvp(int);
 
 /*---------------- Utilities -------------------*/
 Account *new_account()
@@ -346,9 +353,11 @@ void *thread_start(void *client_fd)
         send(conn_fd, &msg, sizeof(msg), 0);
         printf("[%d] Change %s's password.\n", conn_fd, cli->login_account);
         break;
-      case PLAY_OFFLINE:
+      case PLAY_ALONE:
+        // play_alone(conn_fd);
         break;
-      case PLAY_ONLINE:
+      case PLAY_PVP:
+        // play_pvp(conn_fd);
         break;
       case LOGOUT:
         printf("[%d]: Bye %s\n", conn_fd, cli->login_account);

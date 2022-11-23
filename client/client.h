@@ -33,8 +33,8 @@ enum msg_type
   SIGNUP_FAIL,
   CHANGE_PASS,
   CHANGE_PASS_SUCCESS,
-  PLAY_OFFLINE,
-  PLAY_ONLINE,
+  PLAY_ALONE,
+  PLAY_PVP,
   LOGOUT
 };
 
@@ -151,8 +151,8 @@ int menu_logged()
   {
     printf("\n************************************\n");
     printf("\t1. Thay đổi mật khẩu.\n");
-    printf("\t2. Choi Offline.\n");
-    printf("\t3. Choi Online.\n");
+    printf("\t2. Play Alone\n");
+    printf("\t3. Play PvP.\n");
     printf("\t4. Đăng xuất.\n");
     scanf(" %[^\n]", input);
     if (strlen(input) != 1 || !isdigit(input[0]))
@@ -339,10 +339,8 @@ int show_menu_logged()
       }
       break;
     case 2:
-      printf("Choi Offline\n");
       break;
     case 3:
-      printf("Choi Online\n");
       break;
     case 4:
       msg.type = LOGOUT;
