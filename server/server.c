@@ -80,7 +80,6 @@ int main(int argc, char const *argv[])
     printf("New connection from [%s:%d] - (%d)\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port), conn_fd);
 
     add_client(conn_fd);
-    count_room_alone++;
     // pthread_mutex_lock(&mutex);
     pthread_create(&tid, NULL, thread_start, &conn_fd);
     // pthread_mutex_unlock(&mutex);

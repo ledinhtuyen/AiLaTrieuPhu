@@ -20,6 +20,7 @@ enum msg_type
 {
   LOGIN,
   LOGIN_SUCCESS,
+  LOGGED_IN,
   LOGIN_FAIL,
   SIGNUP,
   ACCOUNT_EXIST,
@@ -30,6 +31,11 @@ enum msg_type
   CHANGE_PASS_SUCCESS,
   PLAY_ALONE,
   PLAY_PVP,
+  QUESTION,
+  CHOICE_ANSWER,
+  CORRECT_ANSWER,
+  WIN,
+  LOSE,
   LOGOUT
 };
 
@@ -71,30 +77,31 @@ typedef struct _question
 {
   int index;
   char question[BUFF_SIZE];
-  char answerA[BUFF_SIZE];
-  char answerB[BUFF_SIZE];
-  char answerC[BUFF_SIZE];
-  char answerD[BUFF_SIZE];
-  int true; // true = {1, 2, 3, 4}
+  char choiceA[BUFF_SIZE];
+  char choiceB[BUFF_SIZE];
+  char choiceC[BUFF_SIZE];
+  char choiceD[BUFF_SIZE];
+  char answer[BUFF_SIZE];
   int reward;
 } Question;
 
-typedef struct _list_quest{
-  Question easy_quest[5];
-  Question medium_quest[5];
-  Question hard_quest[5];
+typedef struct _list_quest
+{
+  Question easy_question[5];
+  Question medium_question[5];
+  Question hard_question[5];
 } ListQuest;
 
 typedef struct _room
 {
   int client_fd[2];
-  int status; // 0: wait, 1: playing, 2: end
-  int count_player_entered; // min: 1; max: 2
+  int status;                 // 0: wait, 1: playing, 2: end
+  int count_player_entered;   // min: 1; max: 2
   int index_current_question; // start from 1 to 15
   ListQuest list_quest;
 } Room;
-Room *room_pvp, *room_alone;
-int count_room_pvp = 0, count_room_alone = 0;
+Room *room_pvp;
+int count_room_pvp = 0;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -102,7 +109,7 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 Account *new_account();
 Client *new_client();
 void read_user_file();
-void read_question_file(char *file_name);
+void read_question_file(Question q[], char *file_name);
 void catch_ctrl_c_and_exit(int sig);
 void add_account(char username[BUFF_SIZE], char password[BUFF_SIZE], int status);
 void add_client(int conn_fd);
@@ -116,8 +123,8 @@ void *thread_start(void *client_fd);
 int login(int conn_fd, char msg_data[BUFF_SIZE]);
 int check_account_exist(char msg_data[BUFF_SIZE]);
 int signup(char msg_data[BUFF_SIZE]);
-// int play_alone(int);
-// int play_pvp(int);
+int handle_play_alone(int);
+int handle_play_pvp(int);
 
 /*---------------- Utilities -------------------*/
 Account *new_account()
@@ -157,22 +164,46 @@ void read_user_file()
   fclose(f);
 }
 
-void read_question_file(char *file_name)
+void read_question_file(Question q[], char *file_name)
 {
+  FILE *f;
+  if ((f = fopen(file_name, "r")) == NULL)
+  {
+    printf("Not find %s\n", file_name);
+    return;
+  }
+  else
+  {
+    for (int x = 0; x < 5; x++)
+    { // Reads the questions from file
+      fgets(q[x].question, 120, f);
+      fgets(q[x].choiceA, 70, f);
+      fgets(q[x].choiceB, 70, f);
+      fgets(q[x].choiceC, 70, f);
+      fgets(q[x].choiceD, 70, f);
+      fgets(q[x].answer, 70, f);
+      q[x].answer[1] = '\0';
+    }
+  }
+
+  fclose(f);
 }
 
-void catch_ctrl_c_and_exit(int sig) {
-    char mesg[] = "\nServer is closing...\n";
-    while (head_client != NULL) {
-        if (send(head_client->conn_fd, mesg, strlen(mesg), 0) < 0) {
-            perror("Send error");
-            delete_client(head_client->conn_fd);
-        }
-        printf("\nClose socketfd: %d\n", head_client->conn_fd);
-        delete_client(head_client->conn_fd);
+void catch_ctrl_c_and_exit(int sig)
+{
+  char mesg[] = "\nServer is closing...\n";
+  while (head_client != NULL)
+  {
+    if (send(head_client->conn_fd, mesg, strlen(mesg), 0) < 0)
+    {
+      perror("Send error");
+      delete_client(head_client->conn_fd);
     }
-    printf("\nBye\n");
-    exit(0);
+    printf("\nClose socketfd: %d\n", head_client->conn_fd);
+    delete_client(head_client->conn_fd);
+  }
+  printf("\nBye\n");
+  exit(0);
 }
 
 void add_account(char username[BUFF_SIZE], char password[BUFF_SIZE], int status)
@@ -271,7 +302,7 @@ int login(int conn_fd, char msg_data[BUFF_SIZE])
   char *username = strtok(msg_data, " ");
   char *password = strtok(NULL, " ");
 
-  Client *cli = head_client;
+  Client *cli = head_client, *cli_tmp = head_client;
   while (cli->conn_fd != conn_fd && cli != NULL)
     cli = cli->next;
 
@@ -280,6 +311,20 @@ int login(int conn_fd, char msg_data[BUFF_SIZE])
   {
     if (strcmp(tmp->username, username) == 0)
     {
+      cli_tmp = head_client;
+      while (cli_tmp != NULL)
+      {
+        if (strcmp(cli_tmp->login_account, username) == 0 && cli_tmp->login_status == AUTH)
+        {
+          // msg.type = LOGGED_IN;
+          // strcpy(msg.data, "Account is logged in");
+          // send(server_sock, &msg, sizeof(msg), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
+          // printf("[%s:%d] Account %s is logged in\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port), username);
+          // return;
+          return -1;
+        }
+        cli_tmp = cli_tmp->next;
+      }
       if (strcmp(tmp->password, password) == 0)
       {
         if (tmp->status == 0)
@@ -327,6 +372,85 @@ int signup(char msg_data[BUFF_SIZE])
   return 1;
 }
 
+int handle_play_alone(int conn_fd)
+{
+  Message msg;
+  ListQuest lst;
+  Question q;
+  char str[10];
+  int current_question = 0;
+
+  read_question_file(lst.easy_question, "easy_question.txt");
+  read_question_file(lst.medium_question, "medium_question.txt");
+  read_question_file(lst.hard_question, "hard_question.txt");
+
+  while (current_question < 15)
+  {
+    if (current_question / 5 == 0)
+    {
+      q = lst.easy_question[current_question];
+    }
+    else if (current_question / 5 == 1)
+    {
+      q = lst.medium_question[current_question - 5];
+    }
+    else
+    {
+      q = lst.hard_question[current_question - 10];
+    }
+
+    msg.type = QUESTION;
+    strcpy(msg.value, "Question ");
+    sprintf(str, "%d", current_question + 1);
+    strcat(msg.value, str);
+    strcat(msg.value, ": ");
+    strcat(msg.value, q.question);
+    strcat(msg.value, q.choiceA);
+    strcat(msg.value, q.choiceB);
+    strcat(msg.value, q.choiceC);
+    strcat(msg.value, q.choiceD);
+    send(conn_fd, &msg, sizeof(msg), 0);
+    current_question++;
+
+    recv(conn_fd, &msg, sizeof(msg), 0);
+    if (strcmp(msg.value, q.answer) == 0)
+    {
+      if (current_question == 15)
+      {
+        msg.type = WIN;
+        strcpy(msg.value, "Chuc mung ban da tra loi dung 15 cau hoi!");
+        send(conn_fd, &msg, sizeof(msg), 0);
+        return 1;
+      }
+      else
+      {
+        msg.type = CORRECT_ANSWER;
+        strcpy(msg.value, "Chinh xac!");
+        send(conn_fd, &msg, sizeof(msg), 0);
+        continue;
+      }
+    }
+    else
+    {
+      msg.type = LOSE;
+      strcpy(msg.value, "Sai! Dap an la: ");
+      strcat(msg.value, q.answer);
+      strcat(msg.value, ". Chuc mung ban da tra loi dung ");
+      sprintf(str, "%d cau hoi", current_question - 1);
+      strcat(msg.value, str);
+      send(conn_fd, &msg, sizeof(msg), 0);
+      return 1;
+    }
+  }
+
+  return 1;
+}
+
+int handle_play_pvp(int conn_fd)
+{
+  return 1;
+}
+
 void *thread_start(void *client_fd)
 {
   pthread_detach(pthread_self());
@@ -354,10 +478,11 @@ void *thread_start(void *client_fd)
         printf("[%d] Change %s's password.\n", conn_fd, cli->login_account);
         break;
       case PLAY_ALONE:
-        // play_alone(conn_fd);
+        printf("[%d] %s is playing alone.\n", conn_fd, cli->login_account);
+        handle_play_alone(conn_fd);
         break;
       case PLAY_PVP:
-        // play_pvp(conn_fd);
+        handle_play_pvp(conn_fd);
         break;
       case LOGOUT:
         printf("[%d]: Bye %s\n", conn_fd, cli->login_account);
@@ -369,19 +494,27 @@ void *thread_start(void *client_fd)
       switch (msg.type)
       {
       case LOGIN:
-        if (!login(conn_fd, msg.value))
+        int re = login(conn_fd, msg.value);
+        if (re == 0)
         {
           msg.type = LOGIN_FAIL;
           strcpy(msg.value, "Login failed");
           printf("[%d]: Login failed!\n", conn_fd);
           send(conn_fd, &msg, sizeof(msg), 0);
         }
-        else
+        else if (re == 1)
         {
           msg.type = LOGIN_SUCCESS;
           strcpy(msg.value, "Login success");
           printf("[%d]: Hello %s\n", conn_fd, cli->login_account);
           cli->login_status = AUTH;
+          send(conn_fd, &msg, sizeof(msg), 0);
+        }
+        else if (re == -1)
+        {
+          msg.type = LOGGED_IN;
+          strcpy(msg.value, "Account is logged in");
+          printf("[%d] Account is logged in\n", conn_fd);
           send(conn_fd, &msg, sizeof(msg), 0);
         }
         break;
