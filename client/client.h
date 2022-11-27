@@ -25,6 +25,7 @@ enum msg_type
 {
   LOGIN,
   LOGIN_SUCCESS,
+  LOGGED_IN,
   LOGIN_FAIL,
   SIGNUP,
   ACCOUNT_EXIST,
@@ -35,6 +36,11 @@ enum msg_type
   CHANGE_PASS_SUCCESS,
   PLAY_ALONE,
   PLAY_PVP,
+  QUESTION,
+  CHOICE_ANSWER,
+  CORRECT_ANSWER,
+  WIN,
+  LOSE,
   LOGOUT
 };
 
@@ -62,6 +68,8 @@ int menu_logged();
 int connect_to_server();
 int show_menu_not_login();
 int show_menu_logged();
+int play_alone();
+int play_pvp();
 
 /*--------------------- Ultilities -------------------------*/
 int is_number(const char *s)
@@ -321,7 +329,7 @@ int show_menu_logged()
         {
           printf("Mật khẩu không được để trống\n");
           continue;
-        }    
+        }
 
         if (strcmp(pass, re_pass) == 0)
         {
@@ -339,8 +347,14 @@ int show_menu_logged()
       }
       break;
     case 2:
+      msg.type = PLAY_ALONE;
+      send(sockfd, &msg, sizeof(msg), 0);
+      play_alone();
       break;
     case 3:
+      msg.type = PLAY_PVP;
+      send(sockfd, &msg, sizeof(msg), 0);
+      play_pvp();
       break;
     case 4:
       msg.type = LOGOUT;
@@ -355,4 +369,46 @@ int show_menu_logged()
     }
   }
   return 0;
+}
+
+int play_alone()
+{
+  printf("Chơi một mình\n");
+  Message msg;
+  while (1)
+  {
+    recvBytes = recv(sockfd, &msg, sizeof(msg), 0);
+    if (recvBytes < 0)
+    {
+      perror("The server terminated prematurely");
+      exit(0);
+      return 0;
+    }
+    else
+    {
+      switch (msg.type)
+      {
+      case QUESTION:
+        printf("%s", msg.value);
+        printf("Đáp án: ");
+        msg.type = CHOICE_ANSWER;
+        scanf(" %[^\n]", msg.value);
+        send(sockfd, &msg, sizeof(msg), 0);
+        break;
+      case CORRECT_ANSWER:
+        printf("%s\n", msg.value);
+        break;
+      case WIN:
+        printf("%s\n", msg.value);
+        return 1;
+      case LOSE:
+        printf("%s\n", msg.value);
+        return 1;
+      }
+    }
+  }
+}
+
+int play_pvp(){
+  return 1;
 }
