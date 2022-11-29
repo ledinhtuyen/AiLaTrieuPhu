@@ -23,6 +23,7 @@ int serverPort;
 
 enum msg_type
 {
+  DISCONNECT,
   LOGIN,
   LOGIN_SUCCESS,
   LOGGED_IN,
@@ -39,8 +40,14 @@ enum msg_type
   QUESTION,
   CHOICE_ANSWER,
   CORRECT_ANSWER,
+  FOUND_PLAYER,
+  ENTERED_ROOM,
+  WAIT_OTHER_PLAYER,
+  NOT_FOUND_PLAYER,
+  OTHER_PLAYER_IS_PLAYING,
   WIN,
   LOSE,
+  DRAW,
   LOGOUT
 };
 
@@ -297,6 +304,8 @@ int show_menu_not_login()
       break;
     case 3:
       printf("Trở về\n");
+      msg.type = DISCONNECT;
+      send(sockfd, &msg, sizeof(msg), 0);
       show_menu_not_login = 0;
       break;
     default:
@@ -409,6 +418,81 @@ int play_alone()
   }
 }
 
-int play_pvp(){
+int play_pvp()
+{
+  Message msg;
+  recvBytes = recv(sockfd, &msg, sizeof(msg), 0);
+  if (recvBytes <= 0)
+  {
+    perror("The server terminated prematurely");
+    exit(4);
+    return 0;
+  }
+
+  printf("%s\n", msg.value);
+
+  recvBytes = recv(sockfd, &msg, sizeof(msg), 0);
+  if (recvBytes <= 0)
+  {
+    perror("The server terminated prematurely");
+    exit(4);
+    return 0;
+  }
+
+  switch (msg.type)
+  {
+  case FOUND_PLAYER:
+    printf("%s\n", msg.value);
+    break;
+  case NOT_FOUND_PLAYER:
+    printf("%s\n", msg.value);
+    return 0;
+  }
+
+  recvBytes = recv(sockfd, &msg, sizeof(msg), 0);
+  if (recvBytes <= 0)
+  {
+    perror("The server terminated prematurely");
+    exit(4);
+    return 0;
+  }
+
+  printf("Enter room %s\n", msg.value);
+
+  while (1)
+  {
+    recvBytes = recv(sockfd, &msg, sizeof(msg), 0);
+    if (recvBytes < 0)
+    {
+      perror("The server terminated prematurely");
+      exit(0);
+      return 0;
+    }
+    else
+    {
+      switch (msg.type)
+      {
+      case QUESTION:
+        printf("%s", msg.value);
+        printf("Đáp án: ");
+        msg.type = CHOICE_ANSWER;
+        scanf(" %[^\n]", msg.value);
+        send(sockfd, &msg, sizeof(msg), 0);
+        break;
+      case CORRECT_ANSWER:
+        printf("%s\n", msg.value);
+        break;
+      case OTHER_PLAYER_IS_PLAYING:
+        printf("%s\n", msg.value);
+        break;
+      case WIN:
+      case LOSE:
+      case DRAW:
+        printf("%s\n", msg.value);
+        return 1;
+      }
+    }
+  }
+
   return 1;
 }
