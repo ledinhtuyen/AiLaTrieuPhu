@@ -772,7 +772,7 @@ void *thread_start(void *client_fd)
 {
   pthread_detach(pthread_self());
 
-  int recvBytes, sendBytes;
+  int recvBytes, sendBytes, re;
   Message msg;
   int conn_fd = *((int *)client_fd);
   Client *cli = head_client;
@@ -817,7 +817,7 @@ void *thread_start(void *client_fd)
       switch (msg.type)
       {
       case LOGIN:
-        int re = login(conn_fd, msg.value);
+        re = login(conn_fd, msg.value);
         if (re == 0)
         {
           msg.type = LOGIN_FAIL;
