@@ -1,4 +1,7 @@
 all: run
 
 run: client.c
-	gcc -pthread -o client client.c
+	gcc -o client client.c
+
+clean:
+	rm -rf client
