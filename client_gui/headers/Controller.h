@@ -1,10 +1,11 @@
-#ifndef INCLUDES_MENU_H
-#define INCLUDES_MENU_H
+#ifndef MENUSTART_H
 #include "./headers/MenuStart.h"
-#include "./headers/MenuNotLogin.h"
-#endif // INCLUDES_MENU_H
+#endif // MENUSTART_H
 
-#ifndef CONTROLLER_H
+#ifndef MENUNOTLOGIN_H
+#include "./headers/MenuNotLogin.h"
+#endif // MENUNOTLOGIN_H
+
 #define CONTROLLER_H
 class Controller: public QObject {
     Q_OBJECT
@@ -20,4 +21,3 @@ private:
     MenuStart *menuStart;
     MenuNotLogin *menuNotLogin;
 };
-#endif // CONTROLLER_H

@@ -1,4 +1,3 @@
-#ifndef MENUNOTLOGIN_H
 #define MENUNOTLOGIN_H
 #include "./ui_MenuNotLogin.h"
 
@@ -20,4 +19,3 @@ private:
 signals:
     void switchToStart();
 };
-#endif // MENUNOTLOGIN_H

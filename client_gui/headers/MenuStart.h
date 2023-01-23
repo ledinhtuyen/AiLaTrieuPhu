@@ -1,5 +1,5 @@
-#ifndef MENUSTART_H
 #define MENUSTART_H
+
 #include "./ui_MenuStart.h"
 
 class MenuStart : public QWidget
@@ -19,4 +19,3 @@ private:
 signals:
     void switchToNotLogin();
 };
-#endif // MENUSTART_H
