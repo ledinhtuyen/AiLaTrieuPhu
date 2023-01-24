@@ -52,19 +52,29 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = src/MenuStart.cpp \
+SOURCES       = src/Controller.cpp \
+		src/CreditDialog.cpp \
+		src/GuideDialog.cpp \
+		src/Main.cpp \
 		src/MenuNotLogin.cpp \
-		src/Controller.cpp \
-		src/Main.cpp moc_MenuStart.cpp \
+		src/MenuStart.cpp qrc_images.cpp \
+		moc_Controller.cpp \
+		moc_CreditDialog.cpp \
+		moc_GuideDialog.cpp \
 		moc_MenuNotLogin.cpp \
-		moc_Controller.cpp
-OBJECTS       = MenuStart.o \
-		MenuNotLogin.o \
-		Controller.o \
+		moc_MenuStart.cpp
+OBJECTS       = Controller.o \
+		CreditDialog.o \
+		GuideDialog.o \
 		Main.o \
-		moc_MenuStart.o \
+		MenuNotLogin.o \
+		MenuStart.o \
+		qrc_images.o \
+		moc_Controller.o \
+		moc_CreditDialog.o \
+		moc_GuideDialog.o \
 		moc_MenuNotLogin.o \
-		moc_Controller.o
+		moc_MenuStart.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -140,12 +150,16 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		client.pro headers/MenuStart.h \
+		client.pro headers/Controller.h \
+		headers/CreditDialog.h \
+		headers/GuideDialog.h \
 		headers/MenuNotLogin.h \
-		headers/Controller.h src/MenuStart.cpp \
+		headers/MenuStart.h src/Controller.cpp \
+		src/CreditDialog.cpp \
+		src/GuideDialog.cpp \
+		src/Main.cpp \
 		src/MenuNotLogin.cpp \
-		src/Controller.cpp \
-		src/Main.cpp
+		src/MenuStart.cpp
 QMAKE_TARGET  = client
 DESTDIR       = build/
 TARGET        = build/client
@@ -154,7 +168,7 @@ TARGET        = build/client
 first: all
 ####### Build rules
 
-build/client: ui_MenuStart.h ui_MenuNotLogin.h $(OBJECTS)  
+build/client: ui_CreditDialog.h ui_GuideDialog.h ui_MenuNotLogin.h ui_MenuStart.h $(OBJECTS)  
 	@test -d build/ || mkdir -p build/
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
@@ -233,7 +247,8 @@ Makefile: client.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf 
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		client.pro
+		client.pro \
+		resources/images.qrc
 	$(QMAKE) -o Makefile client.pro
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf:
@@ -311,6 +326,7 @@ Makefile: client.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf 
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf:
 client.pro:
+resources/images.qrc:
 qmake: FORCE
 	@$(QMAKE) -o Makefile client.pro
 
@@ -325,10 +341,11 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
+	$(COPY_FILE) --parents resources/images.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents headers/MenuStart.h headers/MenuNotLogin.h headers/Controller.h $(DISTDIR)/
-	$(COPY_FILE) --parents src/MenuStart.cpp src/MenuNotLogin.cpp src/Controller.cpp src/Main.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents forms/MenuStart.ui forms/MenuNotLogin.ui $(DISTDIR)/
+	$(COPY_FILE) --parents headers/Controller.h headers/CreditDialog.h headers/GuideDialog.h headers/MenuNotLogin.h headers/MenuStart.h $(DISTDIR)/
+	$(COPY_FILE) --parents src/Controller.cpp src/CreditDialog.cpp src/GuideDialog.cpp src/Main.cpp src/MenuNotLogin.cpp src/MenuStart.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents forms/CreditDialog.ui forms/GuideDialog.ui forms/MenuNotLogin.ui forms/MenuStart.ui $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -352,29 +369,24 @@ check: first
 
 benchmark: first
 
-compiler_rcc_make_all:
+compiler_rcc_make_all: qrc_images.cpp
 compiler_rcc_clean:
+	-$(DEL_FILE) qrc_images.cpp
+qrc_images.cpp: resources/images.qrc \
+		/usr/lib/qt5/bin/rcc \
+		resources/ALTP_LOGO_2021.png \
+		resources/desktop-wallpaper-millionaire-wwtbam-money-tree-thumbnail.jpg
+	/usr/lib/qt5/bin/rcc -name images resources/images.qrc -o qrc_images.cpp
+
 compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -Wall -W -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_MenuStart.cpp moc_MenuNotLogin.cpp moc_Controller.cpp
+compiler_moc_header_make_all: moc_Controller.cpp moc_CreditDialog.cpp moc_GuideDialog.cpp moc_MenuNotLogin.cpp moc_MenuStart.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_MenuStart.cpp moc_MenuNotLogin.cpp moc_Controller.cpp
-moc_MenuStart.cpp: headers/MenuStart.h \
-		ui_MenuStart.h \
-		moc_predefs.h \
-		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/z/AiLaTrieuPhu/client_gui/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/z/AiLaTrieuPhu/client_gui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include headers/MenuStart.h -o moc_MenuStart.cpp
-
-moc_MenuNotLogin.cpp: headers/MenuNotLogin.h \
-		ui_MenuNotLogin.h \
-		moc_predefs.h \
-		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/z/AiLaTrieuPhu/client_gui/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/z/AiLaTrieuPhu/client_gui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include headers/MenuNotLogin.h -o moc_MenuNotLogin.cpp
-
+	-$(DEL_FILE) moc_Controller.cpp moc_CreditDialog.cpp moc_GuideDialog.cpp moc_MenuNotLogin.cpp moc_MenuStart.cpp
 moc_Controller.cpp: headers/Controller.h \
 		headers/MenuStart.h \
 		ui_MenuStart.h \
@@ -384,20 +396,52 @@ moc_Controller.cpp: headers/Controller.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/z/AiLaTrieuPhu/client_gui/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/z/AiLaTrieuPhu/client_gui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include headers/Controller.h -o moc_Controller.cpp
 
+moc_CreditDialog.cpp: headers/CreditDialog.h \
+		ui_CreditDialog.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/z/AiLaTrieuPhu/client_gui/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/z/AiLaTrieuPhu/client_gui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include headers/CreditDialog.h -o moc_CreditDialog.cpp
+
+moc_GuideDialog.cpp: headers/GuideDialog.h \
+		ui_GuideDialog.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/z/AiLaTrieuPhu/client_gui/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/z/AiLaTrieuPhu/client_gui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include headers/GuideDialog.h -o moc_GuideDialog.cpp
+
+moc_MenuNotLogin.cpp: headers/MenuNotLogin.h \
+		ui_MenuNotLogin.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/z/AiLaTrieuPhu/client_gui/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/z/AiLaTrieuPhu/client_gui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include headers/MenuNotLogin.h -o moc_MenuNotLogin.cpp
+
+moc_MenuStart.cpp: headers/MenuStart.h \
+		ui_MenuStart.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/z/AiLaTrieuPhu/client_gui/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/z/AiLaTrieuPhu/client_gui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include headers/MenuStart.h -o moc_MenuStart.cpp
+
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
-compiler_uic_make_all: ui_MenuStart.h ui_MenuNotLogin.h
+compiler_uic_make_all: ui_CreditDialog.h ui_GuideDialog.h ui_MenuNotLogin.h ui_MenuStart.h
 compiler_uic_clean:
-	-$(DEL_FILE) ui_MenuStart.h ui_MenuNotLogin.h
-ui_MenuStart.h: forms/MenuStart.ui \
+	-$(DEL_FILE) ui_CreditDialog.h ui_GuideDialog.h ui_MenuNotLogin.h ui_MenuStart.h
+ui_CreditDialog.h: forms/CreditDialog.ui \
 		/usr/lib/qt5/bin/uic
-	/usr/lib/qt5/bin/uic forms/MenuStart.ui -o ui_MenuStart.h
+	/usr/lib/qt5/bin/uic forms/CreditDialog.ui -o ui_CreditDialog.h
+
+ui_GuideDialog.h: forms/GuideDialog.ui \
+		/usr/lib/qt5/bin/uic
+	/usr/lib/qt5/bin/uic forms/GuideDialog.ui -o ui_GuideDialog.h
 
 ui_MenuNotLogin.h: forms/MenuNotLogin.ui \
 		/usr/lib/qt5/bin/uic
 	/usr/lib/qt5/bin/uic forms/MenuNotLogin.ui -o ui_MenuNotLogin.h
+
+ui_MenuStart.h: forms/MenuStart.ui \
+		/usr/lib/qt5/bin/uic
+	/usr/lib/qt5/bin/uic forms/MenuStart.ui -o ui_MenuStart.h
 
 compiler_yacc_decl_make_all:
 compiler_yacc_decl_clean:
@@ -405,24 +449,28 @@ compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
+compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
 
 ####### Compile
 
-MenuStart.o: src/MenuStart.cpp headers/MenuStart.h \
-		ui_MenuStart.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o MenuStart.o src/MenuStart.cpp
-
-MenuNotLogin.o: src/MenuNotLogin.cpp headers/MenuNotLogin.h \
-		ui_MenuNotLogin.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o MenuNotLogin.o src/MenuNotLogin.cpp
-
 Controller.o: src/Controller.cpp headers/MenuStart.h \
 		ui_MenuStart.h \
+		headers/GuideDialog.h \
+		ui_GuideDialog.h \
+		headers/CreditDialog.h \
+		ui_CreditDialog.h \
 		headers/MenuNotLogin.h \
 		ui_MenuNotLogin.h \
 		headers/Controller.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Controller.o src/Controller.cpp
+
+CreditDialog.o: src/CreditDialog.cpp headers/CreditDialog.h \
+		ui_CreditDialog.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o CreditDialog.o src/CreditDialog.cpp
+
+GuideDialog.o: src/GuideDialog.cpp headers/GuideDialog.h \
+		ui_GuideDialog.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o GuideDialog.o src/GuideDialog.cpp
 
 Main.o: src/Main.cpp headers/Controller.h \
 		headers/MenuStart.h \
@@ -431,14 +479,31 @@ Main.o: src/Main.cpp headers/Controller.h \
 		ui_MenuNotLogin.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Main.o src/Main.cpp
 
-moc_MenuStart.o: moc_MenuStart.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_MenuStart.o moc_MenuStart.cpp
+MenuNotLogin.o: src/MenuNotLogin.cpp headers/MenuNotLogin.h \
+		ui_MenuNotLogin.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o MenuNotLogin.o src/MenuNotLogin.cpp
+
+MenuStart.o: src/MenuStart.cpp headers/MenuStart.h \
+		ui_MenuStart.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o MenuStart.o src/MenuStart.cpp
+
+qrc_images.o: qrc_images.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_images.o qrc_images.cpp
+
+moc_Controller.o: moc_Controller.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Controller.o moc_Controller.cpp
+
+moc_CreditDialog.o: moc_CreditDialog.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_CreditDialog.o moc_CreditDialog.cpp
+
+moc_GuideDialog.o: moc_GuideDialog.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_GuideDialog.o moc_GuideDialog.cpp
 
 moc_MenuNotLogin.o: moc_MenuNotLogin.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_MenuNotLogin.o moc_MenuNotLogin.cpp
 
-moc_Controller.o: moc_Controller.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Controller.o moc_Controller.cpp
+moc_MenuStart.o: moc_MenuStart.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_MenuStart.o moc_MenuStart.cpp
 
 ####### Install
 

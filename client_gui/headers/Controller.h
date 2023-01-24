@@ -15,6 +15,8 @@ public:
 
 public slots:
     void showMenuStart();
+    void showGuide();
+    void showCredit();
     void showMenuNotLogin();
 
 private:
