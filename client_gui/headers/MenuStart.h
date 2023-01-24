@@ -12,10 +12,16 @@ public:
 
 private slots:
     void on_startBtn_clicked();
+    void on_guideBtn_clicked();
+    void on_creditBtn_clicked();
+    void on_quitBtn_clicked();
 
 private:
     Ui::MenuStart *ui;
 
 signals:
-    void switchToNotLogin();
+    void showMenuNotLogin();
+    void showCredit();
+    void showGuide();
+    void quit();
 };

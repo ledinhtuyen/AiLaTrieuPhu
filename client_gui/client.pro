@@ -1,8 +1,10 @@
-FORMS += forms/MenuStart.ui forms/MenuNotLogin.ui
+FORMS += forms/*
 
-HEADERS += headers/MenuStart.h headers/MenuNotLogin.h headers/Controller.h
+HEADERS += headers/*
 
-SOURCES += src/MenuStart.cpp src/MenuNotLogin.cpp src/Controller.cpp src/Main.cpp
+SOURCES += src/*
 DESTDIR = build
+
+RESOURCES += resources/images.qrc
 
 QT += widgets
