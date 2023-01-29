@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>assets/logo.png</file>
+        <file>assets/wallpaper.jpg</file>
+        <file>assets/back_icon.png</file>
+        <file>assets/back_icon_hover.png</file>
+        <file>qml/main.qml</file>
+        <file>qml/MenuStart.qml</file>
+        <file>qml/LoginPage.qml</file>
+        <file>qml/SignUpPage.qml</file>
+        <file>qml/CButton.qml</file>
+        <file>assets/fontawesome-webfont.ttf</file>
+    </qresource>
+</RCC>
