@@ -25,9 +25,7 @@ enum msg_type
   LOGIN_FAIL,
   SIGNUP,
   ACCOUNT_EXIST,
-  SIGNUP_CONTINUE,
   SIGNUP_SUCCESS,
-  SIGNUP_FAIL,
   CHANGE_PASS,
   CHANGE_PASS_SUCCESS,
   PLAY_ALONE,
@@ -135,8 +133,8 @@ void update_user_file(char name[BUFF_SIZE], char new_pass[BUFF_SIZE], int new_st
 int is_number(const char *s);
 void *thread_start(void *client_fd);
 int login(int conn_fd, char msg_data[BUFF_SIZE]);
-int check_account_exist(char msg_data[BUFF_SIZE]);
-int signup(char msg_data[BUFF_SIZE]);
+int check_account_exist(char username[BUFF_SIZE]);
+int signup(char username[BUFF_SIZE], char password[BUFF_SIZE]);
 int handle_play_alone(int);
 int handle_play_pvp(int);
 
@@ -432,11 +430,6 @@ int login(int conn_fd, char msg_data[BUFF_SIZE])
       {
         if (strcmp(cli_tmp->login_account, username) == 0 && cli_tmp->login_status == AUTH)
         {
-          // msg.type = LOGGED_IN;
-          // strcpy(msg.data, "Account is logged in");
-          // send(server_sock, &msg, sizeof(msg), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
-          // printf("[%s:%d] Account %s is logged in\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port), username);
-          // return;
           return -1;
         }
         cli_tmp = cli_tmp->next;
@@ -462,10 +455,8 @@ int login(int conn_fd, char msg_data[BUFF_SIZE])
   return 0;
 }
 
-int check_account_exist(char msg_data[BUFF_SIZE])
+int check_account_exist(char username[BUFF_SIZE])
 {
-  char *username = strtok(msg_data, " ");
-  char *password = strtok(NULL, " ");
   Account *tmp = head_account;
   while (tmp != NULL)
   {
@@ -478,11 +469,8 @@ int check_account_exist(char msg_data[BUFF_SIZE])
   return 0;
 }
 
-int signup(char msg_data[BUFF_SIZE])
+int signup(char username[], char password[])
 {
-  char *username = strtok(msg_data, " ");
-  char *password = strtok(NULL, " ");
-
   add_account(username, password, 1);
   update_user_file(username, password, 1);
   return 1;
@@ -842,27 +830,28 @@ void *thread_start(void *client_fd)
         }
         break;
       case SIGNUP:
-        if (check_account_exist(msg.value) == 1)
         {
-          msg.type = ACCOUNT_EXIST;
-          strcpy(msg.value, "Account exist");
-          printf("[%d]: Account %s exist!\n", conn_fd, msg.value);
-          send(conn_fd, &msg, sizeof(msg), 0);
+          char username[BUFF_SIZE];
+          char password[BUFF_SIZE];
+          sprintf(username, "%s", strtok(msg.value, " "));
+          sprintf(password, "%s", strtok(NULL, " "));
+          if (check_account_exist(username) == 1)
+          {
+            msg.type = ACCOUNT_EXIST;
+            printf("[%d]: Account %s exist!\n", conn_fd, username);
+            strcpy(msg.value, "Account exist");
+            send(conn_fd, &msg, sizeof(msg), 0);
+          }
+          else
+          {
+            signup(username, password);
+            msg.type = SIGNUP_SUCCESS;
+            printf("[%d]: Signup %s success!\n", conn_fd, username);
+            strcpy(msg.value, "Signup success");
+            send(conn_fd, &msg, sizeof(msg), 0);
+          }
+          break;
         }
-        else
-        {
-          msg.type = SIGNUP_CONTINUE;
-          send(conn_fd, &msg, sizeof(msg), 0);
-
-          recv(conn_fd, &msg, sizeof(msg), 0);
-          signup(msg.value);
-
-          msg.type = SIGNUP_SUCCESS;
-          strcpy(msg.value, "Signup success");
-          send(conn_fd, &msg, sizeof(msg), 0);
-          printf("[%d]: Signup success!\n", conn_fd);
-        }
-        break;
       }
       break;
     }
