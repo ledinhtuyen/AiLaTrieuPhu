@@ -210,9 +210,12 @@ Page {
             name: "Log In"
             baseColor: mainAppColor
             borderColor: mainAppColor
-            // onClicked: {
-            //     loginUser(loginUsername.text, loginPassword.text)
-            // }
+            onClicked: {
+                waitPopup.popMessage = "Logging in..."
+                waitPopup.open()
+                act = "login"
+                backEnd.signIn(loginUsername.text, loginPassword.text)
+            }
         }
 
         CButton{
