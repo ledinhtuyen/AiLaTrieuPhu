@@ -24,9 +24,7 @@ enum msg_type
   LOGIN_FAIL,
   SIGNUP,
   ACCOUNT_EXIST,
-  SIGNUP_CONTINUE,
   SIGNUP_SUCCESS,
-  SIGNUP_FAIL,
   CHANGE_PASS,
   CHANGE_PASS_SUCCESS,
   PLAY_ALONE,
@@ -68,6 +66,7 @@ typedef struct _account
 int connect_to_server(char ip[], int port);
 int disconnect_to_server();
 int login(char username[], char password[]);
+int signup(char username[], char password[]);
 // int show_menu_not_login();
 // int show_menu_logged();
 // int play_alone();

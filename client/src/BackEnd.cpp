@@ -16,6 +16,7 @@ void BackEnd::connectToServer(){
   {
     emit connectFail();
   }
+  // printf("%s %d\n", BackEnd::server_ip, BackEnd::server_port);
 }
 
 void BackEnd::disconnectToServer(){
@@ -35,5 +36,17 @@ void BackEnd::signIn(QString username, QString password){
   else if (loginStatus == LOGIN_FAIL)
   {
     emit loginFail();
+  }
+}
+
+void BackEnd::signUp(QString username, QString password){
+  int registerStatus = signup(username.toLocal8Bit().data(), password.toLocal8Bit().data());
+  if (registerStatus == SIGNUP_SUCCESS)
+  {
+    emit signupSuccess();
+  }
+  else if (registerStatus == ACCOUNT_EXIST)
+  {
+    emit accountExist();
   }
 }

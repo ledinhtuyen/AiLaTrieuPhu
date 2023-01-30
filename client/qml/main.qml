@@ -26,6 +26,7 @@ ApplicationWindow {
     property string act : "none"
     property bool connectFail : false
     property string loginStatus : "none"
+    property string signupStatus : "none"
 
 
     BackEnd{
@@ -40,7 +41,6 @@ ApplicationWindow {
         }
 
         onLoginSuccess: {
-            // stackView.push("MenuPage.qml")
             rootWindow.loginStatus = "LOGIN_SUCCESS"
         }
 
@@ -49,9 +49,15 @@ ApplicationWindow {
         }
 
         onLoginFail: {
-            // notifyPopup.popMessage = "Sai tên đăng nhập hoặc mật khẩu"
-            // notifyPopup.open()
             rootWindow.loginStatus = "LOGIN_FAIL"
+        }
+
+        onSignupSuccess: {
+            rootWindow.signupStatus = "SIGNUP_SUCCESS"
+        }
+
+        onAccountExist: {
+            rootWindow.signupStatus = "ACCOUNT_EXIST"
         }
     }
 
@@ -156,6 +162,17 @@ ApplicationWindow {
                 else if (loginStatus == "LOGIN_FAIL")
                 {
                     notifyPopup.popMessage = "Sai tên đăng nhập hoặc mật khẩu"
+                    notifyPopup.open()
+                }
+            }
+            else if (act == "signup"){
+                if (signupStatus == "SIGNUP_SUCCESS") {
+                    notifyPopup.popMessage = "Đăng ký thành công"
+                    notifyPopup.open()
+                }
+                else if (signupStatus == "ACCOUNT_EXIST")
+                {
+                    notifyPopup.popMessage = "Tài khoản đã tồn tại"
                     notifyPopup.open()
                 }
             }

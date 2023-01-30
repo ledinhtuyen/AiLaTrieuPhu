@@ -4,6 +4,14 @@
 
 int main(int argc, char *argv[])
 {
+    // if(argc != 3)
+    // {
+    //     printf("Usage: %s <server_ip> <server_port>", argv[0]);
+    // }
+
+    // strcpy(BackEnd::server_ip, argv[1]);
+    // BackEnd::server_port = atoi(argv[2]);
+
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);

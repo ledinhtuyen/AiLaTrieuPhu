@@ -290,7 +290,23 @@ Page {
             name: "Sign Up"
             baseColor: mainAppColor
             borderColor: mainAppColor
-            onClicked: registerNewUser(registerUsername.text, registerPassword.text, registerPassword2.text, passwordHint.text)
+            onClicked: {
+                if(registerUsername.text == "" || registerPassword.text == "" || registerPassword2.text == "" || passwordHint.text == ""){
+                    notifyPopup.popMessage = "Please fill in all fields"
+                    notifyPopup.open()
+                }
+                else if (registerPassword.text != registerPassword2.text) {
+                    notifyPopup.popMessage = "Passwords do not match"
+                    notifyPopup.open()
+                }
+                else {
+                    waitPopup.popMessage = "Signing up..."
+                    act = "signup"
+                    waitPopup.open()
+                    backEnd.signUp(registerUsername.text, registerPassword.text)
+                }
+            }
+                
         }
 
         CButton{
