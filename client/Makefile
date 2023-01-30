@@ -17,7 +17,7 @@ CXX           = g++
 DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_QUICK_LIB -DQT_GUI_LIB -DQT_QML_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -O2 -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I. -Iheader/ -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtQuick -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtQml -isystem /usr/include/x86_64-linux-gnu/qt5/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
+INCPATH       = -I. -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtQuick -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtQml -isystem /usr/include/x86_64-linux-gnu/qt5/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -52,13 +52,13 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = src/Utils.cpp \
-		src/BackEnd.cpp \
-		src/main.cpp qrc_qml.cpp \
+SOURCES       = src/BackEnd.cpp \
+		src/main.cpp \
+		src/Utils.c qrc_qml.cpp \
 		moc_BackEnd.cpp
-OBJECTS       = Utils.o \
-		BackEnd.o \
+OBJECTS       = BackEnd.o \
 		main.o \
+		Utils.o \
 		qrc_qml.o \
 		moc_BackEnd.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -139,10 +139,10 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		client.pro headers/Utils.h \
-		headers/BackEnd.h src/Utils.cpp \
-		src/BackEnd.cpp \
-		src/main.cpp
+		client.pro headers/BackEnd.h \
+		headers/Utils.h src/BackEnd.cpp \
+		src/main.cpp \
+		src/Utils.c
 QMAKE_TARGET  = client
 DESTDIR       = 
 TARGET        = client
@@ -331,8 +331,8 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents qml.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents headers/Utils.h headers/BackEnd.h $(DISTDIR)/
-	$(COPY_FILE) --parents src/Utils.cpp src/BackEnd.cpp src/main.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents headers/BackEnd.h headers/Utils.h $(DISTDIR)/
+	$(COPY_FILE) --parents src/BackEnd.cpp src/main.cpp src/Utils.c $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -386,7 +386,7 @@ moc_BackEnd.cpp: headers/BackEnd.h \
 		headers/Utils.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/z/AiLaTrieuPhu/client/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/z/AiLaTrieuPhu/client -I/home/z/AiLaTrieuPhu/client/header -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtQuick -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtQml -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include headers/BackEnd.h -o moc_BackEnd.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/z/AiLaTrieuPhu/client/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/z/AiLaTrieuPhu/client -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtQuick -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtQml -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include headers/BackEnd.h -o moc_BackEnd.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -402,16 +402,16 @@ compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_heade
 
 ####### Compile
 
-Utils.o: src/Utils.cpp headers/Utils.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Utils.o src/Utils.cpp
-
-BackEnd.o: src/BackEnd.cpp headers/BackEnd.h \
-		headers/Utils.h
+BackEnd.o: src/BackEnd.cpp headers/Utils.h \
+		headers/BackEnd.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o BackEnd.o src/BackEnd.cpp
 
 main.o: src/main.cpp headers/BackEnd.h \
 		headers/Utils.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
+
+Utils.o: src/Utils.c headers/Utils.h
+	$(CC) -c $(CFLAGS) $(INCPATH) -o Utils.o src/Utils.c
 
 qrc_qml.o: qrc_qml.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_qml.o qrc_qml.cpp

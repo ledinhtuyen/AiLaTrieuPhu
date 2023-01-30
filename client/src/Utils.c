@@ -132,8 +132,31 @@ int connect_to_server(char serverIP[], int serverPort)
 
 int disconnect_to_server()
 {
+  printf("Disconnect...\n");
   close(sockfd);
   return 1;
+}
+
+int login(char username[], char password[])
+{
+  Message msg;
+  msg.type = LOGIN;
+  strcpy(msg.data_type, "string");
+  strcpy(msg.value, username);
+  strcat(msg.value, " ");
+  strcat(msg.value, password);
+  msg.length = strlen(msg.value);
+  if (send(sockfd, &msg, sizeof(Message), 0) < 0)
+  {
+    printf("Send failed");
+  }
+
+  if (recv(sockfd, &msg, sizeof(Message), 0) < 0)
+  {
+    printf("Receive failed");
+  }
+
+  return msg.type;
 }
 
 // int show_menu_not_login()

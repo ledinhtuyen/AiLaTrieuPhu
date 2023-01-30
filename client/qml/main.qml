@@ -23,7 +23,10 @@ ApplicationWindow {
     property color mainTextColor: "#f0f0f0"
     property color popupBackGroundColor: "#b44"
     property color popupTextColor: "#ffffff"
+    property string act : "none"
     property bool connectFail : false
+    property string loginStatus : "none"
+
 
     BackEnd{
         id: backEnd
@@ -34,6 +37,21 @@ ApplicationWindow {
 
         onConnectFail: {
             rootWindow.connectFail = true
+        }
+
+        onLoginSuccess: {
+            // stackView.push("MenuPage.qml")
+            rootWindow.loginStatus = "LOGIN_SUCCESS"
+        }
+
+        onLoggedIn: {
+            rootWindow.loginStatus = "LOGGED_IN"
+        }
+
+        onLoginFail: {
+            // notifyPopup.popMessage = "Sai tên đăng nhập hoặc mật khẩu"
+            // notifyPopup.open()
+            rootWindow.loginStatus = "LOGIN_FAIL"
         }
     }
 
@@ -116,14 +134,30 @@ ApplicationWindow {
         interval: 2000
         onTriggered:{
             waitPopup.close()
-            if (connectFail) {
-                notifyPopup.popMessage = "Không thể kết nối đến máy chủ"
-                notifyPopup.open()
-                connectFail = false
+            if(act == "connect2server"){
+                if (connectFail == true) {
+                    notifyPopup.popMessage = "Không thể kết nối đến máy chủ"
+                    notifyPopup.open()
+                }
+                else if (connectFail == false)
+                {
+                    stackView.push("LoginPage.qml")
+                }
             }
-            else
-            {
-                stackView.push("LoginPage.qml")
+            else if (act == "login"){
+                if (loginStatus == "LOGIN_SUCCESS") {
+                    console.log("Login success")
+                }
+                else if (loginStatus == "LOGGED_IN")
+                {
+                    notifyPopup.popMessage = "Tài khoản đã được đăng nhập ở nơi khác"
+                    notifyPopup.open()
+                }
+                else if (loginStatus == "LOGIN_FAIL")
+                {
+                    notifyPopup.popMessage = "Sai tên đăng nhập hoặc mật khẩu"
+                    notifyPopup.open()
+                }
             }
         }
     }

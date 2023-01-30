@@ -67,6 +67,7 @@ typedef struct _account
 // int menu_logged();
 int connect_to_server(char ip[], int port);
 int disconnect_to_server();
+int login(char username[], char password[]);
 // int show_menu_not_login();
 // int show_menu_logged();
 // int play_alone();
