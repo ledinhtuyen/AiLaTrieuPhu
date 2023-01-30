@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Dialogs 1.2
+import AiLaTrieuPhu.BackEnd 1.0
 
 ApplicationWindow {
     id: rootWindow
@@ -22,6 +23,19 @@ ApplicationWindow {
     property color mainTextColor: "#f0f0f0"
     property color popupBackGroundColor: "#b44"
     property color popupTextColor: "#ffffff"
+    property bool connectFail : false
+
+    BackEnd{
+        id: backEnd
+
+        onConnectSuccess: {
+            rootWindow.connectFail = false
+        }
+
+        onConnectFail: {
+            rootWindow.connectFail = true
+        }
+    }
 
     FontLoader {
         id: fontAwesome
@@ -102,9 +116,15 @@ ApplicationWindow {
         interval: 2000
         onTriggered:{
             waitPopup.close()
-            // notifyPopup.popMessage = "Đã có lỗi xảy ra, vui lòng thử lại sau"
-            // notifyPopup.open()
-            stackView.push("LoginPage.qml")
+            if (connectFail) {
+                notifyPopup.popMessage = "Không thể kết nối đến máy chủ"
+                notifyPopup.open()
+                connectFail = false
+            }
+            else
+            {
+                stackView.push("LoginPage.qml")
+            }
         }
     }
 }

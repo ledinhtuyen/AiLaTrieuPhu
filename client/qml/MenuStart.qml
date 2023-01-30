@@ -52,6 +52,7 @@ Item{
       // stackView.push("LoginPage.qml")
       waitPopup.popMessage = "Connecting to server..."
       waitPopup.open()
+      backEnd.connectToServer()
     }
 
     onHoveredChanged: {

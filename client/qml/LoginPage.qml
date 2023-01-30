@@ -65,6 +65,7 @@ Page {
         MouseArea{
             anchors.fill: parent
             onClicked: {
+                backEnd.disconnectToServer()
                 stackView.pop()
             }
         }
