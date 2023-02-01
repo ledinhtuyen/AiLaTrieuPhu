@@ -11,7 +11,7 @@ Item{
   BorderImage {
     id: borderImage
     anchors.fill: parent
-    source: "../assets/wallpaper.jpg"
+    source: applicationDirPath + "/assets/Sprite/wallpaper.jpg"
   }
 
   Image {
@@ -22,7 +22,7 @@ Item{
     anchors.topMargin: 50
     anchors.horizontalCenter: parent.horizontalCenter
     fillMode: Image.PreserveAspectFit
-    source: "../assets/logo.png"
+    source: applicationDirPath + "/assets/Sprite/logo.png"
   }
 
   Button {
@@ -256,7 +256,7 @@ Item{
         text: "<h3><font color='#148F77'><i>2. Phạm Thị Ánh</i></font></h3>
         <b>Github</b>: <a href='https://github.com/Anhpham2802'>https://github.com/Anhpham2802</a>
         <br>
-        <b>Facebook</b>: <a href='https://www.facebook.com/Phâmnh2802'>https://www.facebook.com/PhamAnh2802</a>"
+        <b>Facebook</b>: <a href='https://www.facebook.com/PhamAnh2802'>https://www.facebook.com/PhamAnh2802</a>"
         font.family: "Times New Roman"
         font.pointSize: 12
         anchors.top: contentCredit1.bottom

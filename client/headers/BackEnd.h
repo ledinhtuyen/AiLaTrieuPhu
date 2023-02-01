@@ -1,6 +1,7 @@
 #ifndef BACKEND_H
 #define BACKEND_H
 #include <QObject>
+#include <string>
 
 extern "C" {
   #include "Utils.h"
@@ -10,8 +11,8 @@ class BackEnd : public QObject
 {
     Q_OBJECT
 public:
-    // static char server_ip[16];
-    // static int server_port;
+    static std::string server_ip;
+    static int server_port;
     explicit BackEnd(QObject *parent = nullptr);
     Q_INVOKABLE void connectToServer();
     Q_INVOKABLE void disconnectToServer();

@@ -365,12 +365,7 @@ qrc_qml.cpp: qml.qrc \
 		qml/MenuStart.qml \
 		qml/LoginPage.qml \
 		qml/CButton.qml \
-		qml/main.qml \
-		assets/back_icon.png \
-		assets/wallpaper.jpg \
-		assets/logo.png \
-		assets/back_icon_hover.png \
-		assets/fontawesome-webfont.ttf
+		qml/main.qml
 	/usr/lib/qt5/bin/rcc -name qml qml.qrc -o qrc_qml.cpp
 
 compiler_moc_predefs_make_all: moc_predefs.h
