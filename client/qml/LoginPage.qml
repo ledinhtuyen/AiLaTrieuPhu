@@ -16,12 +16,6 @@ Page {
         color: backGroundColor
     }
 
-    // BorderImage {
-    //     id: backgroundImg
-    //     anchors.fill: parent
-    //     source: "../assets/wallpaper.jpg"
-    // }
-
     Rectangle {
         id: iconRect
         width: parent.width
@@ -67,6 +61,7 @@ Page {
             onClicked: {
                 backEnd.disconnectToServer()
                 stackView.pop()
+                mainTheme.play()
             }
         }
     }

@@ -49,7 +49,7 @@ Item{
     }
 
     onClicked: {
-      // stackView.push("LoginPage.qml")
+      clickSound.play()
       waitPopup.popMessage = "Connecting to server..."
       waitPopup.open()
       act = "connect2server"
@@ -91,6 +91,7 @@ Item{
     }
 
     onClicked: {
+      clickSound.play()
       guideDialog.visible = true
     }
 
@@ -130,6 +131,7 @@ Item{
     }
 
     onClicked: {
+      clickSound.play()
       creditDialog.visible = true
     }
 
@@ -167,6 +169,7 @@ Item{
     }
 
     onClicked: {
+      clickSound.play()
       Qt.quit()
     }
 
