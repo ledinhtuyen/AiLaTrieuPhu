@@ -64,7 +64,7 @@ ApplicationWindow {
     FontLoader {
         id: fontAwesome
         name: "fontawesome"
-        source: "../assets/fontawesome-webfont.ttf"
+        source: applicationDirPath + "/assets/Font/fontawesome-webfont.ttf"
     }
 
     StackView{

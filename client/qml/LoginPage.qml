@@ -46,18 +46,18 @@ Page {
         anchors.leftMargin: 0
         anchors.top: parent.top
         anchors.topMargin: 0
-        source: "../assets/back_icon.png"
+        source: applicationDirPath + "/assets/Sprite/back_icon.png"
         fillMode: Image.PreserveAspectFit
 
         HoverHandler{
             onHoveredChanged: {
                 if (hovered)
                 {
-                    backIcon.source = "../assets/back_icon_hover.png"
+                    backIcon.source = applicationDirPath + "/assets/Sprite/back_icon_hover.png"
                 }
                 else
                 {
-                    backIcon.source = "../assets/back_icon.png"
+                    backIcon.source = applicationDirPath + "/assets/Sprite/back_icon.png"
                 }
             }
         }

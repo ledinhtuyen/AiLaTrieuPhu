@@ -3,12 +3,17 @@ extern "C"{
 }
 #include "../headers/BackEnd.h"
 
+std::string BackEnd::server_ip = "127.0.0.1";
+int BackEnd::server_port = 5500;
+
 BackEnd::BackEnd(QObject *parent) : QObject(parent)
 {
 }
 
 void BackEnd::connectToServer(){
-  if (connect_to_server("127.0.0.1", 5500))
+  char ip[16];
+  strcpy(ip, this->server_ip.c_str());
+  if (connect_to_server(ip, this->server_port))
   {
     emit connectSuccess();
   }
