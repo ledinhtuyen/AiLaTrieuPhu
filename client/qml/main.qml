@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Dialogs 1.2
+import QtMultimedia 5.12
 import AiLaTrieuPhu.BackEnd 1.0
 
 ApplicationWindow {
@@ -27,7 +28,6 @@ ApplicationWindow {
     property bool connectFail : false
     property string loginStatus : "none"
     property string signupStatus : "none"
-
 
     BackEnd{
         id: backEnd
@@ -61,16 +61,39 @@ ApplicationWindow {
         }
     }
 
+    Component.onCompleted: {
+        mainTheme.play()
+        stackView.push("MenuStart.qml")
+    }
+
+    SoundEffect{
+        id: mainTheme
+        source: applicationDirPath + "/assets/AudioClip/main theme.wav"
+        loops: SoundEffect.Infinite
+        volume: 0.5
+    }
+
+    SoundEffect {
+        id: clickSound
+        source: applicationDirPath + "/assets/AudioClip/click.wav"
+        volume: 1.0
+    }
+
     FontLoader {
         id: fontAwesome
         name: "fontawesome"
         source: applicationDirPath + "/assets/Font/fontawesome-webfont.ttf"
     }
 
+    FontLoader {
+        id: roboto
+        name: "roboto"
+        source: applicationDirPath + "/assets/Font/Roboto-Black.ttf"
+    }
+
     StackView{
         id: stackView
         anchors.fill: parent
-        initialItem: MenuStart {}
     }
 
     Popup {

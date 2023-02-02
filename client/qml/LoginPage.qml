@@ -16,12 +16,6 @@ Page {
         color: backGroundColor
     }
 
-    // BorderImage {
-    //     id: backgroundImg
-    //     anchors.fill: parent
-    //     source: "../assets/wallpaper.jpg"
-    // }
-
     Rectangle {
         id: iconRect
         width: parent.width
@@ -30,7 +24,7 @@ Page {
 
          Text {
              id: icontext
-             text: qsTr("\uf169")
+             text: qsTr("\uf136")
              anchors.centerIn: parent
              font.pointSize: 112
              font.family: "fontawesome"
@@ -67,6 +61,7 @@ Page {
             onClicked: {
                 backEnd.disconnectToServer()
                 stackView.pop()
+                stackView.replace("MenuStart.qml")
             }
         }
     }

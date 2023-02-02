@@ -52,13 +52,13 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = src/BackEnd.cpp \
-		src/main.cpp \
-		src/Utils.c qrc_qml.cpp \
+SOURCES       = src/Utils.c \
+		src/BackEnd.cpp \
+		src/main.cpp qrc_qml.cpp \
 		moc_BackEnd.cpp
-OBJECTS       = BackEnd.o \
+OBJECTS       = Utils.o \
+		BackEnd.o \
 		main.o \
-		Utils.o \
 		qrc_qml.o \
 		moc_BackEnd.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -139,10 +139,10 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		client.pro headers/BackEnd.h \
-		headers/Utils.h src/BackEnd.cpp \
-		src/main.cpp \
-		src/Utils.c
+		client.pro headers/Utils.h \
+		headers/BackEnd.h src/Utils.c \
+		src/BackEnd.cpp \
+		src/main.cpp
 QMAKE_TARGET  = client
 DESTDIR       = 
 TARGET        = client
@@ -331,8 +331,8 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents qml.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents headers/BackEnd.h headers/Utils.h $(DISTDIR)/
-	$(COPY_FILE) --parents src/BackEnd.cpp src/main.cpp src/Utils.c $(DISTDIR)/
+	$(COPY_FILE) --parents headers/Utils.h headers/BackEnd.h $(DISTDIR)/
+	$(COPY_FILE) --parents src/Utils.c src/BackEnd.cpp src/main.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -365,6 +365,7 @@ qrc_qml.cpp: qml.qrc \
 		qml/MenuStart.qml \
 		qml/LoginPage.qml \
 		qml/CButton.qml \
+		qml/MenuLogged.qml \
 		qml/main.qml
 	/usr/lib/qt5/bin/rcc -name qml qml.qrc -o qrc_qml.cpp
 
@@ -397,6 +398,9 @@ compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_heade
 
 ####### Compile
 
+Utils.o: src/Utils.c headers/Utils.h
+	$(CC) -c $(CFLAGS) $(INCPATH) -o Utils.o src/Utils.c
+
 BackEnd.o: src/BackEnd.cpp headers/Utils.h \
 		headers/BackEnd.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o BackEnd.o src/BackEnd.cpp
@@ -404,9 +408,6 @@ BackEnd.o: src/BackEnd.cpp headers/Utils.h \
 main.o: src/main.cpp headers/BackEnd.h \
 		headers/Utils.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
-
-Utils.o: src/Utils.c headers/Utils.h
-	$(CC) -c $(CFLAGS) $(INCPATH) -o Utils.o src/Utils.c
 
 qrc_qml.o: qrc_qml.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_qml.o qrc_qml.cpp
