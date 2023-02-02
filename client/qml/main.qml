@@ -63,12 +63,14 @@ ApplicationWindow {
 
     Component.onCompleted: {
         mainTheme.play()
+        stackView.push("MenuStart.qml")
     }
 
     SoundEffect{
         id: mainTheme
         source: applicationDirPath + "/assets/AudioClip/main theme.wav"
         loops: SoundEffect.Infinite
+        volume: 0.5
     }
 
     SoundEffect {
@@ -83,10 +85,15 @@ ApplicationWindow {
         source: applicationDirPath + "/assets/Font/fontawesome-webfont.ttf"
     }
 
+    FontLoader {
+        id: roboto
+        name: "roboto"
+        source: applicationDirPath + "/assets/Font/Roboto-Black.ttf"
+    }
+
     StackView{
         id: stackView
         anchors.fill: parent
-        initialItem: MenuStart {}
     }
 
     Popup {
@@ -163,7 +170,6 @@ ApplicationWindow {
                 }
                 else if (connectFail == false)
                 {
-                    mainTheme.stop()
                     stackView.push("LoginPage.qml")
                 }
             }

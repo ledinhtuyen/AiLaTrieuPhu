@@ -6,14 +6,14 @@
 
 int main(int argc, char *argv[])
 {
-    if(argc != 3)
-    {
-        printf("Usage: %s <server_ip> <server_port>\n", argv[0]);
-        exit(0);
-    }
+   if(argc != 3)
+   {
+       printf("Usage: %s <server_ip> <server_port>\n", argv[0]);
+       exit(0);
+   }
 
-    BackEnd::server_ip = argv[1];
-    BackEnd::server_port = atoi(argv[2]);
+   BackEnd::server_ip = argv[1];
+   BackEnd::server_port = atoi(argv[2]);
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 

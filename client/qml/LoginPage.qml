@@ -24,7 +24,7 @@ Page {
 
          Text {
              id: icontext
-             text: qsTr("\uf169")
+             text: qsTr("\uf136")
              anchors.centerIn: parent
              font.pointSize: 112
              font.family: "fontawesome"
@@ -61,7 +61,7 @@ Page {
             onClicked: {
                 backEnd.disconnectToServer()
                 stackView.pop()
-                mainTheme.play()
+                stackView.replace("MenuStart.qml")
             }
         }
     }

@@ -11,7 +11,7 @@ Item{
   BorderImage {
     id: borderImage
     anchors.fill: parent
-    source: applicationDirPath + "/assets/Sprite/wallpaper.jpg"
+    source: applicationDirPath + "/assets/Sprite/bg.png"
   }
 
   Image {
@@ -22,30 +22,66 @@ Item{
     anchors.topMargin: 50
     anchors.horizontalCenter: parent.horizontalCenter
     fillMode: Image.PreserveAspectFit
-    source: applicationDirPath + "/assets/Sprite/logo.png"
+    source: applicationDirPath + "/assets/Sprite/2.png"
+  }
+
+  Image {
+    id: image2
+    width: 350
+    height: 250
+    anchors.top: parent.top
+    anchors.topMargin: 50
+    anchors.horizontalCenter: parent.horizontalCenter
+    fillMode: Image.PreserveAspectFit
+    source: applicationDirPath + "/assets/Sprite/1.png"
+  }
+
+  Text {
+    id: text
+    width: 250
+    height: 50
+    anchors.top: parent.top
+    anchors.topMargin: 150
+    anchors.horizontalCenter: parent.horizontalCenter
+    font.bold: true
+    font.pointSize: 20
+    font.family: "roboto"
+    text: qsTr("Ai Là Triệu Phú")
+    verticalAlignment: Text.AlignVCenter
+    horizontalAlignment: Text.AlignHCenter
+    color: "white"
   }
 
   Button {
     id: startBtn
-    width: 160
+    width: parent.width
     height: 50
-    anchors.top: image.bottom
-    anchors.topMargin: 50
+    y : menuStart.height
     anchors.horizontalCenter: parent.horizontalCenter
 
     contentItem: Text {
       font.bold: true
-      font.italic: true
-      font.pointSize: 13
-      font.family: "Times New Roman"
+      font.pointSize: 17
+      font.family: "roboto"
       text: qsTr("Bắt đầu")
       verticalAlignment: Text.AlignVCenter
       horizontalAlignment: Text.AlignHCenter
       color: "white"
     }
 
-    background: Rectangle {
-      color: "#191919"
+    background: Image {
+      source: applicationDirPath + "/assets/Sprite/btn.png"
+      opacity: 0.5
+    }
+
+    NumberAnimation on y {
+      id : startBtnAnim
+      duration: 350
+      from : menuStart.height
+      to: 350
+      onStopped :{
+        guideBtnAnim.start()
+      }
     }
 
     onClicked: {
@@ -59,35 +95,44 @@ Item{
     onHoveredChanged: {
       if (startBtn.hovered)
       {
-        startBtn.background.color = "#6B728E"
+        startBtn.background.source = applicationDirPath + "/assets/Sprite/btn_choose.png"
       }
       else {
-        startBtn.background.color = "#191919"
+        startBtn.background.source = applicationDirPath + "/assets/Sprite/btn.png"
       }
     }
-
   }
 
   Button {
     id: guideBtn
-    width: 160
+    width: parent.width
     height: 50
+    y : menuStart.height
     contentItem: Text {
       font.bold: true
-      font.italic: true
-      font.pointSize: 13
-      font.family: "Times New Roman"
+      font.pointSize: 17
+      font.family: "roboto"
       text: qsTr("Cách chơi")
       verticalAlignment: Text.AlignVCenter
       horizontalAlignment: Text.AlignHCenter
       color: "white"
     }
-    anchors.top: startBtn.bottom
-    anchors.topMargin: 15
     anchors.horizontalCenter: parent.horizontalCenter
 
-    background: Rectangle {
-      color: "#191919"
+    background: Image {
+      source: applicationDirPath + "/assets/Sprite/btn.png"
+      opacity: 0.5
+    }
+
+    NumberAnimation on y {
+      id : guideBtnAnim
+      duration: 250
+      from : menuStart.height
+      to: 415
+      running: false
+      onStopped :{
+        creditBtnAnim.start()
+      }
     }
 
     onClicked: {
@@ -98,36 +143,44 @@ Item{
     onHoveredChanged: {
       if (guideBtn.hovered)
       {
-        guideBtn.background.color = "#6B728E"
+        guideBtn.background.source = applicationDirPath + "/assets/Sprite/btn_choose.png"
       }
-      else
-      {
-        guideBtn.background.color = "#191919"
+      else {
+        guideBtn.background.source = applicationDirPath + "/assets/Sprite/btn.png"
       }
     }
   }
 
   Button {
     id: creditBtn
-    width: 160
+    width: parent.width
     height: 50
-    highlighted: true
+    y : menuStart.height
     contentItem: Text {
       font.bold: true
-      font.italic: true
-      font.pointSize: 13
-      font.family: "Times New Roman"
+      font.pointSize: 17
+      font.family: "roboto"
       text: qsTr("Giới thiệu")
       verticalAlignment: Text.AlignVCenter
       horizontalAlignment: Text.AlignHCenter
       color: "white"
     }
-    anchors.top: guideBtn.bottom
-    anchors.topMargin: 15
     anchors.horizontalCenter: parent.horizontalCenter
 
-    background: Rectangle {
-      color: "#191919"
+    background: Image {
+      source: applicationDirPath + "/assets/Sprite/btn.png"
+      opacity: 0.5
+    }
+
+    NumberAnimation on y {
+      id : creditBtnAnim
+      duration: 220
+      from : menuStart.height
+      to: 480
+      running : false
+      onStopped :{
+        quitBtnAnim.start()
+      }
     }
 
     onClicked: {
@@ -138,34 +191,48 @@ Item{
     onHoveredChanged: {
       if (creditBtn.hovered)
       {
-        creditBtn.background.color = "#6B728E"
+        creditBtn.background.source = applicationDirPath + "/assets/Sprite/btn_choose.png"
       }
       else {
-        creditBtn.background.color = "#191919"
+        creditBtn.background.source = applicationDirPath + "/assets/Sprite/btn.png"
       }
     }
   }
 
   Button {
     id: quitBtn
-    width: 160
+    width: parent.width
     height: 50
+    y : menuStart.height
     contentItem: Text {
       font.bold: true
-      font.italic: true
-      font.pointSize: 13
-      font.family: "Times New Roman"
+      font.pointSize: 17
+      font.family: "roboto"
       text: qsTr("Thoát")
       verticalAlignment: Text.AlignVCenter
       horizontalAlignment: Text.AlignHCenter
       color: "white"
     }
-    anchors.top: creditBtn.bottom
-    anchors.topMargin: 15
     anchors.horizontalCenter: parent.horizontalCenter
 
-    background: Rectangle {
-      color: "#191919"
+    background: Image {
+      source: applicationDirPath + "/assets/Sprite/btn.png"
+      opacity: 0.5
+    }
+
+    NumberAnimation on y {
+      id : quitBtnAnim
+      duration: 200
+      from : menuStart.height
+      to: 545
+      running : false
+      
+      onStopped :{
+        startBtn.background.opacity = 1
+        guideBtn.background.opacity = 1
+        creditBtn.background.opacity = 1
+        quitBtn.background.opacity = 1
+      }
     }
 
     onClicked: {
@@ -176,11 +243,10 @@ Item{
     onHoveredChanged: {
       if (quitBtn.hovered)
       {
-        quitBtn.background.color = "#6B728E"
+        quitBtn.background.source = applicationDirPath + "/assets/Sprite/btn_choose.png"
       }
-      else
-      {
-        quitBtn.background.color = "#191919"
+      else {
+        quitBtn.background.source = applicationDirPath + "/assets/Sprite/btn.png"
       }
     }
   }
