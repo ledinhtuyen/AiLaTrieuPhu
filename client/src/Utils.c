@@ -181,6 +181,35 @@ int signup(char username[], char password[])
   return msg.type;
 }
 
+int logout(){
+  Message msg;
+  msg.type = LOGOUT;
+  if (send(sockfd, &msg, sizeof(Message), 0) < 0)
+  {
+    printf("Send failed");
+  }
+  return msg.type;
+}
+
+int change_password(char password[]){
+  Message msg;
+  msg.type = CHANGE_PASS;
+  strcpy(msg.data_type, "string");
+  strcat(msg.value, password);
+  msg.length = strlen(msg.value);
+  if (send(sockfd, &msg, sizeof(Message), 0) < 0)
+  {
+    printf("Send failed");
+  }
+
+  if (recv(sockfd, &msg, sizeof(Message), 0) < 0)
+  {
+    printf("Receive failed");
+  }
+
+  return msg.type;
+}
+
 // int show_menu_not_login()
 // {
 //   Message msg;

@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.1
 
 Page {
     id: signUpPage
-    title: qsTr("Sign Up")
+    title: qsTr("Đăng ký")
     width: 480
     height: 640
 
@@ -19,7 +19,7 @@ Page {
 
     Text {
         id: signupText
-        text: qsTr("Sign Up")
+        text: qsTr("Đăng ký")
         font.pointSize: 24
         anchors.top: parent.top
         anchors.topMargin: 30
@@ -35,7 +35,7 @@ Page {
 
         TextField {
             id: registerUsername
-            placeholderText: qsTr("User name")
+            placeholderText: qsTr("Tên đăng nhập")
             Layout.preferredWidth: parent.width - 20
             Layout.alignment: Qt.AlignHCenter
             color: mainTextColor
@@ -70,7 +70,7 @@ Page {
 
         TextField {
             id: registerPassword
-            placeholderText: qsTr("Password")
+            placeholderText: qsTr("Mật khẩu")
             Layout.preferredWidth: parent.width - 20
             Layout.alignment: Qt.AlignHCenter
             color: mainTextColor
@@ -158,7 +158,7 @@ Page {
 
         TextField {
             id: registerPassword2
-            placeholderText: qsTr("Confirm Password")
+            placeholderText: qsTr("Nhập lại mật khẩu")
             Layout.preferredWidth: parent.width - 20
             Layout.alignment: Qt.AlignHCenter
             color: mainTextColor
@@ -246,7 +246,7 @@ Page {
 
         TextField {
             id: passwordHint
-            placeholderText: qsTr("Password Hint")
+            placeholderText: qsTr("Gợi ý mật khẩu")
             Layout.preferredWidth: parent.width - 20
             Layout.alignment: Qt.AlignHCenter
             color: mainTextColor
@@ -287,20 +287,20 @@ Page {
             height: 50
             Layout.preferredWidth: parent.width - 20
             Layout.alignment: Qt.AlignHCenter
-            name: "Sign Up"
+            name: "Đăng ký"
             baseColor: mainAppColor
             borderColor: mainAppColor
             onClicked: {
                 if(registerUsername.text == "" || registerPassword.text == "" || registerPassword2.text == "" || passwordHint.text == ""){
-                    notifyPopup.popMessage = "Please fill in all fields"
-                    notifyPopup.open()
+                    notifyErrPopup.popMessage = "Vui lòng điền đầy đủ thông tin"
+                    notifyErrPopup.open()
                 }
                 else if (registerPassword.text != registerPassword2.text) {
-                    notifyPopup.popMessage = "Passwords do not match"
-                    notifyPopup.open()
+                    notifyErrPopup.popMessage = "Mật khẩu không khớp"
+                    notifyErrPopup.open()
                 }
                 else {
-                    waitPopup.popMessage = "Signing up..."
+                    waitPopup.popMessage = "Đang đăng ký ..."
                     act = "signup"
                     waitPopup.open()
                     backEnd.signUp(registerUsername.text, registerPassword.text)
@@ -313,7 +313,7 @@ Page {
             height: 50
             Layout.preferredWidth: parent.width - 20
             Layout.alignment: Qt.AlignHCenter
-            name: "Cancel"
+            name: "Đăng nhập"
             baseColor: "transparent"
             borderColor: mainAppColor
             onClicked: stackView.pop()

@@ -16,7 +16,7 @@ Page{
 
     funcBtn1Click: function (){
       clickSound.play()
-      waitPopup.popMessage = "Connecting to server..."
+      waitPopup.popMessage = "Đang kết nối đến server ..."
       waitPopup.open()
       act = "connect2server"
       backEnd.connectToServer()

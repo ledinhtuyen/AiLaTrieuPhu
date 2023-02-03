@@ -21,7 +21,9 @@ enum msg_type
   LOGIN,
   LOGIN_SUCCESS,
   LOGGED_IN,
-  LOGIN_FAIL,
+  WRONG_PASSWORD,
+  ACCOUNT_NOT_EXIST,
+  ACCOUNT_BLOCKED,
   SIGNUP,
   ACCOUNT_EXIST,
   SIGNUP_SUCCESS,
@@ -67,6 +69,8 @@ int connect_to_server(char ip[], int port);
 int disconnect_to_server();
 int login(char username[], char password[]);
 int signup(char username[], char password[]);
+int logout();
+int change_password(char password[]);
 // int show_menu_not_login();
 // int show_menu_logged();
 // int play_alone();

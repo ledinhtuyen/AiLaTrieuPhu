@@ -10,6 +10,16 @@ BackEnd::BackEnd(QObject *parent) : QObject(parent)
 {
 }
 
+QString BackEnd::getUserName() const
+{
+  return user_name;
+}
+
+void BackEnd::setUserName(const QString &value)
+{
+  user_name = value;
+}
+
 void BackEnd::connectToServer(){
   char ip[16];
   strcpy(ip, this->server_ip.c_str());
@@ -29,23 +39,40 @@ void BackEnd::disconnectToServer(){
 }
 
 void BackEnd::signIn(QString username, QString password){
-  int loginStatus = login(username.toLocal8Bit().data(), password.toLocal8Bit().data());
+  char user[100];
+  char pass[100];
+  strcpy(user, username.toStdString().c_str());
+  strcpy(pass, password.toStdString().c_str());
+  int loginStatus = login(user, pass);
   if (loginStatus == LOGIN_SUCCESS)
   {
+    user_name = username;
     emit loginSuccess();
   }
   else if (loginStatus == LOGGED_IN)
   {
     emit loggedIn();
   }
-  else if (loginStatus == LOGIN_FAIL)
+  else if (loginStatus == ACCOUNT_BLOCKED)
   {
-    emit loginFail();
+    emit accountBlocked();
+  }
+  else if (loginStatus == ACCOUNT_NOT_EXIST)
+  {
+    emit accountNotExist();
+  }
+  else if (loginStatus == WRONG_PASSWORD)
+  {
+    emit wrongPassword();
   }
 }
 
 void BackEnd::signUp(QString username, QString password){
-  int registerStatus = signup(username.toLocal8Bit().data(), password.toLocal8Bit().data());
+  char user_name[100];
+  char pass_word[100];
+  strcpy(user_name, username.toStdString().c_str());
+  strcpy(pass_word, password.toStdString().c_str());
+  int registerStatus = signup(user_name, pass_word);
   if (registerStatus == SIGNUP_SUCCESS)
   {
     emit signupSuccess();
@@ -53,5 +80,19 @@ void BackEnd::signUp(QString username, QString password){
   else if (registerStatus == ACCOUNT_EXIST)
   {
     emit accountExist();
+  }
+}
+
+void BackEnd::logOut(){
+  logout();
+}
+
+void BackEnd::changePassword(QString newPassword){
+  char password[100];
+  strcpy(password, newPassword.toStdString().c_str());
+  int re = change_password(password);
+  if (re == CHANGE_PASS_SUCCESS)
+  {
+    emit changePasswordSuccess();
   }
 }
