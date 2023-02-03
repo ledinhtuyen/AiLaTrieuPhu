@@ -126,25 +126,81 @@ ApplicationWindow {
         closePolicy: Popup.NoAutoClose
         modal: true
 
-        background: Rectangle {
-            implicitWidth: 180
-            implicitHeight: 180
-            color: "#E7F6F2"
-            border.color: "#2C3333"
+        background: Image {
+            width: 200
+            height: 200
+            anchors.centerIn: parent
+            source: applicationDirPath + "/assets/Sprite/popup.png"
             
             BusyIndicator {
                 id: busyIndicator
                 running: true
                 anchors.centerIn: parent
+
+                contentItem: Item {
+                    implicitWidth: 64
+                    implicitHeight: 64
+
+                    Item {
+                        id: item
+                        x: parent.width / 2 - 32
+                        y: parent.height / 2 - 32
+                        width: 64
+                        height: 64
+                        opacity: busyIndicator.running ? 1 : 0
+
+                        Behavior on opacity {
+                            OpacityAnimator {
+                                duration: 250
+                            }
+                        }
+
+                        RotationAnimator {
+                            target: item
+                            running: busyIndicator.visible && busyIndicator.running
+                            from: 0
+                            to: 360
+                            loops: Animation.Infinite
+                            duration: 1250
+                        }
+
+                        Repeater {
+                            id: repeater
+                            model: 6
+
+                            Rectangle {
+                                x: item.width / 2 - width / 2
+                                y: item.height / 2 - height / 2
+                                implicitWidth: 10
+                                implicitHeight: 10
+                                radius: 5
+                                color: "white"
+                                transform: [
+                                    Translate {
+                                        y: -Math.min(item.width, item.height) * 0.5 + 5
+                                    },
+                                    Rotation {
+                                        angle: index / repeater.count * 360
+                                        origin.x: 5
+                                        origin.y: 5
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
             }
+
             Text {
                 id: message
-                width: 180
+                width: 200
                 anchors.top: busyIndicator.bottom
                 anchors.topMargin: 20
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 font.pointSize: 12
+                font.family: "roboto"
+                color: "white"
             }
         }
 
@@ -175,7 +231,7 @@ ApplicationWindow {
             }
             else if (act == "login"){
                 if (loginStatus == "LOGIN_SUCCESS") {
-                    console.log("Login success")
+                    stackView.push("MenuMain.qml")
                 }
                 else if (loginStatus == "LOGGED_IN")
                 {

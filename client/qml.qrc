@@ -5,6 +5,9 @@
         <file>qml/LoginPage.qml</file>
         <file>qml/SignUpPage.qml</file>
         <file>qml/CButton.qml</file>
-        <file>qml/MenuLogged.qml</file>
+        <file>qml/MenuMain.qml</file>
+        <file>qml/CountDown.qml</file>
+        <file>qml/ButtonMenu.qml</file>
+        <file>qml/BackGround.qml</file>
     </qresource>
 </RCC>
