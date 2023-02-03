@@ -2,89 +2,19 @@ import QtQuick 2.0
 import QtQuick.Controls 2.12
 import QtQuick.Dialogs 1.2
 
-Item{
+Page{
   id: menuStart
-  anchors.fill: parent
   width: 480
   height: 640
 
-  BorderImage {
-    id: borderImage
-    anchors.fill: parent
-    source: applicationDirPath + "/assets/Sprite/bg.png"
-  }
+  SelectButtonPage{
+    startY: menuStart.height
+    textBtn1: "Bắt đầu"
+    textBtn2: "Hướng dẫn"
+    textBtn3: "Giới thiệu"
+    textBtn4: "Thoát"
 
-  Image {
-    id: image
-    width: 250
-    height: 250
-    anchors.top: parent.top
-    anchors.topMargin: 50
-    anchors.horizontalCenter: parent.horizontalCenter
-    fillMode: Image.PreserveAspectFit
-    source: applicationDirPath + "/assets/Sprite/2.png"
-  }
-
-  Image {
-    id: image2
-    width: 350
-    height: 250
-    anchors.top: parent.top
-    anchors.topMargin: 50
-    anchors.horizontalCenter: parent.horizontalCenter
-    fillMode: Image.PreserveAspectFit
-    source: applicationDirPath + "/assets/Sprite/1.png"
-  }
-
-  Text {
-    id: text
-    width: 250
-    height: 50
-    anchors.top: parent.top
-    anchors.topMargin: 150
-    anchors.horizontalCenter: parent.horizontalCenter
-    font.bold: true
-    font.pointSize: 20
-    font.family: "roboto"
-    text: qsTr("Ai Là Triệu Phú")
-    verticalAlignment: Text.AlignVCenter
-    horizontalAlignment: Text.AlignHCenter
-    color: "white"
-  }
-
-  Button {
-    id: startBtn
-    width: parent.width
-    height: 50
-    y : menuStart.height
-    anchors.horizontalCenter: parent.horizontalCenter
-
-    contentItem: Text {
-      font.bold: true
-      font.pointSize: 17
-      font.family: "roboto"
-      text: qsTr("Bắt đầu")
-      verticalAlignment: Text.AlignVCenter
-      horizontalAlignment: Text.AlignHCenter
-      color: "white"
-    }
-
-    background: Image {
-      source: applicationDirPath + "/assets/Sprite/btn.png"
-      opacity: 0.5
-    }
-
-    NumberAnimation on y {
-      id : startBtnAnim
-      duration: 350
-      from : menuStart.height
-      to: 350
-      onStopped :{
-        guideBtnAnim.start()
-      }
-    }
-
-    onClicked: {
+    funcBtn1Click: function (){
       clickSound.play()
       waitPopup.popMessage = "Connecting to server..."
       waitPopup.open()
@@ -92,163 +22,24 @@ Item{
       backEnd.connectToServer()
     }
 
-    onHoveredChanged: {
-      if (startBtn.hovered)
-      {
-        startBtn.background.source = applicationDirPath + "/assets/Sprite/btn_choose.png"
-      }
-      else {
-        startBtn.background.source = applicationDirPath + "/assets/Sprite/btn.png"
-      }
-    }
-  }
-
-  Button {
-    id: guideBtn
-    width: parent.width
-    height: 50
-    y : menuStart.height
-    contentItem: Text {
-      font.bold: true
-      font.pointSize: 17
-      font.family: "roboto"
-      text: qsTr("Cách chơi")
-      verticalAlignment: Text.AlignVCenter
-      horizontalAlignment: Text.AlignHCenter
-      color: "white"
-    }
-    anchors.horizontalCenter: parent.horizontalCenter
-
-    background: Image {
-      source: applicationDirPath + "/assets/Sprite/btn.png"
-      opacity: 0.5
-    }
-
-    NumberAnimation on y {
-      id : guideBtnAnim
-      duration: 250
-      from : menuStart.height
-      to: 415
-      running: false
-      onStopped :{
-        creditBtnAnim.start()
-      }
-    }
-
-    onClicked: {
+    funcBtn2Click: function (){
       clickSound.play()
-      guideDialog.visible = true
+      guideDialog.open()
     }
 
-    onHoveredChanged: {
-      if (guideBtn.hovered)
-      {
-        guideBtn.background.source = applicationDirPath + "/assets/Sprite/btn_choose.png"
-      }
-      else {
-        guideBtn.background.source = applicationDirPath + "/assets/Sprite/btn.png"
-      }
-    }
-  }
-
-  Button {
-    id: creditBtn
-    width: parent.width
-    height: 50
-    y : menuStart.height
-    contentItem: Text {
-      font.bold: true
-      font.pointSize: 17
-      font.family: "roboto"
-      text: qsTr("Giới thiệu")
-      verticalAlignment: Text.AlignVCenter
-      horizontalAlignment: Text.AlignHCenter
-      color: "white"
-    }
-    anchors.horizontalCenter: parent.horizontalCenter
-
-    background: Image {
-      source: applicationDirPath + "/assets/Sprite/btn.png"
-      opacity: 0.5
-    }
-
-    NumberAnimation on y {
-      id : creditBtnAnim
-      duration: 220
-      from : menuStart.height
-      to: 480
-      running : false
-      onStopped :{
-        quitBtnAnim.start()
-      }
-    }
-
-    onClicked: {
+    funcBtn3Click: function (){
       clickSound.play()
-      creditDialog.visible = true
+      creditDialog.open()
     }
 
-    onHoveredChanged: {
-      if (creditBtn.hovered)
-      {
-        creditBtn.background.source = applicationDirPath + "/assets/Sprite/btn_choose.png"
-      }
-      else {
-        creditBtn.background.source = applicationDirPath + "/assets/Sprite/btn.png"
-      }
-    }
-  }
-
-  Button {
-    id: quitBtn
-    width: parent.width
-    height: 50
-    y : menuStart.height
-    contentItem: Text {
-      font.bold: true
-      font.pointSize: 17
-      font.family: "roboto"
-      text: qsTr("Thoát")
-      verticalAlignment: Text.AlignVCenter
-      horizontalAlignment: Text.AlignHCenter
-      color: "white"
-    }
-    anchors.horizontalCenter: parent.horizontalCenter
-
-    background: Image {
-      source: applicationDirPath + "/assets/Sprite/btn.png"
-      opacity: 0.5
-    }
-
-    NumberAnimation on y {
-      id : quitBtnAnim
-      duration: 200
-      from : menuStart.height
-      to: 545
-      running : false
-      
-      onStopped :{
-        startBtn.background.opacity = 1
-        guideBtn.background.opacity = 1
-        creditBtn.background.opacity = 1
-        quitBtn.background.opacity = 1
-      }
-    }
-
-    onClicked: {
+    funcBtn4Click: function (){
       clickSound.play()
       Qt.quit()
     }
+  }
 
-    onHoveredChanged: {
-      if (quitBtn.hovered)
-      {
-        quitBtn.background.source = applicationDirPath + "/assets/Sprite/btn_choose.png"
-      }
-      else {
-        quitBtn.background.source = applicationDirPath + "/assets/Sprite/btn.png"
-      }
-    }
+  Logo{
+    anchors.horizontalCenter: parent.horizontalCenter
   }
 
   Dialog {

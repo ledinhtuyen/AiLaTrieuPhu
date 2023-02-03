@@ -361,11 +361,17 @@ compiler_rcc_clean:
 	-$(DEL_FILE) qrc_qml.cpp
 qrc_qml.cpp: qml.qrc \
 		/usr/lib/qt5/bin/rcc \
+		qml/SelectButton.qml \
+		qml/ButtonAnimation.qml \
+		qml/Logo.qml \
 		qml/SignUpPage.qml \
+		qml/MenuMain.qml \
 		qml/MenuStart.qml \
+		qml/CountDown.qml \
+		qml/SelectButtonPage.qml \
 		qml/LoginPage.qml \
 		qml/CButton.qml \
-		qml/MenuLogged.qml \
+		qml/BackGround.qml \
 		qml/main.qml
 	/usr/lib/qt5/bin/rcc -name qml qml.qrc -o qrc_qml.cpp
 
