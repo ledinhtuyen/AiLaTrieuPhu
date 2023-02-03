@@ -362,6 +362,7 @@ compiler_rcc_clean:
 qrc_qml.cpp: qml.qrc \
 		/usr/lib/qt5/bin/rcc \
 		qml/SelectButton.qml \
+		qml/ChangePasswordPage.qml \
 		qml/ButtonAnimation.qml \
 		qml/Logo.qml \
 		qml/SignUpPage.qml \

@@ -69,7 +69,7 @@ Item{
     target2: btn2
     target3: btn3
     target4: btn4
-    startY: menuStart.height
+    startY: 640
     isMoveUp: true
 
     funcAfterBtnAnimUp4Stopped : function (){

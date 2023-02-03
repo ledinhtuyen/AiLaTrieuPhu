@@ -1,29 +1,30 @@
-import QtQuick 2.12
+import QtQuick 2.7
 import QtQuick.Controls 2.12
-import QtQuick.Layouts 1.12
-import QtQuick.Controls.Styles 1.3
+import QtQuick.Layouts 1.1
 
 Page {
-    id: loginPage
-    title: "Đăng nhập"
+    id: changePasswordPage
+    title: qsTr("Change Password")
     width: 480
     height: 640
 
+    property string uname: ""
+    property string pword: ""
     property bool isShowPassword: false
-    
+    property bool isShowPassword2: false
 
     background: Rectangle {
         color: backGroundColor
     }
 
     Rectangle {
-        id: iconRect
+        id: iconRect2
         width: parent.width
         height: parent.height / 3
         color: backGroundColor
 
          Text {
-             id: icontext
+             id: icontext2
              text: qsTr("\uf136")
              anchors.centerIn: parent
              font.pointSize: 112
@@ -32,83 +33,22 @@ Page {
          }
     }
 
-    Image {
-        id: backIcon
-        width: 50
-        height: 50
-        anchors.left: parent.left
-        anchors.leftMargin: 0
-        anchors.top: parent.top
-        anchors.topMargin: 0
-        source: applicationDirPath + "/assets/Sprite/back_icon.png"
-        fillMode: Image.PreserveAspectFit
-
-        HoverHandler{
-            onHoveredChanged: {
-                if (hovered)
-                {
-                    backIcon.source = applicationDirPath + "/assets/Sprite/back_icon_hover.png"
-                }
-                else
-                {
-                    backIcon.source = applicationDirPath + "/assets/Sprite/back_icon.png"
-                }
-            }
-        }
-
-        MouseArea{
-            anchors.fill: parent
-            onClicked: {
-                backEnd.disconnectToServer()
-                stackView.pop()
-                stackView.replace("MenuStart.qml")
-            }
-        }
-    }
-
     ColumnLayout {
         width: parent.width
-        anchors.top: iconRect.bottom
-        spacing: 15
+        anchors.top: iconRect2.bottom
+        spacing: 25
 
-        TextField {
-            id: loginUsername
-            placeholderText: qsTr("Tên đăng nhập")
-            Layout.preferredWidth: parent.width - 20
-            Layout.alignment: Qt.AlignHCenter
-            color: mainTextColor
-            font.pointSize: 14
-            font.family: "fontawesome"
-            leftPadding: 30
-            background: Rectangle {
-                implicitWidth: 200
-                implicitHeight: 50
-                radius: implicitHeight / 2
-                color: "transparent"
-
-                Text {
-                    text: "\uf007"
-                    font.pointSize: 14
-                    font.family: "fontawesome"
-                    color: mainAppColor
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    leftPadding: 10
-                }
-
-                Rectangle {
-                    width: parent.width - 10
-                    height: 1
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.bottom: parent.bottom
-                    color: mainAppColor
-                }
-            }
+        Text {
+          id: changePasswordText
+          text: qsTr("Đổi mật khẩu")
+          font.pointSize: 24
+          Layout.alignment: Qt.AlignHCenter
+          color: mainTextColor
         }
 
         TextField {
-            id: loginPassword
-            placeholderText: qsTr("Mật khẩu")
+            id: changePassword
+            placeholderText: qsTr("Mật khẩu mới")
             Layout.preferredWidth: parent.width - 20
             Layout.alignment: Qt.AlignHCenter
             color: mainTextColor
@@ -194,39 +134,136 @@ Page {
             }
         }
 
+        TextField {
+            id: changePassword2
+            placeholderText: qsTr("Nhập lại mật khẩu mới")
+            Layout.preferredWidth: parent.width - 20
+            Layout.alignment: Qt.AlignHCenter
+            color: mainTextColor
+            font.pointSize: 14
+            font.family: "fontawesome"
+            leftPadding: 30
+            echoMode: isShowPassword2 ? TextField.Normal : TextField.Password
+            background: Rectangle {
+                implicitWidth: 200
+                implicitHeight: 50
+                radius: implicitHeight / 2
+                color: "transparent"
+                Text {
+                    text: "\uf023"
+                    font.pointSize: 14
+                    font.family: "fontawesome"
+                    color: mainAppColor
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    leftPadding: 10
+                }
+
+                Rectangle {
+                    width: parent.width - 10
+                    height: 1
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.bottom: parent.bottom
+                    color: mainAppColor
+                }
+
+                Text {
+                    id: showPasswordIcon2
+                    visible: false
+                    text: "\uf06e"
+                    font.pointSize: 14
+                    font.family: "fontawesome"
+                    color: mainAppColor
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    rightPadding: 10
+
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked: {
+                            showPasswordIcon2.visible = false
+                            hidePasswordIcon2.visible = true
+                            isShowPassword2 = true
+                        }
+                    }
+                }
+
+                Text {
+                    id: hidePasswordIcon2
+                    visible: false
+                    text: "\uf070"
+                    font.pointSize: 14
+                    font.family: "fontawesome"
+                    color: mainAppColor
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    rightPadding: 10
+
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked: {
+                            hidePasswordIcon2.visible = false
+                            showPasswordIcon2.visible = true
+                            isShowPassword2 = false
+                        }
+                    }
+                }
+            }
+
+            onTextChanged: {
+                if (text.length > 0) {
+                    showPasswordIcon2.visible = !isShowPassword2
+                    hidePasswordIcon2.visible = isShowPassword2
+                }
+                else {
+                    showPasswordIcon2.visible = false
+                    hidePasswordIcon2.visible = false
+                }
+            }
+        }
+
         Item {
             height: 20
         }
 
         CButton{
             height: 50
-            Layout.preferredWidth: loginPage.width - 20
+            Layout.preferredWidth: parent.width - 20
             Layout.alignment: Qt.AlignHCenter
-            name: "Đăng nhập"
+            name: "Đổi mật khẩu"
             baseColor: mainAppColor
             borderColor: mainAppColor
             onClicked: {
-                if (loginUsername.text == "" || loginPassword.text == "") {
-                    notifyErrPopup.popMessage = "Vui lòng nhập đầy đủ thông tin"
+                if(changePassword.text == "" || changePassword2.text == ""){
+                    notifyErrPopup.popMessage = "Vui lòng điền đầy đủ các trường"
+                    notifyErrPopup.open()
+                }
+                else if (changePassword.text != changePassword2.text) {
+                    notifyErrPopup.popMessage = "Mât khẩu không khớp"
                     notifyErrPopup.open()
                 }
                 else {
-                    waitPopup.popMessage = "Đang đăng nhập ..."
+                    waitPopup.popMessage = "Đang đổi mật khẩu ..."
+                    act = "changepassword"
                     waitPopup.open()
-                    act = "login"
-                    backEnd.signIn(loginUsername.text, loginPassword.text)
+                    backEnd.changePassword(changePassword.text)
                 }
             }
+                
         }
 
         CButton{
             height: 50
-            Layout.preferredWidth: loginPage.width - 20
+            Layout.preferredWidth: parent.width - 20
             Layout.alignment: Qt.AlignHCenter
-            name: "Đăng ký"
+            name: "Hủy"
             baseColor: "transparent"
             borderColor: mainAppColor
-            onClicked: stackView.push("qrc:/qml/SignUpPage.qml", {"uname": "arun", "pword": "some"}) //registerClicked()
+            onClicked: 
+            {
+              stackView.pop()
+              stackView.replace("MenuMain.qml")
+            }
         }
     }
 }

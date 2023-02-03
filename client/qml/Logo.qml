@@ -4,10 +4,10 @@ import QtQuick.Controls 2.12
 Item{
   Image {
     id: image
-    width: 250
-    height: 250
+    width: 220
+    height: 220
     anchors.top: parent.top
-    anchors.topMargin: 50
+    anchors.topMargin: 40
     anchors.horizontalCenter: parent.horizontalCenter
     fillMode: Image.PreserveAspectFit
     source: applicationDirPath + "/assets/Sprite/2.png"
@@ -16,9 +16,9 @@ Item{
   Image {
     id: image2
     width: 350
-    height: 250
+    height: 220
     anchors.top: parent.top
-    anchors.topMargin: 50
+    anchors.topMargin: 40
     anchors.horizontalCenter: parent.horizontalCenter
     fillMode: Image.PreserveAspectFit
     source: applicationDirPath + "/assets/Sprite/1.png"
@@ -26,10 +26,10 @@ Item{
 
   Text {
     id: text
-    width: 250
+    width: 220
     height: 50
     anchors.top: parent.top
-    anchors.topMargin: 150
+    anchors.topMargin: 125
     anchors.horizontalCenter: parent.horizontalCenter
     font.bold: true
     font.pointSize: 20

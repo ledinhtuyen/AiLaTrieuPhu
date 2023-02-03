@@ -12,5 +12,6 @@
         <file>qml/ButtonAnimation.qml</file>
         <file>qml/SelectButtonPage.qml</file>
         <file>qml/Logo.qml</file>
+        <file>qml/ChangePasswordPage.qml</file>
     </qresource>
 </RCC>

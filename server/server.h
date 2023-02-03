@@ -22,7 +22,9 @@ enum msg_type
   LOGIN,
   LOGIN_SUCCESS,
   LOGGED_IN,
-  LOGIN_FAIL,
+  WRONG_PASSWORD,
+  ACCOUNT_NOT_EXIST,
+  ACCOUNT_BLOCKED,
   SIGNUP,
   ACCOUNT_EXIST,
   SIGNUP_SUCCESS,
@@ -430,7 +432,7 @@ int login(int conn_fd, char msg_data[BUFF_SIZE])
       {
         if (strcmp(cli_tmp->login_account, username) == 0 && cli_tmp->login_status == AUTH)
         {
-          return -1;
+          return LOGGED_IN;
         }
         cli_tmp = cli_tmp->next;
       }
@@ -438,21 +440,21 @@ int login(int conn_fd, char msg_data[BUFF_SIZE])
       {
         if (tmp->status == 0)
         {
-          return 0;
+          return ACCOUNT_BLOCKED;
         }
         if (cli != NULL)
         {
           cli->login_status = AUTH;
           strcpy(cli->login_account, tmp->username);
-          return 1;
+          return LOGIN_SUCCESS;
         }
       }
       else
-        return 0;
+        return WRONG_PASSWORD;
     }
     tmp = tmp->next;
   }
-  return 0;
+  return ACCOUNT_NOT_EXIST;
 }
 
 int check_account_exist(char username[BUFF_SIZE])
@@ -806,26 +808,39 @@ void *thread_start(void *client_fd)
       {
       case LOGIN:
         re = login(conn_fd, msg.value);
-        if (re == 0)
-        {
-          msg.type = LOGIN_FAIL;
-          strcpy(msg.value, "Login failed");
-          printf("[%d]: Login failed!\n", conn_fd);
-          send(conn_fd, &msg, sizeof(msg), 0);
-        }
-        else if (re == 1)
+        if (re == LOGIN_SUCCESS)
         {
           msg.type = LOGIN_SUCCESS;
           strcpy(msg.value, "Login success");
-          printf("[%d]: Hello %s\n", conn_fd, cli->login_account);
-          cli->login_status = AUTH;
+          printf("[%d]: Login success!\n", conn_fd);
           send(conn_fd, &msg, sizeof(msg), 0);
         }
-        else if (re == -1)
+        else if (re == LOGGED_IN)
         {
           msg.type = LOGGED_IN;
           strcpy(msg.value, "Account is logged in");
           printf("[%d] Account is logged in\n", conn_fd);
+          send(conn_fd, &msg, sizeof(msg), 0);
+        }
+        else if (re == ACCOUNT_BLOCKED)
+        {
+          msg.type = ACCOUNT_BLOCKED;
+          strcpy(msg.value, "Account is blocked");
+          printf("[%d] Account is blocked\n", conn_fd);
+          send(conn_fd, &msg, sizeof(msg), 0);
+        }
+        else if (re == ACCOUNT_NOT_EXIST)
+        {
+          msg.type = ACCOUNT_NOT_EXIST;
+          strcpy(msg.value, "Account not exist");
+          printf("[%d] Account not exist\n", conn_fd);
+          send(conn_fd, &msg, sizeof(msg), 0);
+        }
+        else if (re == WRONG_PASSWORD)
+        {
+          msg.type = WRONG_PASSWORD;
+          strcpy(msg.value, "Wrong password");
+          printf("[%d] Wrong password\n", conn_fd);
           send(conn_fd, &msg, sizeof(msg), 0);
         }
         break;

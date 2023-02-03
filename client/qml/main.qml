@@ -22,12 +22,13 @@ ApplicationWindow {
     property color backGroundColor : "#394454"
     property color mainAppColor: "#6fda9c"
     property color mainTextColor: "#f0f0f0"
-    property color popupBackGroundColor: "#b44"
+    property color errPopupBackGroundColor: "#b44"
     property color popupTextColor: "#ffffff"
     property string act : "none"
     property bool connectFail : false
     property string loginStatus : "none"
     property string signupStatus : "none"
+    property string changePasswordStatus : "none"
 
     BackEnd{
         id: backEnd
@@ -48,8 +49,16 @@ ApplicationWindow {
             rootWindow.loginStatus = "LOGGED_IN"
         }
 
-        onLoginFail: {
-            rootWindow.loginStatus = "LOGIN_FAIL"
+        onAccountBlocked: {
+            rootWindow.loginStatus = "ACCOUNT_BLOCKED"
+        }
+        
+        onAccountNotExist: {
+            rootWindow.loginStatus = "ACCOUNT_NOT_EXIST"
+        }
+
+        onWrongPassword: {
+            rootWindow.loginStatus = "WRONG_PASSWORD"
         }
 
         onSignupSuccess: {
@@ -58,6 +67,10 @@ ApplicationWindow {
 
         onAccountExist: {
             rootWindow.signupStatus = "ACCOUNT_EXIST"
+        }
+
+        onChangePasswordSuccess: {
+            rootWindow.changePasswordStatus = "CHANGE_PASSWORD_SUCCESS"
         }
     }
 
@@ -97,25 +110,47 @@ ApplicationWindow {
     }
 
     Popup {
-    id: notifyPopup
-    property alias popMessage: notifyMessage.text
+        id: notifySuccessPopup
+        property alias popMessage: notifySuccessMessage.text
 
         background: Rectangle {
             implicitWidth: rootWindow.width
             implicitHeight: 60
-            color: popupBackGroundColor
+            color: mainAppColor
         }
         y: (rootWindow.height - 60)
         modal: true
         focus: true
         closePolicy: Popup.CloseOnPressOutside
         Text {
-            id: notifyMessage
+            id: notifySuccessMessage
             anchors.centerIn: parent
             font.pointSize: 12
             color: popupTextColor
         }
-        onOpened: notifyPopupClose.start()
+        onOpened: notifySuccessPopupClose.start()
+    }
+
+    Popup {
+        id: notifyErrPopup
+        property alias popMessage: notifyErrMessage.text
+
+        background: Rectangle {
+            implicitWidth: rootWindow.width
+            implicitHeight: 60
+            color: errPopupBackGroundColor
+        }
+        y: (rootWindow.height - 60)
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnPressOutside
+        Text {
+            id: notifyErrMessage
+            anchors.centerIn: parent
+            font.pointSize: 12
+            color: popupTextColor
+        }
+        onOpened: notifyErrPopupClose.start()
     }
 
     Popup {
@@ -127,8 +162,8 @@ ApplicationWindow {
         modal: true
 
         background: Image {
-            width: 200
-            height: 200
+            width: 220
+            height: 220
             anchors.centerIn: parent
             source: applicationDirPath + "/assets/Sprite/popup.png"
             
@@ -193,7 +228,7 @@ ApplicationWindow {
 
             Text {
                 id: message
-                width: 200
+                width: 220
                 anchors.top: busyIndicator.bottom
                 anchors.topMargin: 20
                 verticalAlignment: Text.AlignVCenter
@@ -209,9 +244,15 @@ ApplicationWindow {
 
     // Popup will be closed automatically in 2 seconds after its opened
     Timer {
-        id: notifyPopupClose
+        id: notifySuccessPopupClose
         interval: 2000
-        onTriggered: notifyPopup.close()
+        onTriggered: notifySuccessPopup.close()
+    }
+
+    Timer {
+        id: notifyErrPopupClose
+        interval: 2000
+        onTriggered: notifyErrPopup.close()
     }
 
     Timer {
@@ -221,8 +262,8 @@ ApplicationWindow {
             waitPopup.close()
             if(act == "connect2server"){
                 if (connectFail == true) {
-                    notifyPopup.popMessage = "Không thể kết nối đến máy chủ"
-                    notifyPopup.open()
+                    notifyErrPopup.popMessage = "Không thể kết nối đến máy chủ"
+                    notifyErrPopup.open()
                 }
                 else if (connectFail == false)
                 {
@@ -235,24 +276,39 @@ ApplicationWindow {
                 }
                 else if (loginStatus == "LOGGED_IN")
                 {
-                    notifyPopup.popMessage = "Tài khoản đã được đăng nhập ở nơi khác"
-                    notifyPopup.open()
+                    notifyErrPopup.popMessage = "Tài khoản đã được đăng nhập ở nơi khác"
+                    notifyErrPopup.open()
                 }
-                else if (loginStatus == "LOGIN_FAIL")
+                else if (loginStatus == "ACCOUNT_BLOCKED")
                 {
-                    notifyPopup.popMessage = "Sai tên đăng nhập hoặc mật khẩu"
-                    notifyPopup.open()
+                    notifyErrPopup.popMessage = "Tài khoản đã bị khóa"
+                    notifyErrPopup.open()
+                }
+                else if (loginStatus == "ACCOUNT_NOT_EXIST")
+                {
+                    notifyErrPopup.popMessage = "Tài khoản không tồn tại"
+                    notifyErrPopup.open()
+                }
+                else if (loginStatus == "WRONG_PASSWORD")
+                {
+                    notifyErrPopup.popMessage = "Sai mật khẩu"
+                    notifyErrPopup.open()
                 }
             }
             else if (act == "signup"){
                 if (signupStatus == "SIGNUP_SUCCESS") {
-                    notifyPopup.popMessage = "Đăng ký thành công"
-                    notifyPopup.open()
+                    notifySuccessPopup.popMessage = "Đăng ký thành công"
+                    notifySuccessPopup.open()
                 }
                 else if (signupStatus == "ACCOUNT_EXIST")
                 {
-                    notifyPopup.popMessage = "Tài khoản đã tồn tại"
-                    notifyPopup.open()
+                    notifyErrPopup.popMessage = "Tài khoản đã tồn tại"
+                    notifyErrPopup.open()
+                }
+            } else if (act == "changepassword"){
+                if (changePasswordStatus == "CHANGE_PASSWORD_SUCCESS") {
+                    notifySuccessPopup.popMessage = "Đổi mật khẩu thành công"
+                    notifySuccessPopup.open()
                 }
             }
         }
