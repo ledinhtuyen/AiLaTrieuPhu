@@ -7,111 +7,39 @@ Page{
   width: 480
   height: 640
 
-  BackGround {
-    id: bg
-    anchors.fill: parent
-  }
+  SelectButtonPage{
+    startY: menuStart.height
+    textBtn1: "Bắt đầu"
+    textBtn2: "Hướng dẫn"
+    textBtn3: "Giới thiệu"
+    textBtn4: "Thoát"
 
-  ButtonMenu {
-    id: startBtn
-    y : menuStart.height
-    anchors.horizontalCenter: parent.horizontalCenter
-    text : "Bắt đầu"
-
-    NumberAnimation on y {
-      id : startBtnAnim
-      duration: 350
-      from : menuStart.height
-      to: 350
-      onStopped :{
-        guideBtnAnim.start()
-      }
-    }
-
-    onClicked: {
+    funcBtn1Click: function (){
       clickSound.play()
       waitPopup.popMessage = "Connecting to server..."
       waitPopup.open()
       act = "connect2server"
       backEnd.connectToServer()
     }
-  }
 
-  ButtonMenu {
-    id: guideBtn
-    y : menuStart.height
-    anchors.horizontalCenter: parent.horizontalCenter
-    text : "Hướng dẫn"
-
-    NumberAnimation on y {
-      id : guideBtnAnim
-      duration: 250
-      from : menuStart.height
-      to: 415
-      running: false
-      onStopped :{
-        creditBtnAnim.start()
-      }
-    }
-
-    onClicked: {
+    funcBtn2Click: function (){
       clickSound.play()
-      guideDialog.visible = true
-    }
-  }
-
-  ButtonMenu {
-    id : creditBtn
-    y : menuStart.height
-    anchors.horizontalCenter: parent.horizontalCenter
-    text : "Giới thiệu"
-
-    NumberAnimation on y {
-      id : creditBtnAnim
-      duration: 220
-      from : menuStart.height
-      to: 480
-      running : false
-      onStopped :{
-        quitBtnAnim.start()
-      }
+      guideDialog.open()
     }
 
-    onClicked: {
+    funcBtn3Click: function (){
       clickSound.play()
-      creditDialog.visible = true
-    }
-  }
-
-  ButtonMenu {
-    id: quitBtn
-    y : menuStart.height
-    anchors.horizontalCenter: parent.horizontalCenter
-    text : "Thoát"
-
-    NumberAnimation on y {
-      id : quitBtnAnim
-      duration: 200
-      from : menuStart.height
-      to: 545
-      running : false
-      
-      onStopped :{
-        startBtn.background.opacity = 1
-        guideBtn.background.opacity = 1
-        creditBtn.background.opacity = 1
-        quitBtn.background.opacity = 1
-        startBtn.enabled = true
-        guideBtn.enabled = true
-        creditBtn.enabled = true
-        quitBtn.enabled = true
-      }
+      creditDialog.open()
     }
 
-    onClicked: {
+    funcBtn4Click: function (){
       clickSound.play()
       Qt.quit()
     }
+  }
+
+  Logo{
+    anchors.horizontalCenter: parent.horizontalCenter
   }
 
   Dialog {

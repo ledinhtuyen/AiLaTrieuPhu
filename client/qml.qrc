@@ -7,7 +7,10 @@
         <file>qml/CButton.qml</file>
         <file>qml/MenuMain.qml</file>
         <file>qml/CountDown.qml</file>
-        <file>qml/ButtonMenu.qml</file>
+        <file>qml/SelectButton.qml</file>
         <file>qml/BackGround.qml</file>
+        <file>qml/ButtonAnimation.qml</file>
+        <file>qml/SelectButtonPage.qml</file>
+        <file>qml/Logo.qml</file>
     </qresource>
 </RCC>
