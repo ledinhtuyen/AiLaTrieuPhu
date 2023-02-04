@@ -1,6 +1,5 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Dialogs 1.2
+import QtQuick.Controls 2.5
 import QtMultimedia 5.12
 import AiLaTrieuPhu.BackEnd 1.0
 

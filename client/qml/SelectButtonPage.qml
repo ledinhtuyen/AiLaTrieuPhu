@@ -1,5 +1,5 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.12
+import QtQuick 2.12
+import QtQuick.Controls 2.5
 
 Item{
   width: 480
@@ -10,6 +10,7 @@ Item{
   property var textBtn2
   property var textBtn3
   property var textBtn4
+  property bool moveDown : false
   property var funcBtn1Click
   property var funcBtn2Click
   property var funcBtn3Click
@@ -71,8 +72,10 @@ Item{
     target4: btn4
     startY: 640
     isMoveUp: true
+    isMoveDown: moveDown
 
     funcAfterBtnAnimUp4Stopped : function (){
+      isMoveUp = false
       btn1.background.opacity = 1
       btn2.background.opacity = 1
       btn3.background.opacity = 1

@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import QtQuick.Controls 2.12
+import QtQuick.Controls 2.5
 
 Page {
   id: menuMain
@@ -12,6 +12,10 @@ Page {
     textBtn2: "Thi đấu online"
     textBtn3: "Đổi mật khẩu"
     textBtn4: "Đăng xuất"
+
+    funcBtn1Click: function(){
+      moveDown = true
+    }
 
     funcBtn3Click: function(){
       stackView.push("ChangePasswordPage.qml")

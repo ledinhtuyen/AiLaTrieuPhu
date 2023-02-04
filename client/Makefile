@@ -373,6 +373,7 @@ qrc_qml.cpp: qml.qrc \
 		qml/LoginPage.qml \
 		qml/CButton.qml \
 		qml/BackGround.qml \
+		qml/PrizePage.qml \
 		qml/main.qml
 	/usr/lib/qt5/bin/rcc -name qml qml.qrc -o qrc_qml.cpp
 
