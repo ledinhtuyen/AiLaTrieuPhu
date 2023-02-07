@@ -9,6 +9,7 @@ Page {
   property bool showMenuMain: true
   property bool isPlayGame: false
   property bool isMoveUp : false
+  property bool clickShowPrizeBtn: false
   
 
   SelectButtonPage{
@@ -85,15 +86,66 @@ Page {
     textBtn2: "Đáp án 2"
     textBtn3: "Đáp án 3"
     textBtn4: "Đáp án 4"
+
+    Rectangle{
+      color: "transparent"
+      width: 60
+      height: 60
+      anchors.right: parent.right
+      visible: isMoveUp
+
+      Image{
+        source: applicationDirPath + "/assets/Sprite/btn_xemgiaithuong.png"
+        anchors.fill: parent
+        MouseArea{
+          anchors.fill: parent
+          onClicked: {
+            clickSound.play()
+            clickShowPrizeBtn = true
+            prizePopup.open()
+          }
+        }
+      }
+    }
+
+    Rectangle{
+      color: "transparent"
+      width: 60
+      height: 60
+      visible: isMoveUp
+
+      Image{
+        source: applicationDirPath + "/assets/Sprite/btn_pause.png"
+        anchors.fill: parent
+        MouseArea{
+          anchors.fill: parent
+          onClicked: {
+            clickSound.play()
+            pausePopup.open()
+          }
+        }
+      }
+    }
   }
 
   PrizePopup{
     id: prizePopup
+    modal : true
 
     onOpened : {
-      mainTheme.stop()
-      prizeTheme.play()
-      runningHighLightPrize = true
+      if (!clickShowPrizeBtn){
+        mainTheme.stop()
+        prizeTheme.play()
+        runningHighLightPrize = true
+      }
+      else {
+        prize = 6
+      }
     }
+  }
+
+  PausePopup {
+    id: pausePopup
+    modal : true
   }
 }

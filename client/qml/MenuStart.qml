@@ -17,7 +17,6 @@ Page{
     textBtn4: "Thoát"
 
     funcBtn1Click: function (){
-      clickSound.play()
       waitPopup.popMessage = "Đang kết nối đến server ..."
       waitPopup.open()
       act = "connect2server"
@@ -25,17 +24,14 @@ Page{
     }
 
     funcBtn2Click: function (){
-      clickSound.play()
       guideDialog.open()
     }
 
     funcBtn3Click: function (){
-      clickSound.play()
       creditDialog.open()
     }
 
     funcBtn4Click: function (){
-      clickSound.play()
       Qt.quit()
     }
   }
