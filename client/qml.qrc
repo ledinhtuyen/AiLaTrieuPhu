@@ -13,6 +13,6 @@
         <file>qml/SelectButtonPage.qml</file>
         <file>qml/Logo.qml</file>
         <file>qml/ChangePasswordPage.qml</file>
-        <file>qml/PrizePage.qml</file>
+        <file>qml/PrizePopup.qml</file>
     </qresource>
 </RCC>

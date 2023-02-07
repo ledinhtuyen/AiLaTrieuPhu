@@ -9,6 +9,8 @@ Page{
 
   SelectButtonPage{
     startY: menuStart.height
+    isVisible: true
+    moveUp: true
     textBtn1: "Bắt đầu"
     textBtn2: "Hướng dẫn"
     textBtn3: "Giới thiệu"

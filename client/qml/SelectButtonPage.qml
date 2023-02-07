@@ -11,10 +11,14 @@ Item{
   property var textBtn3
   property var textBtn4
   property bool moveDown : false
+  property bool moveUp : false
   property var funcBtn1Click
   property var funcBtn2Click
   property var funcBtn3Click
   property var funcBtn4Click
+  property bool isVisible : false
+
+  visible: isVisible
 
   BackGround{
     id: bg
@@ -71,11 +75,11 @@ Item{
     target3: btn3
     target4: btn4
     startY: 640
-    isMoveUp: true
+    isMoveUp: moveUp
     isMoveDown: moveDown
 
     funcAfterBtnAnimUp4Stopped : function (){
-      isMoveUp = false
+      moveUp = false
       btn1.background.opacity = 1
       btn2.background.opacity = 1
       btn3.background.opacity = 1

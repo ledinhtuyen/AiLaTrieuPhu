@@ -112,7 +112,10 @@ Item{
     properties : "y"
     running : false
     onStopped :{
-      stackView.push("PrizePage.qml")
+      isMoveDown = false
+      menuMain.showMenuMain = false
+      menuMain.isPlayGame = true
+      prizePopup.open()
     }
   }
 }

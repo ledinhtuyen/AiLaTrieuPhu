@@ -91,6 +91,25 @@ ApplicationWindow {
         volume: 1.0
     }
 
+    SoundEffect {
+        id: prizeTheme
+        source: applicationDirPath + "/assets/AudioClip/03 Explain The Rules.wav"
+        volume: 1.0
+    }
+
+    SoundEffect {
+        id: letsPlayTheme
+        source: applicationDirPath + "/assets/AudioClip/lets play.wav"
+        volume: 1.0
+    }
+
+    SoundEffect {
+        id: quest1To5Theme
+        source: applicationDirPath + "/assets/AudioClip/1to5.wav"
+        volume: 1.0
+        loops: SoundEffect.Infinite
+    }
+
     FontLoader {
         id: fontAwesome
         name: "fontawesome"
