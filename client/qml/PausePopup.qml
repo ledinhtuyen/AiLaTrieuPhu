@@ -7,7 +7,8 @@ Popup {
   height: 640
 
   background: Rectangle {
-    opacity: 0
+    opacity: 0.4
+    color: "gray"
     anchors.fill: parent
   }
 
@@ -16,13 +17,22 @@ Popup {
       anchors.horizontalCenter: parent.horizontalCenter
       Item{
         width: 480
-        height: 70
+        height: 120
       }
       Image{
         anchors.horizontalCenter: parent.horizontalCenter
         source: applicationDirPath + "/assets/Sprite/popup#75.png"
         width: 400
         height: 200
+
+        Text {
+          anchors.horizontalCenter: parent.horizontalCenter
+          anchors.verticalCenter: parent.verticalCenter
+          text: "Bạn có muốn dừng lại không?"
+          font.pixelSize: 23
+          font.family: "roboto"
+          color: "white"
+        }
       }
       Item {
         width: 480
@@ -33,6 +43,8 @@ Popup {
         isEnabled: true
         onClick: {
           console.log("Đồng ý");
+          close()
+          console.log("Đóng popup");
         }
       }
       Item {
@@ -43,7 +55,7 @@ Popup {
         text: "Hủy"
         isEnabled: true
         onClick: {
-          console.log("Hủy");
+          close()
         }
       }
     }
