@@ -1,5 +1,5 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.12
+import QtQuick 2.12
+import QtQuick.Controls 2.5
 
 Item{
   property var target1
@@ -8,6 +8,7 @@ Item{
   property var target4
   property var startY
   property var isMoveUp: false
+  property var isMoveDown: false
   property var funcAfterBtnAnimUp4Stopped
 
   NumberAnimation {
@@ -60,6 +61,61 @@ Item{
 
     onStopped :{
       funcAfterBtnAnimUp4Stopped()
+    }
+  }
+
+  NumberAnimation {
+    id : btnAnimDown1
+    duration: 200
+    target : target4
+    from : 545
+    to: startY
+    properties : "y"
+    running : isMoveDown
+    onStopped :{
+      btnAnimDown2.start()
+    }
+  }
+
+  NumberAnimation {
+    id : btnAnimDown2
+    duration: 220
+    target : target3
+    from : 480
+    to: startY
+    properties : "y"
+    running : false
+    onStopped :{
+      btnAnimDown3.start()
+    }
+  }
+
+  NumberAnimation {
+    id : btnAnimDown3
+    duration: 250
+    target : target2
+    from : 415
+    to: startY
+    properties : "y"
+    running : false
+    onStopped :{
+      btnAnimDown4.start()
+    }
+  }
+
+  NumberAnimation {
+    id : btnAnimDown4
+    duration: 350
+    target : target1
+    from : 350
+    to: startY
+    properties : "y"
+    running : false
+    onStopped :{
+      isMoveDown = false
+      menuMain.showMenuMain = false
+      menuMain.isPlayGame = true
+      prizePopup.open()
     }
   }
 }

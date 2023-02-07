@@ -1,6 +1,5 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Dialogs 1.2
+import QtQuick.Controls 2.5
 import QtMultimedia 5.12
 import AiLaTrieuPhu.BackEnd 1.0
 
@@ -90,6 +89,25 @@ ApplicationWindow {
         id: clickSound
         source: applicationDirPath + "/assets/AudioClip/click.wav"
         volume: 1.0
+    }
+
+    SoundEffect {
+        id: prizeTheme
+        source: applicationDirPath + "/assets/AudioClip/03 Explain The Rules.wav"
+        volume: 1.0
+    }
+
+    SoundEffect {
+        id: letsPlayTheme
+        source: applicationDirPath + "/assets/AudioClip/lets play.wav"
+        volume: 1.0
+    }
+
+    SoundEffect {
+        id: quest1To5Theme
+        source: applicationDirPath + "/assets/AudioClip/1to5.wav"
+        volume: 1.0
+        loops: SoundEffect.Infinite
     }
 
     FontLoader {
