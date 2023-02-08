@@ -36,6 +36,7 @@ signals:
     void signupSuccess();
     void accountExist();
     void changePasswordSuccess();
+    void sameOldPassword();
 private:
     QString user_name;
 };

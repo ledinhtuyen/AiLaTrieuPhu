@@ -71,6 +71,10 @@ ApplicationWindow {
         onChangePasswordSuccess: {
             rootWindow.changePasswordStatus = "CHANGE_PASSWORD_SUCCESS"
         }
+
+        onSameOldPassword: {
+            rootWindow.changePasswordStatus = "SAME_OLD_PASSWORD"
+        }
     }
 
     Component.onCompleted: {
@@ -327,6 +331,11 @@ ApplicationWindow {
                 if (changePasswordStatus == "CHANGE_PASSWORD_SUCCESS") {
                     notifySuccessPopup.popMessage = "Đổi mật khẩu thành công"
                     notifySuccessPopup.open()
+                }
+                else if (changePasswordStatus == "SAME_OLD_PASSWORD")
+                {
+                    notifyErrPopup.popMessage = "Giống mật khẩu cũ"
+                    notifyErrPopup.open()
                 }
             }
         }

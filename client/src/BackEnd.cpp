@@ -91,8 +91,12 @@ void BackEnd::changePassword(QString newPassword){
   char password[100];
   strcpy(password, newPassword.toStdString().c_str());
   int re = change_password(password);
-  if (re == CHANGE_PASS_SUCCESS)
+  if (re == CHANGE_PASSWORD_SUCCESS)
   {
     emit changePasswordSuccess();
+  }
+  else if (re == SAME_OLD_PASSWORD)
+  {
+    emit sameOldPassword();
   }
 }
