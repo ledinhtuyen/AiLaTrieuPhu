@@ -14,5 +14,6 @@
         <file>qml/Logo.qml</file>
         <file>qml/ChangePasswordPage.qml</file>
         <file>qml/PrizePopup.qml</file>
+        <file>qml/PausePopup.qml</file>
     </qresource>
 </RCC>

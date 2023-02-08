@@ -233,7 +233,7 @@ Page {
             name: "Đổi mật khẩu"
             baseColor: mainAppColor
             borderColor: mainAppColor
-            onClicked: {
+            onClick: {
                 if(changePassword.text == "" || changePassword2.text == ""){
                     notifyErrPopup.popMessage = "Vui lòng điền đầy đủ các trường"
                     notifyErrPopup.open()
@@ -259,7 +259,7 @@ Page {
             name: "Hủy"
             baseColor: "transparent"
             borderColor: mainAppColor
-            onClicked: 
+            onClick: 
             {
               stackView.pop()
               stackView.replace("MenuMain.qml")

@@ -10,6 +10,8 @@ Button {
     property color baseColor
     property color borderColor
 
+    signal click()
+
     contentItem: Text {
         text: control.text
         font: control.font
@@ -28,5 +30,10 @@ Button {
         opacity: control.down ? 0.7 : 1
         radius: height/2
         border.color: borderColor
+    }
+
+    onClicked: {
+        clickSound.play()
+        click()
     }
 }

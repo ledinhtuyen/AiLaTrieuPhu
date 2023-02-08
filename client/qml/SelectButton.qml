@@ -5,7 +5,13 @@ Button {
   id : button
   width: 480
   height: 50
-  enabled: false
+  
+  property bool isEnabled : false
+  
+
+  enabled: isEnabled
+
+  signal click()
 
   contentItem: Text {
     font.bold: true
@@ -30,5 +36,10 @@ Button {
     else {
         background.source = applicationDirPath + "/assets/Sprite/btn.png"
     }
+  }
+
+  onClicked: {
+    clickSound.play()
+    button.click()
   }
 }

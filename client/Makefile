@@ -361,6 +361,7 @@ compiler_rcc_clean:
 	-$(DEL_FILE) qrc_qml.cpp
 qrc_qml.cpp: qml.qrc \
 		/usr/lib/qt5/bin/rcc \
+		qml/PausePopup.qml \
 		qml/SelectButton.qml \
 		qml/ChangePasswordPage.qml \
 		qml/PrizePopup.qml \

@@ -290,7 +290,7 @@ Page {
             name: "Đăng ký"
             baseColor: mainAppColor
             borderColor: mainAppColor
-            onClicked: {
+            onClick: {
                 if(registerUsername.text == "" || registerPassword.text == "" || registerPassword2.text == "" || passwordHint.text == ""){
                     notifyErrPopup.popMessage = "Vui lòng điền đầy đủ thông tin"
                     notifyErrPopup.open()
@@ -316,7 +316,7 @@ Page {
             name: "Đăng nhập"
             baseColor: "transparent"
             borderColor: mainAppColor
-            onClicked: stackView.pop()
+            onClick: stackView.pop()
         }
     }
 }

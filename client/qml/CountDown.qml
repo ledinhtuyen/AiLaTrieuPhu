@@ -1,19 +1,20 @@
 import QtQuick 2.12
 
 Item {
-    width: 100
-    height: 100
+    width: 76
+    height: 76
 
     property int angle: 0
-    property int radius: 42
+    property int radius: 30
     property int time: 30
     property bool stopped: false
+    property bool isRunning: false
 
     Timer {
         id: timer
         interval: 1000
         repeat : true
-        running: true
+        running: isRunning
         onTriggered: {
             if (!stopped) {
                 angle += 12

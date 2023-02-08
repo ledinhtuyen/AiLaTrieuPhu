@@ -59,6 +59,7 @@ Page {
         MouseArea{
             anchors.fill: parent
             onClicked: {
+                clickSound.play()
                 backEnd.disconnectToServer()
                 stackView.pop()
                 stackView.replace("MenuStart.qml")
@@ -205,7 +206,7 @@ Page {
             name: "Đăng nhập"
             baseColor: mainAppColor
             borderColor: mainAppColor
-            onClicked: {
+            onClick: {
                 if (loginUsername.text == "" || loginPassword.text == "") {
                     notifyErrPopup.popMessage = "Vui lòng nhập đầy đủ thông tin"
                     notifyErrPopup.open()
@@ -226,7 +227,9 @@ Page {
             name: "Đăng ký"
             baseColor: "transparent"
             borderColor: mainAppColor
-            onClicked: stackView.push("qrc:/qml/SignUpPage.qml", {"uname": "arun", "pword": "some"}) //registerClicked()
+            onClick:{
+                stackView.push("qrc:/qml/SignUpPage.qml")
+            }
         }
     }
 }

@@ -9,6 +9,7 @@ Page {
   property bool showMenuMain: true
   property bool isPlayGame: false
   property bool isMoveUp : false
+  property bool clickShowPrizeBtn: false
   
 
   SelectButtonPage{
@@ -85,15 +86,136 @@ Page {
     textBtn2: "Đáp án 2"
     textBtn3: "Đáp án 3"
     textBtn4: "Đáp án 4"
+
+    Rectangle{
+      color: "transparent"
+      width: 60
+      height: 60
+      anchors.right: parent.right
+      visible: isMoveUp
+
+      Image{
+        source: applicationDirPath + "/assets/Sprite/btn_xemgiaithuong.png"
+        anchors.fill: parent
+        MouseArea{
+          anchors.fill: parent
+          onClicked: {
+            clickSound.play()
+            clickShowPrizeBtn = true
+            prizePopup.open()
+          }
+        }
+      }
+    }
+
+    Rectangle{
+      color: "transparent"
+      width: 60
+      height: 60
+      visible: isMoveUp
+
+      Image{
+        source: applicationDirPath + "/assets/Sprite/btn_pause.png"
+        anchors.fill: parent
+        MouseArea{
+          anchors.fill: parent
+          onClicked: {
+            clickSound.play()
+            pausePopup.open()
+          }
+        }
+      }
+    }
+
+    CountDown{
+      id: countDown
+      visible: isMoveUp
+      isRunning: isMoveUp
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.top: parent.top
+      anchors.topMargin: 10
+    }
+
+    Image {
+      id: questionImage
+      visible: isMoveUp
+      width: 400
+      height: 200
+      source: applicationDirPath + "/assets/Sprite/question_bg.png"
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.top: countDown.bottom
+    }
+
+    Text {
+      id : questionNumber
+      visible: isMoveUp
+      width: 100
+      height: 50
+      anchors.horizontalCenter: parent.horizontalCenter
+      horizontalAlignment: Text.AlignHCenter
+      anchors.top: countDown.bottom
+      anchors.topMargin: 10
+      font.family: "roboto"
+      font.pointSize: 14
+      text: "Câu hỏi 1"
+    }
+
+    Text {
+      id : questionText
+      visible: isMoveUp
+      width: 360
+      height: 150
+      anchors.horizontalCenter: parent.horizontalCenter
+      horizontalAlignment: Text.AlignHCenter
+      anchors.top: countDown.bottom
+      anchors.topMargin: 50
+      font.family: "roboto"
+      font.pointSize: 14
+      color: "white"
+      text: "Noi dung cau hoi"
+      wrapMode: Text.WordWrap
+    }
+
+    Image {
+      id: namMuoiNamMuoi
+      visible: isMoveUp
+      width: 70
+      height: 40
+      source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
+      anchors.left: parent.left
+      anchors.top: questionImage.bottom
+      anchors.topMargin: 15
+      anchors.leftMargin: 50
+
+      Image {
+        id: namMuoiNamMuoiIcon
+        width: 40
+        height: 20
+        source: applicationDirPath + "/assets/Sprite/ic_50_50.png"
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+      }
+    }
   }
 
   PrizePopup{
     id: prizePopup
+    modal : true
 
     onOpened : {
-      mainTheme.stop()
-      prizeTheme.play()
-      runningHighLightPrize = true
+      if (!clickShowPrizeBtn){
+        mainTheme.stop()
+        prizeTheme.play()
+        runningHighLightPrize = true
+      }
+      else {
+        prize = 6
+      }
     }
+  }
+
+  PausePopup {
+    id: pausePopup
+    modal : true
   }
 }

@@ -193,7 +193,7 @@ int logout(){
 
 int change_password(char password[]){
   Message msg;
-  msg.type = CHANGE_PASS;
+  msg.type = CHANGE_PASSWORD;
   strcpy(msg.data_type, "string");
   strcat(msg.value, password);
   msg.length = strlen(msg.value);

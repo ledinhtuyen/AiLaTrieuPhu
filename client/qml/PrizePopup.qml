@@ -1,7 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.12
-import QtQml.Models 2.12
 
 Popup {
     id: popup
@@ -29,6 +28,7 @@ Popup {
                 MouseArea{
                     anchors.fill: parent
                     onClicked: {
+                        clickSound.play()
                         popup.close()
                     }
                 }

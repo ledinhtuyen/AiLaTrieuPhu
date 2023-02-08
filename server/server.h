@@ -10,6 +10,7 @@
 #include <pthread.h>
 #include <errno.h>
 #include <time.h>
+#include <mysql/mysql.h>
 
 #define BACKLOG 6
 #define BUFF_SIZE 1024
@@ -28,8 +29,9 @@ enum msg_type
   SIGNUP,
   ACCOUNT_EXIST,
   SIGNUP_SUCCESS,
-  CHANGE_PASS,
-  CHANGE_PASS_SUCCESS,
+  CHANGE_PASSWORD,
+  SAME_OLD_PASSWORD,
+  CHANGE_PASSWORD_SUCCESS,
   PLAY_ALONE,
   PLAY_PVP,
   QUESTION,
@@ -59,16 +61,6 @@ typedef struct _message
   int length;
   char value[BUFF_SIZE];
 } Message;
-
-typedef struct _account
-{
-  char username[BUFF_SIZE];
-  char password[BUFF_SIZE];
-  int status; // 0 (blocked), 1 (active)
-  int count;  // // number of times of wrong-password's typing
-  struct _account *next;
-} Account;
-Account *head_account = NULL;
 
 typedef struct _client
 {
@@ -115,37 +107,60 @@ int current_id_room = 0;
 
 // pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
+MYSQL *conn;
+
 /*------------ Function Declare ----------------*/
-Account *new_account();
+int connect_to_database();
 Client *new_client();
 Room *new_room();
-void read_user_file();
-void read_question_file(Question q[], char *file_name);
 void catch_ctrl_c_and_exit(int sig);
-void add_account(char username[BUFF_SIZE], char password[BUFF_SIZE], int status);
 void add_client(int conn_fd);
 Room *add_room();
 void delete_room(int room_id);
 Room *find_room_is_blank_or_waiting();
-void add_question(int index, int level, char question[BUFF_SIZE], char answerA[BUFF_SIZE], char answerB[BUFF_SIZE],
-                  char answerC[BUFF_SIZE], char answerD[BUFF_SIZE], int true);
+// void add_question(int index, int level, char question[BUFF_SIZE], char answerA[BUFF_SIZE], char answerB[BUFF_SIZE],
+//                   char answerC[BUFF_SIZE], char answerD[BUFF_SIZE], int true);
 void delete_client(int conn_fd);
 int add_client_to_room(int conn_fd, Room *room);
-void update_user_file(char name[BUFF_SIZE], char new_pass[BUFF_SIZE], int new_status);
 int is_number(const char *s);
 void *thread_start(void *client_fd);
 int login(int conn_fd, char msg_data[BUFF_SIZE]);
-int check_account_exist(char username[BUFF_SIZE]);
 int signup(char username[BUFF_SIZE], char password[BUFF_SIZE]);
+int change_password(char username[BUFF_SIZE], char msg_data[BUFF_SIZE]);
 int handle_play_alone(int);
 int handle_play_pvp(int);
 
 /*---------------- Utilities -------------------*/
-Account *new_account()
+int connect_to_database()
 {
-  Account *new = (Account *)malloc(sizeof(Account));
-  new->next = NULL;
-  return new;
+  char server[50], username[50], password[50], database[50];
+  int port;
+
+  FILE *f = fopen("config", "r");
+  if (f == NULL)
+  {
+    printf("Error opening file!\n");
+    exit(1);
+  }
+
+  fscanf(f, "DB_HOST=%s\nDB_PORT=%d\nDB_DATABASE=%s\nDB_USERNAME=%s\nDB_PASSWORD=%s", server, &port, database, username, password);
+  fclose(f);
+
+  conn = mysql_init(NULL);
+  if (!mysql_real_connect(conn, server, username, password, database, port, NULL, 0)) {
+    fprintf(stderr, "%s\n", mysql_error(conn));
+    exit(1);
+  }
+  return 1;
+}
+
+int execute_query(char *query)
+{
+  if (mysql_query(conn, query)) {
+    fprintf(stderr, "%s\n", mysql_error(conn));
+    exit(1);
+  }
+  return 1;
 }
 
 Client *new_client()
@@ -174,52 +189,6 @@ Room *new_room()
   return new;
 }
 
-void read_user_file()
-{
-  char str[100];
-  FILE *f = fopen("account.txt", "r");
-  if (f == NULL)
-  {
-    printf("Error opening file!\n");
-    exit(1);
-  }
-
-  while (fgets(str, sizeof(str), f) != NULL)
-  {
-    char *name = strtok(str, " ");
-    char *pass = strtok(NULL, " ");
-    int status = atoi(strtok(NULL, " "));
-    add_account(name, pass, status);
-  }
-
-  fclose(f);
-}
-
-void read_question_file(Question q[], char *file_name)
-{
-  FILE *f;
-  if ((f = fopen(file_name, "r")) == NULL)
-  {
-    printf("Not find %s\n", file_name);
-    return;
-  }
-  else
-  {
-    for (int x = 0; x < 5; x++)
-    { // Reads the questions from file
-      fgets(q[x].question, 120, f);
-      fgets(q[x].choiceA, 70, f);
-      fgets(q[x].choiceB, 70, f);
-      fgets(q[x].choiceC, 70, f);
-      fgets(q[x].choiceD, 70, f);
-      fgets(q[x].answer, 70, f);
-      q[x].answer[1] = '\0';
-    }
-  }
-
-  fclose(f);
-}
-
 void catch_ctrl_c_and_exit(int sig)
 {
   char mesg[] = "\nServer is closing...\n";
@@ -235,23 +204,6 @@ void catch_ctrl_c_and_exit(int sig)
   }
   printf("\nBye\n");
   exit(0);
-}
-
-void add_account(char username[BUFF_SIZE], char password[BUFF_SIZE], int status)
-{
-  Account *new = new_account();
-  strcpy(new->username, username);
-  strcpy(new->password, password);
-  new->status = status;
-  if (head_account == NULL)
-    head_account = new; // if linked list is empty
-  else
-  {
-    Account *tmp = head_account; // assign head to p
-    while (tmp->next != NULL)
-      tmp = tmp->next; // traverse the list until the last node
-    tmp->next = new;   // Point the previous last node to the new node created.
-  }
 }
 
 void add_client(int conn_fd)
@@ -379,29 +331,6 @@ int add_client_to_room(int conn_fd, Room *room)
 //   return -1;
 // }
 
-void update_user_file(char name[BUFF_SIZE], char new_pass[BUFF_SIZE], int new_status)
-{
-  FILE *f = fopen("account.txt", "w");
-  if (f == NULL)
-  {
-    printf("Error opening file!\n");
-    exit(1);
-  }
-
-  Account *tmp = head_account;
-  while (tmp != NULL)
-  {
-    if (strcmp(tmp->username, name) == 0)
-    {
-      if (strcmp(new_pass, "") != 0)
-        strcpy(tmp->password, new_pass);
-    }
-    fprintf(f, "%s %s %d\n", tmp->username, tmp->password, tmp->status);
-    tmp = tmp->next;
-  }
-  fclose(f);
-}
-
 int is_number(const char *s)
 {
   while (*s != '\0')
@@ -415,67 +344,114 @@ int is_number(const char *s)
 
 int login(int conn_fd, char msg_data[BUFF_SIZE])
 {
-  char *username = strtok(msg_data, " ");
-  char *password = strtok(NULL, " ");
+  MYSQL_RES *res;
+  MYSQL_ROW row;
 
-  Client *cli = head_client, *cli_tmp = head_client;
+  Client *cli = head_client, *tmp = head_client;
+  char username[50], password[50];
+  char query[100];
+  int re = -1;
+
+  strcpy(username, strtok(msg_data, " "));
+  strcpy(password, strtok(NULL, " "));
+
   while (cli->conn_fd != conn_fd && cli != NULL)
     cli = cli->next;
 
-  Account *tmp = head_account;
-  while (tmp != NULL)
+  sprintf(query, "SELECT * FROM account WHERE username = '%s'", username);
+  execute_query(query);
+  res = mysql_use_result(conn);
+  if ((row = mysql_fetch_row(res)) == NULL)
   {
-    if (strcmp(tmp->username, username) == 0)
-    {
-      cli_tmp = head_client;
-      while (cli_tmp != NULL)
-      {
-        if (strcmp(cli_tmp->login_account, username) == 0 && cli_tmp->login_status == AUTH)
+    re = ACCOUNT_NOT_EXIST;
+  }
+  else
+  {
+    if (strcmp(row[2], password) == 0){
+      if (strcmp(row[3], "1") == 0){
+        while (tmp != NULL)
         {
-          return LOGGED_IN;
+          if (strcmp(tmp->login_account, username) == 0 && tmp->login_status == AUTH)
+          {
+            re = LOGGED_IN;
+            break;
+          }
+          tmp = tmp->next;
         }
-        cli_tmp = cli_tmp->next;
-      }
-      if (strcmp(tmp->password, password) == 0)
-      {
-        if (tmp->status == 0)
+        if (re != LOGGED_IN)
         {
-          return ACCOUNT_BLOCKED;
-        }
-        if (cli != NULL)
-        {
+          strcpy(cli->login_account, username);
           cli->login_status = AUTH;
-          strcpy(cli->login_account, tmp->username);
-          return LOGIN_SUCCESS;
+          re = LOGIN_SUCCESS;
         }
       }
       else
-        return WRONG_PASSWORD;
+        re = ACCOUNT_BLOCKED;
     }
-    tmp = tmp->next;
+    else
+      re = WRONG_PASSWORD;
   }
-  return ACCOUNT_NOT_EXIST;
-}
 
-int check_account_exist(char username[BUFF_SIZE])
-{
-  Account *tmp = head_account;
-  while (tmp != NULL)
-  {
-    if (strcmp(tmp->username, username) == 0)
-    {
-      return 1;
-    }
-    tmp = tmp->next;
-  }
-  return 0;
+  mysql_free_result(res);
+  return re;
 }
 
 int signup(char username[], char password[])
 {
-  add_account(username, password, 1);
-  update_user_file(username, password, 1);
-  return 1;
+  MYSQL_RES *res;
+  MYSQL_ROW row;
+
+  char query[100];
+  int re;
+
+  sprintf(query, "SELECT * FROM account WHERE username = '%s'", username);
+  execute_query(query);
+  res = mysql_use_result(conn);
+  if ((row = mysql_fetch_row(res)) == NULL)
+  {
+    mysql_free_result(res);
+    sprintf(query, "INSERT INTO account(username, password, status) VALUES('%s', '%s', 1)", username, password);
+    execute_query(query);
+    res = mysql_use_result(conn);
+    re = SIGNUP_SUCCESS;
+  }
+  else
+    re = ACCOUNT_EXIST;
+
+  mysql_free_result(res);
+  return re;
+}
+
+int change_password(char username[], char new_password[])
+{
+  MYSQL_RES *res;
+  MYSQL_ROW row;
+
+  char query[100];
+  int re;
+
+  sprintf(query, "SELECT * FROM account WHERE username = '%s'", username);
+  execute_query(query);
+  res = mysql_use_result(conn);
+  if ((row = mysql_fetch_row(res)) != NULL)
+  {
+    if (strcmp(row[2], new_password) == 0)
+    {
+      re = SAME_OLD_PASSWORD;
+    }
+    else {
+      mysql_free_result(res);
+      sprintf(query, "UPDATE account SET password = '%s' WHERE username = '%s'", new_password, username);
+      execute_query(query);
+      res = mysql_use_result(conn);
+      re = CHANGE_PASSWORD_SUCCESS;
+    }
+  }
+  else
+    re = ACCOUNT_NOT_EXIST;
+
+  mysql_free_result(res);
+  return re;
 }
 
 int handle_play_alone(int conn_fd)
@@ -485,10 +461,6 @@ int handle_play_alone(int conn_fd)
   Question q;
   char str[10];
   int current_question = 0;
-
-  read_question_file(lst.easy_question, "easy_question.txt");
-  read_question_file(lst.medium_question, "medium_question.txt");
-  read_question_file(lst.hard_question, "hard_question.txt");
 
   while (current_question < 15)
   {
@@ -576,10 +548,6 @@ int handle_play_pvp(int conn_fd)
   {
     is_found = 0;
     room = add_room();
-
-    read_question_file(room->list_quest.easy_question, "easy_question.txt");
-    read_question_file(room->list_quest.medium_question, "medium_question.txt");
-    read_question_file(room->list_quest.hard_question, "hard_question.txt");
 
     add_client_to_room(conn_fd, room);
 
@@ -783,12 +751,16 @@ void *thread_start(void *client_fd)
     case AUTH:
       switch (msg.type)
       {
-      case CHANGE_PASS:
-        update_user_file(cli->login_account, msg.value, 1);
-        msg.type = CHANGE_PASS_SUCCESS;
-        strcpy(msg.value, "Change password successfully!");
+      case CHANGE_PASSWORD:
+        re = change_password(cli->login_account, msg.value);
+
+        if (re == SAME_OLD_PASSWORD)
+          printf("[%d] %s's password is the same as old password.\n", conn_fd, cli->login_account);
+        else if (re == CHANGE_PASSWORD_SUCCESS)
+          printf("[%d] %s's password is changed.\n", conn_fd, cli->login_account);
+
+        msg.type = re;
         send(conn_fd, &msg, sizeof(msg), 0);
-        printf("[%d] Change %s's password.\n", conn_fd, cli->login_account);
         break;
       case PLAY_ALONE:
         printf("[%d] %s is playing alone.\n", conn_fd, cli->login_account);
@@ -811,35 +783,30 @@ void *thread_start(void *client_fd)
         if (re == LOGIN_SUCCESS)
         {
           msg.type = LOGIN_SUCCESS;
-          strcpy(msg.value, "Login success");
           printf("[%d]: Login success!\n", conn_fd);
           send(conn_fd, &msg, sizeof(msg), 0);
         }
         else if (re == LOGGED_IN)
         {
           msg.type = LOGGED_IN;
-          strcpy(msg.value, "Account is logged in");
           printf("[%d] Account is logged in\n", conn_fd);
           send(conn_fd, &msg, sizeof(msg), 0);
         }
         else if (re == ACCOUNT_BLOCKED)
         {
           msg.type = ACCOUNT_BLOCKED;
-          strcpy(msg.value, "Account is blocked");
           printf("[%d] Account is blocked\n", conn_fd);
           send(conn_fd, &msg, sizeof(msg), 0);
         }
         else if (re == ACCOUNT_NOT_EXIST)
         {
           msg.type = ACCOUNT_NOT_EXIST;
-          strcpy(msg.value, "Account not exist");
           printf("[%d] Account not exist\n", conn_fd);
           send(conn_fd, &msg, sizeof(msg), 0);
         }
         else if (re == WRONG_PASSWORD)
         {
           msg.type = WRONG_PASSWORD;
-          strcpy(msg.value, "Wrong password");
           printf("[%d] Wrong password\n", conn_fd);
           send(conn_fd, &msg, sizeof(msg), 0);
         }
@@ -850,22 +817,21 @@ void *thread_start(void *client_fd)
           char password[BUFF_SIZE];
           sprintf(username, "%s", strtok(msg.value, " "));
           sprintf(password, "%s", strtok(NULL, " "));
-          if (check_account_exist(username) == 1)
+          
+          re = signup(username, password);
+
+          if (re == SIGNUP_SUCCESS)
+          {
+            msg.type = SIGNUP_SUCCESS;
+            printf("[%d]: Signup success!\n", conn_fd);
+            send(conn_fd, &msg, sizeof(msg), 0);
+          }
+          else if (re == ACCOUNT_EXIST)
           {
             msg.type = ACCOUNT_EXIST;
-            printf("[%d]: Account %s exist!\n", conn_fd, username);
-            strcpy(msg.value, "Account exist");
+            printf("[%d] Account exist\n", conn_fd);
             send(conn_fd, &msg, sizeof(msg), 0);
           }
-          else
-          {
-            signup(username, password);
-            msg.type = SIGNUP_SUCCESS;
-            printf("[%d]: Signup %s success!\n", conn_fd, username);
-            strcpy(msg.value, "Signup success");
-            send(conn_fd, &msg, sizeof(msg), 0);
-          }
-          break;
         }
       }
       break;

@@ -31,7 +31,7 @@ Item{
     anchors.horizontalCenter: parent.horizontalCenter
     text : textBtn1
 
-    onClicked: {
+    onClick: {
       funcBtn1Click()
     }
   }
@@ -42,7 +42,7 @@ Item{
     anchors.horizontalCenter: parent.horizontalCenter
     text : textBtn2
 
-    onClicked: {
+    onClick: {
       funcBtn2Click()
     }
   }
@@ -53,7 +53,7 @@ Item{
     anchors.horizontalCenter: parent.horizontalCenter
     text : textBtn3
 
-    onClicked: {
+    onClick: {
       funcBtn3Click()
     }
   }
@@ -64,7 +64,7 @@ Item{
     anchors.horizontalCenter: parent.horizontalCenter
     text : textBtn4
 
-    onClicked: {
+    onClick: {
       funcBtn4Click()
     }
   }
