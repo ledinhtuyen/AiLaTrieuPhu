@@ -372,10 +372,12 @@ qrc_qml.cpp: qml.qrc \
 		qml/MenuStart.qml \
 		qml/CountDown.qml \
 		qml/SelectButtonPage.qml \
+		qml/GameScreen.qml \
 		qml/LoginPage.qml \
 		qml/CButton.qml \
 		qml/BackGround.qml \
-		qml/main.qml
+		qml/main.qml \
+		qml/VotePopup.qml
 	/usr/lib/qt5/bin/rcc -name qml qml.qrc -o qrc_qml.cpp
 
 compiler_moc_predefs_make_all: moc_predefs.h

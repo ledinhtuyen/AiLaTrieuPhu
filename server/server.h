@@ -34,6 +34,7 @@ enum msg_type
   CHANGE_PASSWORD_SUCCESS,
   PLAY_ALONE,
   PLAY_PVP,
+  STOP_GAME,
   QUESTION,
   CHOICE_ANSWER,
   CORRECT_ANSWER,
@@ -74,22 +75,14 @@ Client *head_client = NULL;
 
 typedef struct _question
 {
-  int index;
-  char question[BUFF_SIZE];
-  char choiceA[BUFF_SIZE];
-  char choiceB[BUFF_SIZE];
-  char choiceC[BUFF_SIZE];
-  char choiceD[BUFF_SIZE];
-  char answer[BUFF_SIZE];
-  int reward;
+  char question[15][BUFF_SIZE];
+  char a[15][BUFF_SIZE];
+  char b[15][BUFF_SIZE];
+  char c[15][BUFF_SIZE];
+  char d[15][BUFF_SIZE];
+  int answer[15];
+  int reward[15];
 } Question;
-
-typedef struct _list_quest
-{
-  Question easy_question[5];
-  Question medium_question[5];
-  Question hard_question[5];
-} ListQuest;
 
 typedef struct _room
 {
@@ -98,7 +91,7 @@ typedef struct _room
   int status;                    // 0: no player enter, 1: waiting, 2: playing, 3: end
   int play_status[2];            // 0: playing, 1: end or out of room
   int index_current_question[2]; // start from 1 to 15
-  ListQuest list_quest;
+  Question questions;
   int reward[2]; // set default all = 0
   struct _room *next;
 } Room;
@@ -111,6 +104,12 @@ MYSQL *conn;
 
 /*------------ Function Declare ----------------*/
 int connect_to_database();
+int execute_query(char *query);
+Question get_questions();
+int choose_2_incorrect_answers(Question q, int level, int incorrect_answer[2]);
+int goi_dien_cho_nguoi_than(Question q, int level);
+int hoi_y_kien_khan_gia(Question q, int level, int percent[4]);
+int change_question(Question *q, int level);
 Client *new_client();
 Room *new_room();
 void catch_ctrl_c_and_exit(int sig);
@@ -118,8 +117,6 @@ void add_client(int conn_fd);
 Room *add_room();
 void delete_room(int room_id);
 Room *find_room_is_blank_or_waiting();
-// void add_question(int index, int level, char question[BUFF_SIZE], char answerA[BUFF_SIZE], char answerB[BUFF_SIZE],
-//                   char answerC[BUFF_SIZE], char answerD[BUFF_SIZE], int true);
 void delete_client(int conn_fd);
 int add_client_to_room(int conn_fd, Room *room);
 int is_number(const char *s);
@@ -128,7 +125,7 @@ int login(int conn_fd, char msg_data[BUFF_SIZE]);
 int signup(char username[BUFF_SIZE], char password[BUFF_SIZE]);
 int change_password(char username[BUFF_SIZE], char msg_data[BUFF_SIZE]);
 int handle_play_alone(int);
-int handle_play_pvp(int);
+// int handle_play_pvp(int);
 
 /*---------------- Utilities -------------------*/
 int connect_to_database()
@@ -159,6 +156,106 @@ int execute_query(char *query)
   if (mysql_query(conn, query)) {
     fprintf(stderr, "%s\n", mysql_error(conn));
     exit(1);
+  }
+  return 1;
+}
+
+Question get_questions(){
+  MYSQL_RES *res;
+  MYSQL_ROW row;
+
+  Question questions;
+  char query[1000];
+
+  for (int i = 0; i < 15; i++)
+  {
+    sprintf(query, "SELECT question, a, b, c, d, answer, reward FROM questions WHERE level = %d ORDER BY RAND() LIMIT 1", i + 1);
+    execute_query(query);
+    res = mysql_store_result(conn);
+    row = mysql_fetch_row(res);
+    strcpy(questions.question[i], row[0]);
+    strcpy(questions.a[i], row[1]);
+    strcpy(questions.b[i], row[2]);
+    strcpy(questions.c[i], row[3]);
+    strcpy(questions.d[i], row[4]);
+    questions.answer[i] = atoi(row[5]);
+    questions.reward[i] = atoi(row[6]);
+    mysql_free_result(res);
+  }
+
+  printf("Get question success\n");
+  return questions;
+}
+
+int choose_2_incorrect_answers(Question q, int level, int incorrect_answers[2]){
+  srand(time(0));
+  int i, j, incorrect;
+  for (i = 0; i < 2; i++) {
+    incorrect = rand() % 4 + 1;
+    while (incorrect == q.answer[level - 1]) {
+      incorrect = rand() % 4 + 1;
+    }
+    incorrect_answers[i] = incorrect;
+    for (j = 0; j < i; j++) {
+      if (incorrect_answers[j] == incorrect) {
+        i--;
+        break;
+      }
+    }
+  }
+  return 1;
+}
+
+int goi_dien_cho_nguoi_than(Question q, int level){
+  return q.answer[level - 1];
+}
+
+int hoi_y_kien_khan_gia(Question q, int level, int percent[4]){
+    int i, j, sum = 0, random_number, max;
+    srand(time(0));
+    for (i = 0; i < 3; i++) {
+        random_number = rand() % (100 - sum + 1);
+        percent[i] = random_number;
+        sum += random_number;
+    }
+    percent[3] = 100 - sum;
+
+    max = percent[0];
+
+    for (i = 0; i < 4; i++) {
+        if (percent[i] > max) {
+            max = percent[i];
+            j = i;
+        }
+    }
+
+    int tmp = percent[q.answer[level - 1] - 1];
+    percent[q.answer[level - 1] - 1] = max;
+    percent[j] = tmp;
+
+    return 1;
+}
+
+int change_question(Question *q, int level) {
+  MYSQL_RES *res;
+  MYSQL_ROW row;
+
+  char query[1000];
+  sprintf(query, "SELECT question, a, b, c, d, answer, reward FROM questions WHERE level = %d ORDER BY RAND() LIMIT 1", level);
+  execute_query(query);
+  res = mysql_store_result(conn);
+  if((row = mysql_fetch_row(res)) != NULL){
+    strcpy(q->question[level - 1], row[0]);
+    strcpy(q->a[level - 1], row[1]);
+    strcpy(q->b[level - 1], row[2]);
+    strcpy(q->c[level - 1], row[3]);
+    strcpy(q->d[level - 1], row[4]);
+    q->answer[level - 1] = atoi(row[5]);
+    q->reward[level - 1] = atoi(row[6]);
+    mysql_free_result(res);
+  }
+  else {
+    return 0;
   }
   return 1;
 }
@@ -457,206 +554,48 @@ int change_password(char username[], char new_password[])
 int handle_play_alone(int conn_fd)
 {
   Message msg;
-  ListQuest lst;
-  Question q;
+  Question questions = get_questions();
   char str[10];
   int current_question = 0;
+  int reward = 0;
 
   while (current_question < 15)
   {
-    if (current_question / 5 == 0)
-    {
-      q = lst.easy_question[current_question];
-    }
-    else if (current_question / 5 == 1)
-    {
-      q = lst.medium_question[current_question - 5];
-    }
-    else
-    {
-      q = lst.hard_question[current_question - 10];
-    }
-
     msg.type = QUESTION;
-    strcpy(msg.value, "Question ");
     sprintf(str, "%d", current_question + 1);
-    strcat(msg.value, str);
-    strcat(msg.value, ": ");
-    strcat(msg.value, q.question);
-    strcat(msg.value, q.choiceA);
-    strcat(msg.value, q.choiceB);
-    strcat(msg.value, q.choiceC);
-    strcat(msg.value, q.choiceD);
+    strcpy(msg.value, str);
+    strcat(msg.value, "|");
+    strcat(msg.value, questions.question[current_question]);
+    strcat(msg.value, "|");
+    strcat(msg.value, questions.a[current_question]);
+    strcat(msg.value, "|");
+    strcat(msg.value, questions.b[current_question]);
+    strcat(msg.value, "|");
+    strcat(msg.value, questions.c[current_question]);
+    strcat(msg.value, "|");
+    strcat(msg.value, questions.d[current_question]);
     send(conn_fd, &msg, sizeof(msg), 0);
     current_question++;
 
     recv(conn_fd, &msg, sizeof(msg), 0);
-    if (strcmp(msg.value, q.answer) == 0)
+
+    switch (msg.type)
     {
-      if (current_question == 15)
+    case STOP_GAME:
+      printf("Client %d stopped play alone\n", conn_fd);
+      break;
+    case CHOICE_ANSWER:
+      if (questions.answer[current_question - 1] == atoi(msg.value))
       {
-        msg.type = WIN;
-        strcpy(msg.value, "Chuc mung ban da tra loi dung 15 cau hoi!");
-        send(conn_fd, &msg, sizeof(msg), 0);
-        return 1;
-      }
-      else
-      {
-        msg.type = CORRECT_ANSWER;
-        strcpy(msg.value, "Chinh xac!");
-        send(conn_fd, &msg, sizeof(msg), 0);
-        continue;
-      }
-    }
-    else
-    {
-      msg.type = LOSE;
-      strcpy(msg.value, "Sai! Dap an la: ");
-      strcat(msg.value, q.answer);
-      strcat(msg.value, ". Chuc mung ban da tra loi dung ");
-      sprintf(str, "%d cau hoi", current_question - 1);
-      strcat(msg.value, str);
-      send(conn_fd, &msg, sizeof(msg), 0);
-      return 1;
-    }
-  }
-
-  return 1;
-}
-
-int handle_play_pvp(int conn_fd)
-{
-  Message msg, tmp;
-  int is_found = 0, index_in_room = -1, index_doi_thu_in_room = -1, is_me_win = -1;
-  Room *room;
-  char str[BUFF_SIZE];
-  time_t start, endwait, seconds, start_reply, end_reply;
-  Question q;
-
-  msg.type = WAIT_OTHER_PLAYER;
-  strcpy(msg.value, "Đang tìm kiếm người chơi khác, xin chờ chút...\n");
-  if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
-  {
-    perror("Send error!");
-    delete_client(conn_fd);
-    return 0;
-  }
-
-  room = find_room_is_blank_or_waiting();
-
-  if (room == NULL)
-  {
-    is_found = 0;
-    room = add_room();
-
-    add_client_to_room(conn_fd, room);
-
-    start = time(NULL);
-    seconds = 10; // end loop after this time has elapsed
-
-    endwait = start + seconds;
-
-    printf("Find opponent for room %d...\n", room->room_id);
-
-    printf("start time is: %s", ctime(&start));
-
-    while (start < endwait)
-    {
-      if (room->client_fd[1] != 0)
-      {
-        is_found = 1;
-        index_in_room = 0;
-        index_doi_thu_in_room = 1;
-        break;
-      }
-      sleep(1); // sleep 1s.
-      start = time(NULL);
-      printf("loop time is: %s", ctime(&start));
-    }
-    printf("end time is: %s", ctime(&endwait));
-
-    printf("Found opponent for room %d...\n", room->room_id);
-  }
-  else
-  {
-    is_found = 1;
-    add_client_to_room(conn_fd, room);
-    index_in_room = 1;
-    index_doi_thu_in_room = 0;
-  }
-
-  if (is_found == 1)
-  {
-    msg.type = FOUND_PLAYER;
-    strcpy(msg.value, "Đã tìm thấy người chơi khác, bắt đầu trò chơi!");
-    if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
-    {
-      perror("Send error!");
-      delete_client(conn_fd);
-      return 0;
-    }
-
-    room->play_status[index_in_room] = 0;
-
-    msg.type = ENTERED_ROOM;
-    sprintf(str, "%d", room->room_id);
-    strcpy(msg.value, str);
-
-    if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
-    {
-      perror("Send error!");
-      delete_client(conn_fd);
-      return 0;
-    }
-
-    while (room->index_current_question[index_in_room] < 15)
-    {
-      if (room->index_current_question[index_in_room] / 5 == 0)
-      {
-        q = room->list_quest.easy_question[room->index_current_question[index_in_room]];
-      }
-      else if (room->index_current_question[index_in_room] / 5 == 1)
-      {
-        q = room->list_quest.medium_question[room->index_current_question[index_in_room] - 5];
-      }
-      else
-      {
-        q = room->list_quest.hard_question[room->index_current_question[index_in_room] - 10];
-      }
-
-      msg.type = QUESTION;
-      strcpy(msg.value, "Question ");
-      sprintf(str, "%d", room->index_current_question[index_in_room] + 1);
-      strcat(msg.value, str);
-      strcat(msg.value, ": ");
-      strcat(msg.value, q.question);
-      strcat(msg.value, q.choiceA);
-      strcat(msg.value, q.choiceB);
-      strcat(msg.value, q.choiceC);
-      strcat(msg.value, q.choiceD);
-      send(conn_fd, &msg, sizeof(msg), 0);
-      start_reply = time(NULL);
-      room->index_current_question[index_in_room]++;
-
-      recv(conn_fd, &msg, sizeof(msg), 0);
-      end_reply = time(NULL);
-      seconds = end_reply - start_reply;
-      if (strcmp(msg.value, q.answer) == 0 && seconds <= 15)
-      {
-        room->reward[index_in_room] += 10000;
-        if (room->index_current_question[index_in_room] == 15)
+        if (current_question == 15)
         {
           msg.type = WIN;
-          strcpy(msg.value, "Chuc mung ban da tra loi dung 15 cau hoi va nhan duoc !");
-          sprintf(str, "%dd\n", room->reward[index_in_room]);
-          strcat(msg.value, str);
-          room->play_status[index_in_room] = 1;
-          break;
+          send(conn_fd, &msg, sizeof(msg), 0);
+          return 1;
         }
         else
         {
           msg.type = CORRECT_ANSWER;
-          strcpy(msg.value, "Chinh xac!");
           send(conn_fd, &msg, sizeof(msg), 0);
           continue;
         }
@@ -664,67 +603,220 @@ int handle_play_pvp(int conn_fd)
       else
       {
         msg.type = LOSE;
-        if (seconds > 15)
-        {
-          strcpy(msg.value, "Het thoi gian tra loi!");
-        }
-        else
-        {
-          strcpy(msg.value, "Sai! Dap an la: ");
-          strcat(msg.value, q.answer);
-        }
-
-        strcat(msg.value, ". Chuc mung ban da tra loi dung ");
-        sprintf(str, "%d cau hoi va nhan duoc %dd\n", room->index_current_question[index_in_room] - 1, room->reward[index_in_room]);
+        sprintf(str, "%d", questions.answer[current_question - 1]);
         strcat(msg.value, str);
-        room->play_status[index_in_room] = 1;
-        break;
+        send(conn_fd, &msg, sizeof(msg), 0);
+        return 0;
       }
+      break;
+    default:
+      break;
     }
-
-    int sent = 0;
-
-    while (room->play_status[index_doi_thu_in_room] == 0)
-    {
-      if (!sent)
-      {
-        tmp.type = OTHER_PLAYER_IS_PLAYING;
-        strcpy(tmp.value, msg.value);
-        strcat(tmp.value, "Đối thủ đang chơi, vui lòng chờ!");
-        send(conn_fd, &tmp, sizeof(tmp), 0);
-        sent = 1;
-      }
-    }
-
-    if (room->index_current_question[index_in_room] > room->index_current_question[index_doi_thu_in_room])
-      strcpy(msg.value, "Ban da thang doi thu!");
-    else if (room->index_current_question[index_in_room] < room->index_current_question[index_doi_thu_in_room])
-    {
-      strcpy(msg.value, "Ban da thua doi thu!");
-    }
-    else
-      strcpy(msg.value, "Ban va doi thu hoa nhau!");
-    send(conn_fd, &msg, sizeof(msg), 0);
-
-    delete_room(room->room_id);
-    return 1;
   }
-  else
-  {
-    msg.type = NOT_FOUND_PLAYER;
-    strcpy(msg.value, "Không tìm thấy người chơi khác, vui lòng thử lại sau!");
-    if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
-    {
-      perror("Send error!");
-      delete_client(conn_fd);
-      return 0;
-    }
-    delete_room(room->room_id);
-    return 0;
-  }
-
   return 1;
 }
+
+// int handle_play_pvp(int conn_fd)
+// {
+//   Message msg, tmp;
+//   int is_found = 0, index_in_room = -1, index_doi_thu_in_room = -1, is_me_win = -1;
+//   Room *room;
+//   char str[BUFF_SIZE];
+//   time_t start, endwait, seconds, start_reply, end_reply;
+//   Question q;
+
+//   msg.type = WAIT_OTHER_PLAYER;
+//   strcpy(msg.value, "Đang tìm kiếm người chơi khác, xin chờ chút...\n");
+//   if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
+//   {
+//     perror("Send error!");
+//     delete_client(conn_fd);
+//     return 0;
+//   }
+
+//   room = find_room_is_blank_or_waiting();
+
+//   if (room == NULL)
+//   {
+//     is_found = 0;
+//     room = add_room();
+
+//     add_client_to_room(conn_fd, room);
+
+//     start = time(NULL);
+//     seconds = 10; // end loop after this time has elapsed
+
+//     endwait = start + seconds;
+
+//     printf("Find opponent for room %d...\n", room->room_id);
+
+//     printf("start time is: %s", ctime(&start));
+
+//     while (start < endwait)
+//     {
+//       if (room->client_fd[1] != 0)
+//       {
+//         is_found = 1;
+//         index_in_room = 0;
+//         index_doi_thu_in_room = 1;
+//         break;
+//       }
+//       sleep(1); // sleep 1s.
+//       start = time(NULL);
+//       printf("loop time is: %s", ctime(&start));
+//     }
+//     printf("end time is: %s", ctime(&endwait));
+
+//     printf("Found opponent for room %d...\n", room->room_id);
+//   }
+//   else
+//   {
+//     is_found = 1;
+//     add_client_to_room(conn_fd, room);
+//     index_in_room = 1;
+//     index_doi_thu_in_room = 0;
+//   }
+
+//   if (is_found == 1)
+//   {
+//     msg.type = FOUND_PLAYER;
+//     strcpy(msg.value, "Đã tìm thấy người chơi khác, bắt đầu trò chơi!");
+//     if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
+//     {
+//       perror("Send error!");
+//       delete_client(conn_fd);
+//       return 0;
+//     }
+
+//     room->play_status[index_in_room] = 0;
+
+//     msg.type = ENTERED_ROOM;
+//     sprintf(str, "%d", room->room_id);
+//     strcpy(msg.value, str);
+
+//     if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
+//     {
+//       perror("Send error!");
+//       delete_client(conn_fd);
+//       return 0;
+//     }
+
+//     while (room->index_current_question[index_in_room] < 15)
+//     {
+//       if (room->index_current_question[index_in_room] / 5 == 0)
+//       {
+//         q = room->list_quest.easy_question[room->index_current_question[index_in_room]];
+//       }
+//       else if (room->index_current_question[index_in_room] / 5 == 1)
+//       {
+//         q = room->list_quest.medium_question[room->index_current_question[index_in_room] - 5];
+//       }
+//       else
+//       {
+//         q = room->list_quest.hard_question[room->index_current_question[index_in_room] - 10];
+//       }
+
+//       msg.type = QUESTION;
+//       strcpy(msg.value, "Question ");
+//       sprintf(str, "%d", room->index_current_question[index_in_room] + 1);
+//       strcat(msg.value, str);
+//       strcat(msg.value, ": ");
+//       strcat(msg.value, q.question);
+//       strcat(msg.value, q.choiceA);
+//       strcat(msg.value, q.choiceB);
+//       strcat(msg.value, q.choiceC);
+//       strcat(msg.value, q.choiceD);
+//       send(conn_fd, &msg, sizeof(msg), 0);
+//       start_reply = time(NULL);
+//       room->index_current_question[index_in_room]++;
+
+//       recv(conn_fd, &msg, sizeof(msg), 0);
+//       end_reply = time(NULL);
+//       seconds = end_reply - start_reply;
+//       if (strcmp(msg.value, q.answer) == 0 && seconds <= 15)
+//       {
+//         room->reward[index_in_room] += 10000;
+//         if (room->index_current_question[index_in_room] == 15)
+//         {
+//           msg.type = WIN;
+//           strcpy(msg.value, "Chuc mung ban da tra loi dung 15 cau hoi va nhan duoc !");
+//           sprintf(str, "%dd\n", room->reward[index_in_room]);
+//           strcat(msg.value, str);
+//           room->play_status[index_in_room] = 1;
+//           break;
+//         }
+//         else
+//         {
+//           msg.type = CORRECT_ANSWER;
+//           strcpy(msg.value, "Chinh xac!");
+//           send(conn_fd, &msg, sizeof(msg), 0);
+//           continue;
+//         }
+//       }
+//       else
+//       {
+//         msg.type = LOSE;
+//         if (seconds > 15)
+//         {
+//           strcpy(msg.value, "Het thoi gian tra loi!");
+//         }
+//         else
+//         {
+//           strcpy(msg.value, "Sai! Dap an la: ");
+//           strcat(msg.value, q.answer);
+//         }
+
+//         strcat(msg.value, ". Chuc mung ban da tra loi dung ");
+//         sprintf(str, "%d cau hoi va nhan duoc %dd\n", room->index_current_question[index_in_room] - 1, room->reward[index_in_room]);
+//         strcat(msg.value, str);
+//         room->play_status[index_in_room] = 1;
+//         break;
+//       }
+//     }
+
+//     int sent = 0;
+
+//     while (room->play_status[index_doi_thu_in_room] == 0)
+//     {
+//       if (!sent)
+//       {
+//         tmp.type = OTHER_PLAYER_IS_PLAYING;
+//         strcpy(tmp.value, msg.value);
+//         strcat(tmp.value, "Đối thủ đang chơi, vui lòng chờ!");
+//         send(conn_fd, &tmp, sizeof(tmp), 0);
+//         sent = 1;
+//       }
+//     }
+
+//     if (room->index_current_question[index_in_room] > room->index_current_question[index_doi_thu_in_room])
+//       strcpy(msg.value, "Ban da thang doi thu!");
+//     else if (room->index_current_question[index_in_room] < room->index_current_question[index_doi_thu_in_room])
+//     {
+//       strcpy(msg.value, "Ban da thua doi thu!");
+//     }
+//     else
+//       strcpy(msg.value, "Ban va doi thu hoa nhau!");
+//     send(conn_fd, &msg, sizeof(msg), 0);
+
+//     delete_room(room->room_id);
+//     return 1;
+//   }
+//   else
+//   {
+//     msg.type = NOT_FOUND_PLAYER;
+//     strcpy(msg.value, "Không tìm thấy người chơi khác, vui lòng thử lại sau!");
+//     if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
+//     {
+//       perror("Send error!");
+//       delete_client(conn_fd);
+//       return 0;
+//     }
+//     delete_room(room->room_id);
+//     return 0;
+//   }
+
+//   return 1;
+// }
 
 void *thread_start(void *client_fd)
 {
@@ -766,9 +858,9 @@ void *thread_start(void *client_fd)
         printf("[%d] %s is playing alone.\n", conn_fd, cli->login_account);
         handle_play_alone(conn_fd);
         break;
-      case PLAY_PVP:
-        handle_play_pvp(conn_fd);
-        break;
+      // case PLAY_PVP:
+      //   handle_play_pvp(conn_fd);
+      //   break;
       case LOGOUT:
         printf("[%d]: Bye %s\n", conn_fd, cli->login_account);
         cli->login_status = UN_AUTH;

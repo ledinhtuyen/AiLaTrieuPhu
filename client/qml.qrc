@@ -15,5 +15,7 @@
         <file>qml/ChangePasswordPage.qml</file>
         <file>qml/PrizePopup.qml</file>
         <file>qml/PausePopup.qml</file>
+        <file>qml/GameScreen.qml</file>
+        <file>qml/VotePopup.qml</file>
     </qresource>
 </RCC>

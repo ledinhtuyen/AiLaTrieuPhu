@@ -21,7 +21,7 @@ Popup {
       }
       Image{
         anchors.horizontalCenter: parent.horizontalCenter
-        source: applicationDirPath + "/assets/Sprite/popup#75.png"
+        source: applicationDirPath + "/assets/Sprite/popup_75.png"
         width: 400
         height: 200
 
