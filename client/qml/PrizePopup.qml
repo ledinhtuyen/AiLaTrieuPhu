@@ -294,7 +294,7 @@ Popup {
                 prizeTheme.stop()
                 letsPlayTheme.play()
                 popup.close()
-                menuMain.isMoveUp = true
+                menuMain.isMoveUp = 2
                 startSound1To5.start()
                 highLightPrize.stop()
             }

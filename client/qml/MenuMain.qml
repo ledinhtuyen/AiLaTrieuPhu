@@ -8,13 +8,13 @@ Page {
   height: 640
   property bool showMenuMain: true
   property bool isPlayGame: false
-  property bool isMoveUp : false
+  property var isMoveUp : 0
   
 
   SelectButtonPage{
     id : menuSelectButton
     isVisible: showMenuMain
-    moveUp: !isMoveUp
+    moveUp: isMoveUp == 1 ? true : false
 
     startY: 640
     textBtn1: "Chơi 1 mình"
@@ -77,7 +77,8 @@ Page {
   }
 
   GameScreen {
-    boolMoveUp: isMoveUp
+    id : gameScreen
+    boolMoveUp: isMoveUp == 2 ? true : false
   }
 
   PrizePopup{
@@ -96,5 +97,17 @@ Page {
         prize = backEnd.prize + 1
       }
     }
+  }
+
+  function startBtnAnimUp(){
+    gameScreen.startBtnAnimUp()
+  }
+
+  function resetBtnToStartY(){
+    gameScreen.resetBtnToStartY()
+  }
+
+  function flickerCorrectAnswer(count){
+    gameScreen.flickerCorrectAnswer(count)
   }
 }

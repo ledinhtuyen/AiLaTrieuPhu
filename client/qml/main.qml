@@ -75,6 +75,15 @@ ApplicationWindow {
         onSameOldPassword: {
             rootWindow.changePasswordStatus = "SAME_OLD_PASSWORD"
         }
+
+        onCorrectAnswer: {
+            flicker.start()
+        }
+    }
+
+    MenuMain {
+        id: menuMain
+        isMoveUp: 0
     }
 
     Component.onCompleted: {
@@ -300,7 +309,9 @@ ApplicationWindow {
             }
             else if (act == "login"){
                 if (loginStatus == "LOGIN_SUCCESS") {
-                    stackView.push("MenuMain.qml")
+                    backEnd.userNameChanged()
+                    stackView.push(menuMain)
+                    menuMain.isMoveUp = 1
                 }
                 else if (loginStatus == "LOGGED_IN")
                 {
@@ -345,5 +356,36 @@ ApplicationWindow {
                 }
             }
         }
+    }
+
+    Timer {
+        id : flicker
+        property var count : 0
+        interval: 200
+        running: false
+        repeat : true
+        onTriggered: {
+            menuMain.flickerCorrectAnswer(count)
+            count++;
+            if (count == 6) {
+                count = 0
+                flicker.stop()
+                startNewQuestion()
+            }
+        }
+    }
+
+    function startNewQuestion() {
+        backEnd.prize++
+        backEnd.prizeChanged()
+
+        backEnd.questionChanged()
+        backEnd.aChanged()
+        backEnd.bChanged()
+        backEnd.cChanged()
+        backEnd.dChanged()
+
+        menuMain.resetBtnToStartY()
+        menuMain.startBtnAnimUp()
     }
 }

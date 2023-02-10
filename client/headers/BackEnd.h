@@ -24,9 +24,10 @@ public:
     int voteB;
     int voteC;
     int voteD;
+    int correct_answer;
     static BackEnd *instance;
     Q_PROPERTY(QString user_name READ getUserName WRITE setUserName NOTIFY userNameChanged);
-    Q_PROPERTY(int prize READ getPrize NOTIFY prizeChanged);
+    Q_PROPERTY(int prize READ getPrize WRITE setPrize NOTIFY prizeChanged);
     Q_PROPERTY(QString question READ getQuestion NOTIFY questionChanged);
     Q_PROPERTY(QString a READ getA NOTIFY aChanged);
     Q_PROPERTY(QString b READ getB NOTIFY bChanged);
@@ -37,18 +38,21 @@ public:
     Q_PROPERTY(int voteB READ getVoteB NOTIFY voteBChanged);
     Q_PROPERTY(int voteC READ getVoteC NOTIFY voteCChanged);
     Q_PROPERTY(int voteD READ getVoteD NOTIFY voteDChanged);
+    Q_PROPERTY(int correct_answer READ getCorrectAnswer);
 
     explicit BackEnd(QObject *parent = nullptr);
     ~BackEnd();
     QString getUserName() const;
     void setUserName(const QString &value);
     int getPrize();
+    void setPrize(int value);
     QString getQuestion();
     QString getA();
     QString getB();
     QString getC();
     QString getD();
     QString getCallPhoneAnswer();
+    int getCorrectAnswer();
     int getVoteA();
     int getVoteB();
     int getVoteC();
@@ -91,6 +95,7 @@ signals:
     void voteBChanged();
     void voteCChanged();
     void voteDChanged();
+    void correctAnswer();
 
 private:
     QString user_name;

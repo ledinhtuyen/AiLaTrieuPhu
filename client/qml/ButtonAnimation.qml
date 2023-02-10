@@ -118,4 +118,14 @@ Item{
       prizePopup.open()
     }
   }
+
+  function startBtnAnimUp(){
+    isMoveUp = true
+    btnAnimUp1.start()
+  }
+
+  function startBtnAnimDown(){
+    isMoveDown = true
+    btnAnimDown1.start()
+  }
 }

@@ -114,7 +114,7 @@ int fifty_fifty(Question q, int level, int incorrect_answer[2]);
 int call_phone(Question q, int level);
 int vote(Question q, int level, int percent[4]);
 int change_question(Question *q, int level);
-int help(int type, Question questions, int level, int conn_fd);
+int help(int type, Question *questions, int level, int conn_fd);
 Client *new_client();
 Room *new_room();
 void catch_ctrl_c_and_exit(int sig);
@@ -568,6 +568,8 @@ int handle_play_alone(int conn_fd)
   while (level < 15)
   {
     msg.type = QUESTION;
+
+initQuestion:
     sprintf(str, "%d", level + 1);
     strcpy(msg.value, str);
     strcat(msg.value, "|");
@@ -602,6 +604,7 @@ recvLabel:
         }
         else
         {
+          sleep(2);
           msg.type = CORRECT_ANSWER;
           send(conn_fd, &msg, sizeof(msg), 0);
           continue;
@@ -617,17 +620,19 @@ recvLabel:
       }
       break;
     case FIFTY_FIFTY:
-      help(FIFTY_FIFTY, questions, level, conn_fd);
+      help(FIFTY_FIFTY, &questions, level, conn_fd);
       goto recvLabel;
     case CALL_PHONE:
-      help(CALL_PHONE, questions, level, conn_fd);
+      help(CALL_PHONE, &questions, level, conn_fd);
       goto recvLabel;
     case VOTE:
-      help(VOTE, questions, level, conn_fd);
+      help(VOTE, &questions, level, conn_fd);
       goto recvLabel;
     case CHANGE_QUESTION:
-      help(CHANGE_QUESTION, questions, level, conn_fd);
-      continue;
+      help(CHANGE_QUESTION, &questions, level, conn_fd);
+      level--;
+      msg.type = CHANGE_QUESTION;
+      goto initQuestion;
     default:
       break;
     }
@@ -635,7 +640,7 @@ recvLabel:
   return 1;
 }
 
-int help(int type, Question questions, int level, int conn_fd){
+int help(int type, Question *questions, int level, int conn_fd){
   Message msg;
   int incorrect_answer[2];
   int percent[4];
@@ -645,7 +650,7 @@ int help(int type, Question questions, int level, int conn_fd){
   {
     case FIFTY_FIFTY:
       printf("[%d]: 50_50 question %d\n", conn_fd, level);
-      fifty_fifty(questions, level, incorrect_answer);
+      fifty_fifty(*questions, level, incorrect_answer);
       msg.type = FIFTY_FIFTY;
       sprintf(str, "%d %d", incorrect_answer[0], incorrect_answer[1]);
       strcpy(msg.value, str);
@@ -654,14 +659,14 @@ int help(int type, Question questions, int level, int conn_fd){
     case CALL_PHONE:
       printf("[%d]: Call phone question %d\n", conn_fd, level);
       msg.type = CALL_PHONE;
-      int answer = call_phone(questions, level);
+      int answer = call_phone(*questions, level);
       sprintf(str, "%d", answer);
       strcpy(msg.value, str);
       send(conn_fd, &msg, sizeof(msg), 0);
       break;
     case VOTE:
       printf("[%d]: Vote question %d\n", conn_fd, level);
-      vote(questions, level, percent);
+      vote(*questions, level, percent);
       msg.type = VOTE;
       sprintf(str, "%d %d %d %d", percent[0], percent[1], percent[2], percent[3]);
       strcpy(msg.value, str);
@@ -669,8 +674,7 @@ int help(int type, Question questions, int level, int conn_fd){
       break;
     case CHANGE_QUESTION:
       printf("[%d]: Changed question %d\n", conn_fd, level);
-      change_question(&questions, level);
-      level--;
+      change_question(questions, level);
       break;
   }
 }

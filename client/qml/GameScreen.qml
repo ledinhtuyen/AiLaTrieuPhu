@@ -11,7 +11,7 @@ Item {
   SelectButtonPage{
     id: questionPage
     visible: isPlayGame
-    moveUp: isMoveUp
+    moveUp: boolMoveUp
 
     startY: 640
     textBtn1: backEnd.a
@@ -20,18 +20,22 @@ Item {
     textBtn4: backEnd.d
 
     funcBtn1Click: function (){
+      hightLightChoice(1)
       backEnd.choiceAnswer(1)
     }
 
     funcBtn2Click: function (){
+      hightLightChoice(2)
       backEnd.choiceAnswer(2)
     }
 
     funcBtn3Click: function (){
+      hightLightChoice(3)
       backEnd.choiceAnswer(3)
     }
 
     funcBtn4Click: function (){
+      hightLightChoice(4)
       backEnd.choiceAnswer(4)
     }
 
@@ -40,7 +44,7 @@ Item {
       width: 60
       height: 60
       anchors.right: parent.right
-      visible: isMoveUp
+      visible: isMoveUp == 2 ? true : false
 
       Image{
         source: applicationDirPath + "/assets/Sprite/btn_xemgiaithuong.png"
@@ -60,7 +64,7 @@ Item {
       color: "transparent"
       width: 60
       height: 60
-      visible: isMoveUp
+      visible: isMoveUp == 2 ? true : false
 
       Image{
         source: applicationDirPath + "/assets/Sprite/btn_pause.png"
@@ -77,8 +81,8 @@ Item {
 
     CountDown{
       id: countDown
-      visible: isMoveUp
-      isRunning: isMoveUp
+      visible: isMoveUp == 2 ? true : false
+      isRunning: isMoveUp == 2 ? true : false
       anchors.horizontalCenter: parent.horizontalCenter
       anchors.top: parent.top
       anchors.topMargin: 10
@@ -86,7 +90,7 @@ Item {
 
     Image {
       id: questionImage
-      visible: isMoveUp
+      visible: isMoveUp == 2 ? true : false
       width: 400
       height: 200
       source: applicationDirPath + "/assets/Sprite/question_bg.png"
@@ -96,7 +100,7 @@ Item {
 
     Text {
       id : questionNumber
-      visible: isMoveUp
+      visible: isMoveUp == 2 ? true : false
       width: 100
       height: 50
       anchors.horizontalCenter: parent.horizontalCenter
@@ -110,7 +114,7 @@ Item {
 
     Text {
       id : questionText
-      visible: isMoveUp
+      visible: isMoveUp == 2 ? true : false
       width: 360
       height: 150
       anchors.horizontalCenter: parent.horizontalCenter
@@ -127,7 +131,7 @@ Item {
 
     Image {
       id: fiftyFiftyIcon
-      visible: isMoveUp
+      visible: isMoveUp == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
@@ -166,7 +170,7 @@ Item {
 
     Image {
       id: callPhoneIcon
-      visible: isMoveUp
+      visible: isMoveUp == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
@@ -206,7 +210,7 @@ Item {
 
     Image {
       id: voteIcon
-      visible: isMoveUp
+      visible: isMoveUp == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
@@ -247,7 +251,7 @@ Item {
 
     Image {
       id: changeQuestionIcon
-      visible: isMoveUp
+      visible: isMoveUp == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
@@ -297,5 +301,21 @@ Item {
   CallPhonePopup {
     id: callPhonePopup
     modal : true
+  }
+
+  function startBtnAnimUp() {
+    questionPage.startBtnAnimUp()
+  }
+
+  function resetBtnToStartY(){
+    questionPage.resetBtnToStartY()
+  }
+
+  function hightLightChoice(choice) {
+    questionPage.hightLightChoice(choice)
+  }
+
+  function flickerCorrectAnswer(count) {
+    questionPage.flickerCorrectAnswer(count)
   }
 }

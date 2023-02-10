@@ -16,6 +16,7 @@ void *thread_recv(void *arg)
   Message msg;
   int recvBytes;
   int incorrect_answer[2];
+  int i = 0;
 
   while (1)
   {
@@ -30,6 +31,7 @@ void *thread_recv(void *arg)
     {
       switch (msg.type)
       {
+      case CHANGE_QUESTION:
       case QUESTION:
         strtok(msg.value, "|");
         BackEnd::instance->question = strtok(NULL, "|");
@@ -38,15 +40,18 @@ void *thread_recv(void *arg)
         BackEnd::instance->c = strtok(NULL, "|");
         BackEnd::instance->d = strtok(NULL, "|");
 
-        BackEnd::instance->questionChanged();
-        BackEnd::instance->aChanged();
-        BackEnd::instance->bChanged();
-        BackEnd::instance->cChanged();
-        BackEnd::instance->dChanged();
+        if (i == 0 || msg.type == CHANGE_QUESTION){
+          BackEnd::instance->questionChanged();
+          BackEnd::instance->aChanged();
+          BackEnd::instance->bChanged();
+          BackEnd::instance->cChanged();
+          BackEnd::instance->dChanged();
+          i++;
+        }
         break;
       case CORRECT_ANSWER:
-        BackEnd::instance->prize++;
-        emit BackEnd::instance->prizeChanged();
+        BackEnd::instance->correct_answer = atoi(msg.value);
+        BackEnd::instance->correctAnswer();
         break;
       case WIN:
         printf("WIN\n", msg.value);
@@ -164,6 +169,11 @@ int BackEnd::getPrize()
   return prize;
 }
 
+void BackEnd::setPrize(int value)
+{
+  prize = value;
+}
+
 QString BackEnd::getQuestion()
 {
   return question;
@@ -192,6 +202,11 @@ QString BackEnd::getD()
 QString BackEnd::getCallPhoneAnswer()
 {
   return call_phone_answer;
+}
+
+int BackEnd::getCorrectAnswer()
+{
+  return correct_answer;
 }
 
 int BackEnd::getVoteA()
