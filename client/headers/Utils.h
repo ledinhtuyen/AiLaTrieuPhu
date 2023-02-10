@@ -32,6 +32,7 @@ enum msg_type
   CHANGE_PASSWORD_SUCCESS,
   PLAY_ALONE,
   PLAY_PVP,
+  STOP_GAME,
   QUESTION,
   CHOICE_ANSWER,
   CORRECT_ANSWER,
@@ -43,7 +44,11 @@ enum msg_type
   WIN,
   LOSE,
   DRAW,
-  LOGOUT
+  LOGOUT,
+  FIFTY_FIFTY,
+  CALL_PHONE,
+  VOTE,
+  CHANGE_QUESTION
 };
 
 typedef struct _message

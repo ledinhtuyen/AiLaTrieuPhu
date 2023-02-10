@@ -11,20 +11,40 @@ Item {
   SelectButtonPage{
     id: questionPage
     visible: isPlayGame
-    moveUp: isMoveUp
+    moveUp: boolMoveUp
 
     startY: 640
-    textBtn1: "Đáp án 1"
-    textBtn2: "Đáp án 2"
-    textBtn3: "Đáp án 3"
-    textBtn4: "Đáp án 4"
+    textBtn1: backEnd.a
+    textBtn2: backEnd.b
+    textBtn3: backEnd.c
+    textBtn4: backEnd.d
+
+    funcBtn1Click: function (){
+      hightLightChoice(1)
+      backEnd.choiceAnswer(1)
+    }
+
+    funcBtn2Click: function (){
+      hightLightChoice(2)
+      backEnd.choiceAnswer(2)
+    }
+
+    funcBtn3Click: function (){
+      hightLightChoice(3)
+      backEnd.choiceAnswer(3)
+    }
+
+    funcBtn4Click: function (){
+      hightLightChoice(4)
+      backEnd.choiceAnswer(4)
+    }
 
     Rectangle{
       color: "transparent"
       width: 60
       height: 60
       anchors.right: parent.right
-      visible: isMoveUp
+      visible: isMoveUp == 2 ? true : false
 
       Image{
         source: applicationDirPath + "/assets/Sprite/btn_xemgiaithuong.png"
@@ -44,7 +64,7 @@ Item {
       color: "transparent"
       width: 60
       height: 60
-      visible: isMoveUp
+      visible: isMoveUp == 2 ? true : false
 
       Image{
         source: applicationDirPath + "/assets/Sprite/btn_pause.png"
@@ -61,8 +81,8 @@ Item {
 
     CountDown{
       id: countDown
-      visible: isMoveUp
-      isRunning: isMoveUp
+      visible: isMoveUp == 2 ? true : false
+      isRunning: isMoveUp == 2 ? true : false
       anchors.horizontalCenter: parent.horizontalCenter
       anchors.top: parent.top
       anchors.topMargin: 10
@@ -70,7 +90,7 @@ Item {
 
     Image {
       id: questionImage
-      visible: isMoveUp
+      visible: isMoveUp == 2 ? true : false
       width: 400
       height: 200
       source: applicationDirPath + "/assets/Sprite/question_bg.png"
@@ -80,7 +100,7 @@ Item {
 
     Text {
       id : questionNumber
-      visible: isMoveUp
+      visible: isMoveUp == 2 ? true : false
       width: 100
       height: 50
       anchors.horizontalCenter: parent.horizontalCenter
@@ -89,28 +109,29 @@ Item {
       anchors.topMargin: 10
       font.family: "roboto"
       font.pointSize: 14
-      text: "Câu hỏi 1"
+      text: "Câu hỏi " + (backEnd.prize + 1)
     }
 
     Text {
       id : questionText
-      visible: isMoveUp
+      visible: isMoveUp == 2 ? true : false
       width: 360
       height: 150
       anchors.horizontalCenter: parent.horizontalCenter
       horizontalAlignment: Text.AlignHCenter
+      verticalAlignment: Text.AlignVCenter
       anchors.top: countDown.bottom
-      anchors.topMargin: 50
+      anchors.topMargin: 45
       font.family: "roboto"
       font.pointSize: 14
       color: "white"
-      text: "Noi dung cau hoi"
+      text: backEnd.question
       wrapMode: Text.WordWrap
     }
 
     Image {
-      id: namMuoiNamMuoi
-      visible: isMoveUp
+      id: fiftyFiftyIcon
+      visible: isMoveUp == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
@@ -139,19 +160,21 @@ Item {
 
         onClicked : {
           clickSound.play()
+          fiftyFiftySound.play()
           x1.visible = true
-          namMuoiNamMuoi.enabled = false
+          fiftyFiftyIcon.enabled = false
+          backEnd.fiftyFifty()
         }
       }
     }
 
     Image {
-      id: goiDienThoaiChoNguoiThan
-      visible: isMoveUp
+      id: callPhoneIcon
+      visible: isMoveUp == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
-      anchors.left: namMuoiNamMuoi.right
+      anchors.left: fiftyFiftyIcon.right
       anchors.top: questionImage.bottom
       anchors.topMargin: 15
       anchors.leftMargin: 15
@@ -176,19 +199,22 @@ Item {
 
         onClicked : {
           clickSound.play()
+          fiftyFiftySound.play()
           x2.visible = true
-          goiDienThoaiChoNguoiThan.enabled = false
+          callPhoneIcon.enabled = false
+          backEnd.callPhone()
+          callPhonePopup.open()
         }
       }
     }
 
     Image {
-      id: hoiYKienKhanGia
-      visible: isMoveUp
+      id: voteIcon
+      visible: isMoveUp == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
-      anchors.left: goiDienThoaiChoNguoiThan.right
+      anchors.left: callPhoneIcon.right
       anchors.top: questionImage.bottom
       anchors.topMargin: 15
       anchors.leftMargin: 15
@@ -213,21 +239,23 @@ Item {
 
         onClicked : {
           clickSound.play()
-          vote.open()
-          vote.isShow = true
+          fiftyFiftySound.play()
+          votePopup.open()
+          votePopup.isShow = true
           x3.visible = true
-          hoiYKienKhanGia.enabled = false
+          voteIcon.enabled = false
+          backEnd.vote()
         }
       }
     }
 
     Image {
-      id: doiCauHoi
-      visible: isMoveUp
+      id: changeQuestionIcon
+      visible: isMoveUp == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
-      anchors.left: hoiYKienKhanGia.right
+      anchors.left: voteIcon.right
       anchors.top: questionImage.bottom
       anchors.topMargin: 15
       anchors.leftMargin: 15
@@ -252,19 +280,42 @@ Item {
 
         onClicked : {
           clickSound.play()
+          fiftyFiftySound.play()
           x4.visible = true
-          doiCauHoi.enabled = false
+          changeQuestionIcon.enabled = false
+          backEnd.changeQuestion()
         }
       }
     }
   }
 
   VotePopup{
-    id: vote
+    id: votePopup
   }
 
   PausePopup {
     id: pausePopup
     modal : true
+  }
+
+  CallPhonePopup {
+    id: callPhonePopup
+    modal : true
+  }
+
+  function startBtnAnimUp() {
+    questionPage.startBtnAnimUp()
+  }
+
+  function resetBtnToStartY(){
+    questionPage.resetBtnToStartY()
+  }
+
+  function hightLightChoice(choice) {
+    questionPage.hightLightChoice(choice)
+  }
+
+  function flickerCorrectAnswer(count) {
+    questionPage.flickerCorrectAnswer(count)
   }
 }

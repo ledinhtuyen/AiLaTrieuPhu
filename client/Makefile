@@ -361,23 +361,24 @@ compiler_rcc_clean:
 	-$(DEL_FILE) qrc_qml.cpp
 qrc_qml.cpp: qml.qrc \
 		/usr/lib/qt5/bin/rcc \
-		qml/PausePopup.qml \
 		qml/SelectButton.qml \
-		qml/ChangePasswordPage.qml \
-		qml/PrizePopup.qml \
-		qml/ButtonAnimation.qml \
-		qml/Logo.qml \
-		qml/SignUpPage.qml \
+		qml/PausePopup.qml \
 		qml/MenuMain.qml \
-		qml/MenuStart.qml \
-		qml/CountDown.qml \
 		qml/SelectButtonPage.qml \
-		qml/GameScreen.qml \
-		qml/LoginPage.qml \
-		qml/CButton.qml \
+		qml/CallPhonePopup.qml \
+		qml/CountDown.qml \
 		qml/BackGround.qml \
+		qml/VotePopup.qml \
+		qml/LoginPage.qml \
+		qml/ChangePasswordPage.qml \
+		qml/ButtonAnimation.qml \
+		qml/CButton.qml \
+		qml/PrizePopup.qml \
+		qml/Logo.qml \
 		qml/main.qml \
-		qml/VotePopup.qml
+		qml/GameScreen.qml \
+		qml/SignUpPage.qml \
+		qml/MenuStart.qml
 	/usr/lib/qt5/bin/rcc -name qml qml.qrc -o qrc_qml.cpp
 
 compiler_moc_predefs_make_all: moc_predefs.h

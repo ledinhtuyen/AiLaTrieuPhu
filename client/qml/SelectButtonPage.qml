@@ -70,6 +70,7 @@ Item{
   }
 
   ButtonAnimation{
+    id: btnAnimation
     target1: btn1
     target2: btn2
     target3: btn3
@@ -88,6 +89,55 @@ Item{
       btn2.enabled = true
       btn3.enabled = true
       btn4.enabled = true
+    }
+  }
+
+  function startBtnAnimUp(){
+    btnAnimation.startBtnAnimUp()
+  }
+
+  function resetBtnToStartY(){
+    btn1.y = startY
+    btn2.y = startY
+    btn3.y = startY
+    btn4.y = startY
+  }
+
+  function hightLightChoice(choice){
+    switch(choice){
+      case 1:
+        btn1.background.source = applicationDirPath + "/assets/Sprite/btn_choose2.png"
+        btn1.background.enabled = false
+        break;
+      case 2:
+        btn2.background.source = applicationDirPath + "/assets/Sprite/btn_choose2.png"
+        btn2.background.enabled = false
+        break;
+      case 3:
+        btn3.background.source = applicationDirPath + "/assets/Sprite/btn_choose2.png"
+        btn3.background.enabled = false
+        break;
+      case 4:
+        btn4.background.source = applicationDirPath + "/assets/Sprite/btn_choose2.png"
+        btn4.background.enabled = false
+        break;
+    }
+  }
+
+  function flickerCorrectAnswer(count){
+    switch(backEnd.correct_answer){
+      case 1:
+        btn1.background.source = applicationDirPath + (count % 2 == 0 ? "/assets/Sprite/btn_choose3.png" : "/assets/Sprite/btn.png")
+        break;
+      case 2:
+        btn2.background.source = applicationDirPath + (count % 2 == 0 ? "/assets/Sprite/btn_choose3.png" : "/assets/Sprite/btn.png")
+        break;
+      case 3:
+        btn3.background.source = applicationDirPath + (count % 2 == 0 ? "/assets/Sprite/btn_choose3.png" : "/assets/Sprite/btn.png")
+        break;
+      case 4:
+        btn4.background.source = applicationDirPath + (count % 2 == 0 ? "/assets/Sprite/btn_choose3.png" : "/assets/Sprite/btn.png")
+        break;
     }
   }
 }

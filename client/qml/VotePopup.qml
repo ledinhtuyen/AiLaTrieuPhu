@@ -27,15 +27,15 @@ import QtQuick.Controls 2.5
             source: applicationDirPath + "/assets/Sprite/popup_75.png"
             width: 400
             height: 200
-            Row {
-              anchors.horizontalCenter: parent.horizontalCenter
-              anchors.bottom: parent.bottom
-              anchors.bottomMargin: 50
               Rectangle {
+                id : tileA
                 width: 30
                 height: heightValue1
                 visible: vote.isShow
                 anchors.bottom: parent.bottom
+                anchors.bottomMargin: 50
+                anchors.left: parent.left
+                anchors.leftMargin: 60
 
                 property int heightValue1: 0
                 Image {
@@ -69,7 +69,7 @@ import QtQuick.Controls 2.5
                   running: vote.isShow
                   repeat: true
                   onTriggered: {
-                    if (parent.heightValue1 < 100) {
+                    if (parent.heightValue1 < backEnd.voteA) {
                       parent.heightValue1 += 1
                     }
                     else {
@@ -78,15 +78,15 @@ import QtQuick.Controls 2.5
                   }
                 }
               }
-              Item {
-                width: 50
-                height: 50
-              }
               Rectangle {
+                id : tileB
                 width: 30
                 height: heightValue2
                 visible: vote.isShow
                 anchors.bottom: parent.bottom
+                anchors.bottomMargin: 50
+                anchors.left: tileA.right
+                anchors.leftMargin: 50
 
                 property int heightValue2: 0
                 Image {
@@ -120,7 +120,7 @@ import QtQuick.Controls 2.5
                   running: vote.isShow
                   repeat: true
                   onTriggered: {
-                    if (parent.heightValue2 < 100) {
+                    if (parent.heightValue2 < backEnd.voteB) {
                       parent.heightValue2 += 1
                     }
                     else {
@@ -129,15 +129,15 @@ import QtQuick.Controls 2.5
                   }
                 }
               }
-              Item {
-                width: 50
-                height: 50
-              }
               Rectangle {
+                id : tileC
                 width: 30
                 height: heightValue3
                 visible: vote.isShow
                 anchors.bottom: parent.bottom
+                anchors.bottomMargin: 50
+                anchors.left: tileB.right
+                anchors.leftMargin: 50
 
                 property int heightValue3: 0
                 Image {
@@ -171,7 +171,7 @@ import QtQuick.Controls 2.5
                   running: vote.isShow
                   repeat: true
                   onTriggered: {
-                    if (parent.heightValue3 < 100) {
+                    if (parent.heightValue3 < backEnd.voteC) {
                       parent.heightValue3 += 1
                     }
                     else {
@@ -180,15 +180,15 @@ import QtQuick.Controls 2.5
                   }
                 }
               }
-              Item {
-                width: 50
-                height: 50
-              }
               Rectangle {
+                id : tileD
                 width: 30
                 height: heightValue4
                 visible: vote.isShow
                 anchors.bottom: parent.bottom
+                anchors.bottomMargin: 50
+                anchors.left: tileC.right
+                anchors.leftMargin: 50
 
                 property int heightValue4: 0
                 Image {
@@ -222,7 +222,7 @@ import QtQuick.Controls 2.5
                   running: vote.isShow
                   repeat: true
                   onTriggered: {
-                    if (parent.heightValue4 < 100) {
+                    if (parent.heightValue4 < backEnd.voteD) {
                       parent.heightValue4 += 1
                     }
                     else {
@@ -231,7 +231,6 @@ import QtQuick.Controls 2.5
                   }
                 }
               }
-            }
           }
           Item {
             width: 480
