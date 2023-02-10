@@ -117,7 +117,7 @@ Item {
       horizontalAlignment: Text.AlignHCenter
       verticalAlignment: Text.AlignVCenter
       anchors.top: countDown.bottom
-      anchors.topMargin: 50
+      anchors.topMargin: 45
       font.family: "roboto"
       font.pointSize: 14
       color: "white"
@@ -126,7 +126,7 @@ Item {
     }
 
     Image {
-      id: namMuoiNamMuoi
+      id: fiftyFiftyIcon
       visible: isMoveUp
       width: 70
       height: 40
@@ -156,19 +156,21 @@ Item {
 
         onClicked : {
           clickSound.play()
+          fiftyFiftySound.play()
           x1.visible = true
-          namMuoiNamMuoi.enabled = false
+          fiftyFiftyIcon.enabled = false
+          backEnd.fiftyFifty()
         }
       }
     }
 
     Image {
-      id: goiDienThoaiChoNguoiThan
+      id: callPhoneIcon
       visible: isMoveUp
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
-      anchors.left: namMuoiNamMuoi.right
+      anchors.left: fiftyFiftyIcon.right
       anchors.top: questionImage.bottom
       anchors.topMargin: 15
       anchors.leftMargin: 15
@@ -193,20 +195,22 @@ Item {
 
         onClicked : {
           clickSound.play()
+          fiftyFiftySound.play()
           x2.visible = true
-          goiDienThoaiChoNguoiThan.enabled = false
+          callPhoneIcon.enabled = false
+          backEnd.callPhone()
           callPhonePopup.open()
         }
       }
     }
 
     Image {
-      id: hoiYKienKhanGia
+      id: voteIcon
       visible: isMoveUp
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
-      anchors.left: goiDienThoaiChoNguoiThan.right
+      anchors.left: callPhoneIcon.right
       anchors.top: questionImage.bottom
       anchors.topMargin: 15
       anchors.leftMargin: 15
@@ -231,21 +235,23 @@ Item {
 
         onClicked : {
           clickSound.play()
-          vote.open()
-          vote.isShow = true
+          fiftyFiftySound.play()
+          votePopup.open()
+          votePopup.isShow = true
           x3.visible = true
-          hoiYKienKhanGia.enabled = false
+          voteIcon.enabled = false
+          backEnd.vote()
         }
       }
     }
 
     Image {
-      id: doiCauHoi
+      id: changeQuestionIcon
       visible: isMoveUp
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
-      anchors.left: hoiYKienKhanGia.right
+      anchors.left: voteIcon.right
       anchors.top: questionImage.bottom
       anchors.topMargin: 15
       anchors.leftMargin: 15
@@ -270,15 +276,17 @@ Item {
 
         onClicked : {
           clickSound.play()
+          fiftyFiftySound.play()
           x4.visible = true
-          doiCauHoi.enabled = false
+          changeQuestionIcon.enabled = false
+          backEnd.changeQuestion()
         }
       }
     }
   }
 
   VotePopup{
-    id: vote
+    id: votePopup
   }
 
   PausePopup {
@@ -286,51 +294,8 @@ Item {
     modal : true
   }
 
-  Popup {
-    id : callPhonePopup
-    width: 480
-    height: 640
-
-    background: Rectangle {
-      opacity: 0.4
-      color: "gray"
-      anchors.fill: parent
-    }
-
-    contentItem : Item {
-      Column {
-        anchors.horizontalCenter: parent.horizontalCenter
-        Item{
-          width: 480
-          height: 120
-        }
-        Image{
-          anchors.horizontalCenter: parent.horizontalCenter
-          source: applicationDirPath + "/assets/Sprite/popup_75.png"
-          width: 400
-          height: 200
-
-          Text {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            text: "Tôi đoán đáp án đúng là A"
-            font.pixelSize: 23
-            font.family: "roboto"
-            color: "white"
-          }
-        }
-        Item {
-          width: 480
-          height: 20
-        }
-        SelectButton{
-          text: "Đóng"
-          isEnabled: true
-          onClick: {
-            callPhonePopup.close()
-          }
-        }
-      }
-    }
+  CallPhonePopup {
+    id: callPhonePopup
+    modal : true
   }
 }

@@ -44,7 +44,11 @@ enum msg_type
   WIN,
   LOSE,
   DRAW,
-  LOGOUT
+  LOGOUT,
+  FIFTY_FIFTY,
+  CALL_PHONE,
+  VOTE,
+  CHANGE_QUESTION
 };
 
 typedef struct _message

@@ -69,7 +69,7 @@ import QtQuick.Controls 2.5
                   running: vote.isShow
                   repeat: true
                   onTriggered: {
-                    if (parent.heightValue1 < 100) {
+                    if (parent.heightValue1 < backEnd.voteA) {
                       parent.heightValue1 += 1
                     }
                     else {
@@ -120,7 +120,7 @@ import QtQuick.Controls 2.5
                   running: vote.isShow
                   repeat: true
                   onTriggered: {
-                    if (parent.heightValue2 < 100) {
+                    if (parent.heightValue2 < backEnd.voteB) {
                       parent.heightValue2 += 1
                     }
                     else {
@@ -171,7 +171,7 @@ import QtQuick.Controls 2.5
                   running: vote.isShow
                   repeat: true
                   onTriggered: {
-                    if (parent.heightValue3 < 100) {
+                    if (parent.heightValue3 < backEnd.voteC) {
                       parent.heightValue3 += 1
                     }
                     else {
@@ -222,7 +222,7 @@ import QtQuick.Controls 2.5
                   running: vote.isShow
                   repeat: true
                   onTriggered: {
-                    if (parent.heightValue4 < 100) {
+                    if (parent.heightValue4 < backEnd.voteD) {
                       parent.heightValue4 += 1
                     }
                     else {

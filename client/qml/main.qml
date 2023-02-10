@@ -114,6 +114,12 @@ ApplicationWindow {
         loops: SoundEffect.Infinite
     }
 
+    SoundEffect {
+        id : fiftyFiftySound
+        source: applicationDirPath + "/assets/AudioClip/50-50.wav"
+        volume: 1.0
+    }
+
     FontLoader {
         id: fontAwesome
         name: "fontawesome"

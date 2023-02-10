@@ -46,7 +46,11 @@ enum msg_type
   WIN,
   LOSE,
   DRAW,
-  LOGOUT
+  LOGOUT,
+  FIFTY_FIFTY,
+  CALL_PHONE,
+  VOTE,
+  CHANGE_QUESTION
 };
 
 enum login_status
@@ -106,10 +110,11 @@ MYSQL *conn;
 int connect_to_database();
 int execute_query(char *query);
 Question get_questions();
-int choose_2_incorrect_answers(Question q, int level, int incorrect_answer[2]);
-int goi_dien_cho_nguoi_than(Question q, int level);
-int hoi_y_kien_khan_gia(Question q, int level, int percent[4]);
+int fifty_fifty(Question q, int level, int incorrect_answer[2]);
+int call_phone(Question q, int level);
+int vote(Question q, int level, int percent[4]);
 int change_question(Question *q, int level);
+int help(int type, Question questions, int level, int conn_fd);
 Client *new_client();
 Room *new_room();
 void catch_ctrl_c_and_exit(int sig);
@@ -187,7 +192,7 @@ Question get_questions(){
   return questions;
 }
 
-int choose_2_incorrect_answers(Question q, int level, int incorrect_answers[2]){
+int fifty_fifty(Question q, int level, int incorrect_answers[2]){
   srand(time(0));
   int i, j, incorrect;
   for (i = 0; i < 2; i++) {
@@ -206,11 +211,11 @@ int choose_2_incorrect_answers(Question q, int level, int incorrect_answers[2]){
   return 1;
 }
 
-int goi_dien_cho_nguoi_than(Question q, int level){
+int call_phone(Question q, int level){
   return q.answer[level - 1];
 }
 
-int hoi_y_kien_khan_gia(Question q, int level, int percent[4]){
+int vote(Question q, int level, int percent[4]){
     int i, j, sum = 0, random_number, max;
     srand(time(0));
     for (i = 0; i < 3; i++) {
@@ -556,38 +561,40 @@ int handle_play_alone(int conn_fd)
   Message msg;
   Question questions = get_questions();
   char str[10];
-  int current_question = 0;
+  int level = 0;
   int reward = 0;
+  int incorrect_answer[2];
 
-  while (current_question < 15)
+  while (level < 15)
   {
     msg.type = QUESTION;
-    sprintf(str, "%d", current_question + 1);
+    sprintf(str, "%d", level + 1);
     strcpy(msg.value, str);
     strcat(msg.value, "|");
-    strcat(msg.value, questions.question[current_question]);
+    strcat(msg.value, questions.question[level]);
     strcat(msg.value, "|");
-    strcat(msg.value, questions.a[current_question]);
+    strcat(msg.value, questions.a[level]);
     strcat(msg.value, "|");
-    strcat(msg.value, questions.b[current_question]);
+    strcat(msg.value, questions.b[level]);
     strcat(msg.value, "|");
-    strcat(msg.value, questions.c[current_question]);
+    strcat(msg.value, questions.c[level]);
     strcat(msg.value, "|");
-    strcat(msg.value, questions.d[current_question]);
+    strcat(msg.value, questions.d[level]);
     send(conn_fd, &msg, sizeof(msg), 0);
-    current_question++;
+    level++;
 
+recvLabel:
     recv(conn_fd, &msg, sizeof(msg), 0);
 
     switch (msg.type)
     {
     case STOP_GAME:
-      printf("Client %d stopped play alone\n", conn_fd);
+      printf("[%d]: Stopped play alone\n", conn_fd);
       break;
     case CHOICE_ANSWER:
-      if (questions.answer[current_question - 1] == atoi(msg.value))
+      if (questions.answer[level - 1] == atoi(msg.value))
       {
-        if (current_question == 15)
+        if (level == 15)
         {
           msg.type = WIN;
           send(conn_fd, &msg, sizeof(msg), 0);
@@ -603,17 +610,69 @@ int handle_play_alone(int conn_fd)
       else
       {
         msg.type = LOSE;
-        sprintf(str, "%d", questions.answer[current_question - 1]);
+        sprintf(str, "%d", questions.answer[level - 1]);
         strcpy(msg.value, str);
         send(conn_fd, &msg, sizeof(msg), 0);
         return 0;
       }
       break;
+    case FIFTY_FIFTY:
+      help(FIFTY_FIFTY, questions, level, conn_fd);
+      goto recvLabel;
+    case CALL_PHONE:
+      help(CALL_PHONE, questions, level, conn_fd);
+      goto recvLabel;
+    case VOTE:
+      help(VOTE, questions, level, conn_fd);
+      goto recvLabel;
+    case CHANGE_QUESTION:
+      help(CHANGE_QUESTION, questions, level, conn_fd);
+      continue;
     default:
       break;
     }
   }
   return 1;
+}
+
+int help(int type, Question questions, int level, int conn_fd){
+  Message msg;
+  int incorrect_answer[2];
+  int percent[4];
+  char str[10];
+
+  switch (type)
+  {
+    case FIFTY_FIFTY:
+      printf("[%d]: 50_50 question %d\n", conn_fd, level);
+      fifty_fifty(questions, level, incorrect_answer);
+      msg.type = FIFTY_FIFTY;
+      sprintf(str, "%d %d", incorrect_answer[0], incorrect_answer[1]);
+      strcpy(msg.value, str);
+      send(conn_fd, &msg, sizeof(msg), 0);
+      break;
+    case CALL_PHONE:
+      printf("[%d]: Call phone question %d\n", conn_fd, level);
+      msg.type = CALL_PHONE;
+      int answer = call_phone(questions, level);
+      sprintf(str, "%d", answer);
+      strcpy(msg.value, str);
+      send(conn_fd, &msg, sizeof(msg), 0);
+      break;
+    case VOTE:
+      printf("[%d]: Vote question %d\n", conn_fd, level);
+      vote(questions, level, percent);
+      msg.type = VOTE;
+      sprintf(str, "%d %d %d %d", percent[0], percent[1], percent[2], percent[3]);
+      strcpy(msg.value, str);
+      send(conn_fd, &msg, sizeof(msg), 0);
+      break;
+    case CHANGE_QUESTION:
+      printf("[%d]: Changed question %d\n", conn_fd, level);
+      change_question(&questions, level);
+      level--;
+      break;
+  }
 }
 
 // int handle_play_pvp(int conn_fd)
@@ -855,7 +914,7 @@ void *thread_start(void *client_fd)
         send(conn_fd, &msg, sizeof(msg), 0);
         break;
       case PLAY_ALONE:
-        printf("[%d] %s is playing alone.\n", conn_fd, cli->login_account);
+        printf("[%d]: %s is playing alone.\n", conn_fd, cli->login_account);
         handle_play_alone(conn_fd);
         break;
       // case PLAY_PVP:

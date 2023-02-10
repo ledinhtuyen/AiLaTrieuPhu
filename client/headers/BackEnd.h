@@ -19,6 +19,11 @@ public:
     QString b;
     QString c;
     QString d;
+    QString call_phone_answer;
+    int voteA;
+    int voteB;
+    int voteC;
+    int voteD;
     static BackEnd *instance;
     Q_PROPERTY(QString user_name READ getUserName WRITE setUserName NOTIFY userNameChanged);
     Q_PROPERTY(int prize READ getPrize NOTIFY prizeChanged);
@@ -27,6 +32,12 @@ public:
     Q_PROPERTY(QString b READ getB NOTIFY bChanged);
     Q_PROPERTY(QString c READ getC NOTIFY cChanged);
     Q_PROPERTY(QString d READ getD NOTIFY dChanged);
+    Q_PROPERTY(QString call_phone_answer READ getCallPhoneAnswer NOTIFY callPhoneAnswerChanged);
+    Q_PROPERTY(int voteA READ getVoteA NOTIFY voteAChanged);
+    Q_PROPERTY(int voteB READ getVoteB NOTIFY voteBChanged);
+    Q_PROPERTY(int voteC READ getVoteC NOTIFY voteCChanged);
+    Q_PROPERTY(int voteD READ getVoteD NOTIFY voteDChanged);
+
     explicit BackEnd(QObject *parent = nullptr);
     ~BackEnd();
     QString getUserName() const;
@@ -37,6 +48,12 @@ public:
     QString getB();
     QString getC();
     QString getD();
+    QString getCallPhoneAnswer();
+    int getVoteA();
+    int getVoteB();
+    int getVoteC();
+    int getVoteD();
+
     Q_INVOKABLE void connectToServer();
     Q_INVOKABLE void disconnectToServer();
     Q_INVOKABLE void signIn(QString username, QString password);
@@ -45,6 +62,10 @@ public:
     Q_INVOKABLE void changePassword(QString newPassword);
     Q_INVOKABLE void playAlone();
     Q_INVOKABLE void choiceAnswer(int answer);
+    Q_INVOKABLE void fiftyFifty();
+    Q_INVOKABLE void callPhone();
+    Q_INVOKABLE void vote();
+    Q_INVOKABLE void changeQuestion();
 
 signals:
     void userNameChanged();
@@ -65,6 +86,11 @@ signals:
     void accountExist();
     void changePasswordSuccess();
     void sameOldPassword();
+    void callPhoneAnswerChanged();
+    void voteAChanged();
+    void voteBChanged();
+    void voteCChanged();
+    void voteDChanged();
 
 private:
     QString user_name;

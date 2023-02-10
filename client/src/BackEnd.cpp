@@ -15,6 +15,8 @@ void *thread_recv(void *arg)
 
   Message msg;
   int recvBytes;
+  int incorrect_answer[2];
+
   while (1)
   {
     recvBytes = recv(sockfd, &msg, sizeof(msg), 0);
@@ -36,18 +38,15 @@ void *thread_recv(void *arg)
         BackEnd::instance->c = strtok(NULL, "|");
         BackEnd::instance->d = strtok(NULL, "|");
 
-        emit BackEnd::instance->questionChanged();
-        emit BackEnd::instance->aChanged();
-        emit BackEnd::instance->bChanged();
-        emit BackEnd::instance->cChanged();
-        emit BackEnd::instance->dChanged();
+        BackEnd::instance->questionChanged();
+        BackEnd::instance->aChanged();
+        BackEnd::instance->bChanged();
+        BackEnd::instance->cChanged();
+        BackEnd::instance->dChanged();
         break;
       case CORRECT_ANSWER:
         BackEnd::instance->prize++;
-
         emit BackEnd::instance->prizeChanged();
-
-        printf("%d - %s\n", BackEnd::instance->prize, msg.value);
         break;
       case WIN:
         printf("WIN\n", msg.value);
@@ -55,6 +54,78 @@ void *thread_recv(void *arg)
       case LOSE:
         printf("LOSE - Correct answer: %d\n", atoi(msg.value));
         return NULL;
+      case FIFTY_FIFTY:
+        incorrect_answer[0] = atoi(strtok(msg.value, " "));
+        incorrect_answer[1] = atoi(strtok(NULL, " "));
+        switch (incorrect_answer[0])
+        {
+        case 1:
+          BackEnd::instance->a = "";
+          BackEnd::instance->aChanged();
+          break;
+        case 2:
+          BackEnd::instance->b = "";
+          BackEnd::instance->bChanged();
+          break;
+        case 3:
+          BackEnd::instance->c = "";
+          BackEnd::instance->cChanged();
+          break;
+        case 4:
+          BackEnd::instance->d = "";
+          BackEnd::instance->dChanged();
+          break;
+        }
+
+        switch (incorrect_answer[1])
+        {
+        case 1:
+          BackEnd::instance->a = "";
+          BackEnd::instance->aChanged();
+          break;
+        case 2:
+          BackEnd::instance->b = "";
+          BackEnd::instance->bChanged();
+          break;
+        case 3:
+          BackEnd::instance->c = "";
+          BackEnd::instance->cChanged();
+          break;
+        case 4:
+          BackEnd::instance->d = "";
+          BackEnd::instance->dChanged();
+          break;
+        }
+        break;
+      case CALL_PHONE:
+        if (msg.value[0] == '1')
+        {
+          BackEnd::instance->call_phone_answer = "A";
+        }
+        else if (msg.value[0] == '2')
+        {
+          BackEnd::instance->call_phone_answer = "B";
+        }
+        else if (msg.value[0] == '3')
+        {
+          BackEnd::instance->call_phone_answer = "C";
+        }
+        else if (msg.value[0] == '4')
+        {
+          BackEnd::instance->call_phone_answer = "D";
+        }
+        BackEnd::instance->callPhoneAnswerChanged();
+        break;
+      case VOTE:
+        BackEnd::instance->voteA = atoi(strtok(msg.value, " "));
+        BackEnd::instance->voteB = atoi(strtok(NULL, " "));
+        BackEnd::instance->voteC = atoi(strtok(NULL, " "));
+        BackEnd::instance->voteD = atoi(strtok(NULL, " "));
+        BackEnd::instance->voteAChanged();
+        BackEnd::instance->voteBChanged();
+        BackEnd::instance->voteCChanged();
+        BackEnd::instance->voteDChanged();
+        break;
       }
     }
   }
@@ -116,6 +187,31 @@ QString BackEnd::getC()
 QString BackEnd::getD()
 {
   return d;
+}
+
+QString BackEnd::getCallPhoneAnswer()
+{
+  return call_phone_answer;
+}
+
+int BackEnd::getVoteA()
+{
+  return voteA;
+}
+
+int BackEnd::getVoteB()
+{
+  return voteB;
+}
+
+int BackEnd::getVoteC()
+{
+  return voteC;
+}
+
+int BackEnd::getVoteD()
+{
+  return voteD;
 }
 
 void BackEnd::setUserName(const QString &value)
@@ -212,7 +308,6 @@ void BackEnd::changePassword(QString newPassword)
 
 void BackEnd::playAlone()
 {
-  printf("play alone\n");
   Message msg;
   int sendBytes;
 
@@ -233,12 +328,69 @@ void BackEnd::choiceAnswer(int answer)
 {
   Message msg;
   int sendBytes;
-
-  printf("choice answer %d\n", answer);
-
   msg.type = CHOICE_ANSWER;
   msg.value[0] = answer + '0';
   msg.value[1] = '\0';
+  sendBytes = send(sockfd, &msg, sizeof(msg), 0);
+  if (sendBytes < 0)
+  {
+    perror("The server terminated prematurely");
+    exit(0);
+    return;
+  }
+}
+
+void BackEnd::fiftyFifty()
+{
+  Message msg;
+  int sendBytes;
+
+  msg.type = FIFTY_FIFTY;
+  sendBytes = send(sockfd, &msg, sizeof(msg), 0);
+  if (sendBytes < 0)
+  {
+    perror("The server terminated prematurely");
+    exit(0);
+    return;
+  }
+}
+
+void BackEnd::callPhone()
+{
+  Message msg;
+  int sendBytes;
+
+  msg.type = CALL_PHONE;
+  sendBytes = send(sockfd, &msg, sizeof(msg), 0);
+  if (sendBytes < 0)
+  {
+    perror("The server terminated prematurely");
+    exit(0);
+    return;
+  }
+}
+
+void BackEnd::vote()
+{
+  Message msg;
+  int sendBytes;
+
+  msg.type = VOTE;
+  sendBytes = send(sockfd, &msg, sizeof(msg), 0);
+  if (sendBytes < 0)
+  {
+    perror("The server terminated prematurely");
+    exit(0);
+    return;
+  }
+}
+
+void BackEnd::changeQuestion()
+{
+  Message msg;
+  int sendBytes;
+
+  msg.type = CHANGE_QUESTION;
   sendBytes = send(sockfd, &msg, sizeof(msg), 0);
   if (sendBytes < 0)
   {
