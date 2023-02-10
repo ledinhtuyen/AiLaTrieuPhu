@@ -24,6 +24,7 @@ Page {
 
     funcBtn1Click: function(){
       moveDown = true
+      backEnd.playAlone()
     }
 
     funcBtn3Click: function(){
@@ -92,7 +93,7 @@ Page {
         runningHighLightPrize = true
       }
       else {
-        prize = 6
+        prize = backEnd.prize + 1
       }
     }
   }

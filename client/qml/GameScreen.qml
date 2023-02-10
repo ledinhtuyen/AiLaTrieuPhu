@@ -14,10 +14,26 @@ Item {
     moveUp: isMoveUp
 
     startY: 640
-    textBtn1: "Đáp án 1"
-    textBtn2: "Đáp án 2"
-    textBtn3: "Đáp án 3"
-    textBtn4: "Đáp án 4"
+    textBtn1: backEnd.a
+    textBtn2: backEnd.b
+    textBtn3: backEnd.c
+    textBtn4: backEnd.d
+
+    funcBtn1Click: function (){
+      backEnd.choiceAnswer(1)
+    }
+
+    funcBtn2Click: function (){
+      backEnd.choiceAnswer(2)
+    }
+
+    funcBtn3Click: function (){
+      backEnd.choiceAnswer(3)
+    }
+
+    funcBtn4Click: function (){
+      backEnd.choiceAnswer(4)
+    }
 
     Rectangle{
       color: "transparent"
@@ -89,7 +105,7 @@ Item {
       anchors.topMargin: 10
       font.family: "roboto"
       font.pointSize: 14
-      text: "Câu hỏi 1"
+      text: "Câu hỏi " + (backEnd.prize + 1)
     }
 
     Text {
@@ -99,12 +115,13 @@ Item {
       height: 150
       anchors.horizontalCenter: parent.horizontalCenter
       horizontalAlignment: Text.AlignHCenter
+      verticalAlignment: Text.AlignVCenter
       anchors.top: countDown.bottom
       anchors.topMargin: 50
       font.family: "roboto"
       font.pointSize: 14
       color: "white"
-      text: "Noi dung cau hoi"
+      text: backEnd.question
       wrapMode: Text.WordWrap
     }
 
@@ -178,6 +195,7 @@ Item {
           clickSound.play()
           x2.visible = true
           goiDienThoaiChoNguoiThan.enabled = false
+          callPhonePopup.open()
         }
       }
     }
@@ -266,5 +284,53 @@ Item {
   PausePopup {
     id: pausePopup
     modal : true
+  }
+
+  Popup {
+    id : callPhonePopup
+    width: 480
+    height: 640
+
+    background: Rectangle {
+      opacity: 0.4
+      color: "gray"
+      anchors.fill: parent
+    }
+
+    contentItem : Item {
+      Column {
+        anchors.horizontalCenter: parent.horizontalCenter
+        Item{
+          width: 480
+          height: 120
+        }
+        Image{
+          anchors.horizontalCenter: parent.horizontalCenter
+          source: applicationDirPath + "/assets/Sprite/popup_75.png"
+          width: 400
+          height: 200
+
+          Text {
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            text: "Tôi đoán đáp án đúng là A"
+            font.pixelSize: 23
+            font.family: "roboto"
+            color: "white"
+          }
+        }
+        Item {
+          width: 480
+          height: 20
+        }
+        SelectButton{
+          text: "Đóng"
+          isEnabled: true
+          onClick: {
+            callPhonePopup.close()
+          }
+        }
+      }
+    }
   }
 }

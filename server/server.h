@@ -604,7 +604,7 @@ int handle_play_alone(int conn_fd)
       {
         msg.type = LOSE;
         sprintf(str, "%d", questions.answer[current_question - 1]);
-        strcat(msg.value, str);
+        strcpy(msg.value, str);
         send(conn_fd, &msg, sizeof(msg), 0);
         return 0;
       }

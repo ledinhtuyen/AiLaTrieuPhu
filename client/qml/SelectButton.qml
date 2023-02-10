@@ -15,7 +15,7 @@ Button {
 
   contentItem: Text {
     font.bold: true
-    font.pointSize: 17
+    font.pointSize: 15
     font.family: "roboto"
     verticalAlignment: Text.AlignVCenter
     horizontalAlignment: Text.AlignHCenter
