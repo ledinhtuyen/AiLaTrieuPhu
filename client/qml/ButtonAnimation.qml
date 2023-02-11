@@ -112,10 +112,16 @@ Item{
     properties : "y"
     running : false
     onStopped :{
-      isMoveDown = false
-      menuMain.showMenuMain = false
-      menuMain.isPlayGame = true
-      prizePopup.open()
+      if (menuMain.isMoveUp == 1){
+        isMoveDown = false
+        menuMain.showMenuMain = false
+        menuMain.isPlayGame = true
+        prizePopup.open()
+      }
+      else if (menuMain.isMoveUp == 2){
+        menuMain.startBtnAnimUp()
+        backEnd.changeQuestion()
+      }
     }
   }
 
@@ -125,7 +131,10 @@ Item{
     repeat: false
     onTriggered: {
       letsPlayTheme.stop()
-      quest1To5Theme.play()
+      if (backEnd.prize > 5)
+        quest5To15Theme.play()
+      else
+        quest1To5Theme.play()
     }
   }
 

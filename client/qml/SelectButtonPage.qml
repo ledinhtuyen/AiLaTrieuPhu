@@ -96,6 +96,10 @@ Item{
     btnAnimation.startBtnAnimUp()
   }
 
+  function startBtnAnimDown(){
+    btnAnimation.startBtnAnimDown()
+  }
+
   function resetBtnToStartY(){
     btn1.y = startY
     btn2.y = startY

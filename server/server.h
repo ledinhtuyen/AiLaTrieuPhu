@@ -216,7 +216,7 @@ int call_phone(Question q, int level){
 }
 
 int vote(Question q, int level, int percent[4]){
-    int i, j, sum = 0, random_number, max;
+    int i = 0, j = 0, sum = 0, random_number, max;
     srand(time(0));
     for (i = 0; i < 3; i++) {
         random_number = rand() % (100 - sum + 1);
@@ -227,7 +227,7 @@ int vote(Question q, int level, int percent[4]){
 
     max = percent[0];
 
-    for (i = 0; i < 4; i++) {
+    for (i = 1; i < 4; i++) {
         if (percent[i] > max) {
             max = percent[i];
             j = i;
@@ -560,7 +560,7 @@ int handle_play_alone(int conn_fd)
 {
   Message msg;
   Question questions = get_questions();
-  char str[10];
+  char str[100];
   int level = 0;
   int reward = 0;
   int incorrect_answer[2];
@@ -622,17 +622,21 @@ recvLabel:
     case FIFTY_FIFTY:
       help(FIFTY_FIFTY, &questions, level, conn_fd);
       goto recvLabel;
+      break;
     case CALL_PHONE:
       help(CALL_PHONE, &questions, level, conn_fd);
       goto recvLabel;
+      break;
     case VOTE:
       help(VOTE, &questions, level, conn_fd);
       goto recvLabel;
+      break;
     case CHANGE_QUESTION:
       help(CHANGE_QUESTION, &questions, level, conn_fd);
       level--;
       msg.type = CHANGE_QUESTION;
       goto initQuestion;
+      break;
     default:
       break;
     }
@@ -644,7 +648,7 @@ int help(int type, Question *questions, int level, int conn_fd){
   Message msg;
   int incorrect_answer[2];
   int percent[4];
-  char str[10];
+  char str[100];
 
   switch (type)
   {
