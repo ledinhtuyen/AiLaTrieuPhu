@@ -21,28 +21,40 @@ Item {
 
     funcBtn1Click: function (){
       hightLightChoice(1)
-      quest1To5Theme.stop()
+      if (backEnd.prize > 5)
+        quest5To15Theme.stop()
+      else
+        quest1To5Theme.stop()
       finalAnswerSound.play()
       backEnd.choiceAnswer(1)
     }
 
     funcBtn2Click: function (){
       hightLightChoice(2)
-      quest1To5Theme.stop()
+      if (backEnd.prize > 5)
+        quest5To15Theme.stop()
+      else
+        quest1To5Theme.stop()
       finalAnswerSound.play()
       backEnd.choiceAnswer(2)
     }
 
     funcBtn3Click: function (){
       hightLightChoice(3)
-      quest1To5Theme.stop()
+      if (backEnd.prize > 5)
+        quest5To15Theme.stop()
+      else
+        quest1To5Theme.stop()
       finalAnswerSound.play()
       backEnd.choiceAnswer(3)
     }
 
     funcBtn4Click: function (){
       hightLightChoice(4)
-      quest1To5Theme.stop()
+      if (backEnd.prize > 5)
+        quest5To15Theme.stop()
+      else
+        quest1To5Theme.stop()
       finalAnswerSound.play()
       backEnd.choiceAnswer(4)
     }
@@ -291,7 +303,7 @@ Item {
           fiftyFiftySound.play()
           x4.visible = true
           changeQuestionIcon.enabled = false
-          backEnd.changeQuestion()
+          questionPage.startBtnAnimDown()
         }
       }
     }

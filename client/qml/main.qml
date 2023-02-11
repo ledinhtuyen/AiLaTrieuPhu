@@ -77,6 +77,7 @@ ApplicationWindow {
         }
 
         onCorrectAnswer: {
+            finalAnswerSound.stop()
             correctAnswerSound.play()
             flicker.start()
         }
@@ -120,6 +121,13 @@ ApplicationWindow {
     SoundEffect {
         id: quest1To5Theme
         source: applicationDirPath + "/assets/AudioClip/1to5.wav"
+        volume: 1.0
+        loops: SoundEffect.Infinite
+    }
+
+    SoundEffect {
+        id: quest5To15Theme
+        source: applicationDirPath + "/assets/AudioClip/5to15.wav"
         volume: 1.0
         loops: SoundEffect.Infinite
     }
