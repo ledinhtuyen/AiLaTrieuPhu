@@ -38,7 +38,7 @@ cd AiLaTrieuPhu
 
 ##### _2. Run Server_ #####
 
-#### Cài đặt MYSQL Server, library Dev MySQL####
+#### Cài đặt MYSQL Server, library Dev MySQL ####
 ```sh
 sudo apt install mysql-server libmysqlclient-dev
 ```
