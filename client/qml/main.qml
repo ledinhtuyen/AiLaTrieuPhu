@@ -28,6 +28,7 @@ ApplicationWindow {
     property string loginStatus : "none"
     property string signupStatus : "none"
     property string changePasswordStatus : "none"
+    property bool lose : false
 
     BackEnd{
         id: backEnd
@@ -81,22 +82,42 @@ ApplicationWindow {
             correctAnswerSound.play()
             flicker.start()
         }
+
+        onLose: {
+            rootWindow.lose = true
+            finalAnswerSound.stop()
+            wrongAnswerSound.play()
+            flicker.start()
+        }
+
+        onLose2: {
+            if (backEnd.prize > 5)
+                quest5To15Theme.stop()
+            else
+                quest1To5Theme.stop()
+            menuMain.showResultPopup()
+        }
     }
 
     MenuMain {
         id: menuMain
-        isMoveUp: 0
+        sTatus: 0
     }
 
     Component.onCompleted: {
-        mainTheme.play()
+        commericalBreakSound.play()
         stackView.push("MenuStart.qml")
+    }
+
+    SoundEffect {
+        id : commericalBreakSound
+        source: applicationDirPath + "/assets/AudioClip/commerical break.wav"
+        volume: 1.0
     }
 
     SoundEffect{
         id: mainTheme
         source: applicationDirPath + "/assets/AudioClip/main theme.wav"
-        loops: SoundEffect.Infinite
         volume: 0.5
     }
 
@@ -338,7 +359,7 @@ ApplicationWindow {
                 if (loginStatus == "LOGIN_SUCCESS") {
                     backEnd.userNameChanged()
                     stackView.push(menuMain)
-                    menuMain.isMoveUp = 1
+                    menuMain.sTatus = 1
                 }
                 else if (loginStatus == "LOGGED_IN")
                 {
@@ -397,28 +418,15 @@ ApplicationWindow {
             if (count == 10) {
                 count = 0
                 flicker.stop()
-                // delayTimerStartNewQuestion.start()
-                menuMain.showPrizePopup()
+                if (!rootWindow.lose){
+                    menuMain.showPrizePopup()
+                }
+                else {
+                    menuMain.showResultPopup()
+                }
             }
         }
     }
-
-    // Timer {
-    //     id: delayTimerStartNewQuestion
-    //     interval: 200
-    //     property var count : 0
-    //     property var endCount : 6
-    //     repeat: true
-    //     running: false
-    //     onTriggered: {
-    //         count++
-    //         if (count == endCount) {
-    //             count = 0
-    //             delayTimerStartNewQuestion.stop()
-    //             startNewQuestion()
-    //         }
-    //     }
-    // }
 
     function startNewQuestion() {
         backEnd.prize++

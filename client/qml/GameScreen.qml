@@ -10,8 +10,8 @@ Item {
 
   SelectButtonPage{
     id: questionPage
-    visible: isPlayGame
-    moveUp: boolMoveUp
+    visible: !showMenuMain
+    btnMoveUp: boolMoveUp
 
     startY: 640
     textBtn1: backEnd.a
@@ -64,7 +64,7 @@ Item {
       width: 60
       height: 60
       anchors.right: parent.right
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
 
       Image{
         source: applicationDirPath + "/assets/Sprite/btn_xemgiaithuong.png"
@@ -84,7 +84,7 @@ Item {
       color: "transparent"
       width: 60
       height: 60
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
 
       Image{
         source: applicationDirPath + "/assets/Sprite/btn_pause.png"
@@ -101,8 +101,8 @@ Item {
 
     CountDown{
       id: countDown
-      visible: isMoveUp == 2 ? true : false
-      isRunning: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
+      isRunning: sTatus == 2 ? true : false
       anchors.horizontalCenter: parent.horizontalCenter
       anchors.top: parent.top
       anchors.topMargin: 10
@@ -110,7 +110,7 @@ Item {
 
     Image {
       id: questionImage
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
       width: 400
       height: 200
       source: applicationDirPath + "/assets/Sprite/question_bg.png"
@@ -120,7 +120,7 @@ Item {
 
     Text {
       id : questionNumber
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
       width: 100
       height: 50
       anchors.horizontalCenter: parent.horizontalCenter
@@ -134,7 +134,7 @@ Item {
 
     Text {
       id : questionText
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
       width: 360
       height: 150
       anchors.horizontalCenter: parent.horizontalCenter
@@ -151,7 +151,7 @@ Item {
 
     Image {
       id: fiftyFiftyIcon
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
@@ -190,7 +190,7 @@ Item {
 
     Image {
       id: callPhoneIcon
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
@@ -230,7 +230,7 @@ Item {
 
     Image {
       id: voteIcon
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
@@ -271,7 +271,7 @@ Item {
 
     Image {
       id: changeQuestionIcon
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"

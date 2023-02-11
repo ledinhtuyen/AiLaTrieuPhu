@@ -40,11 +40,11 @@ Popup {
       }
       SelectButton{
         text: "Đồng ý"
-        isEnabled: true
         onClick: {
-          console.log("Đồng ý");
           close()
-          console.log("Đóng popup");
+          mainTheme.play()
+          backEnd.lose2()
+          backEnd.stopGame()
         }
       }
       Item {
@@ -53,7 +53,6 @@ Popup {
       }
       SelectButton{
         text: "Hủy"
-        isEnabled: true
         onClick: {
           close()
         }

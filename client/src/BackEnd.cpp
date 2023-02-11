@@ -50,14 +50,17 @@ void *thread_recv(void *arg)
         }
         break;
       case CORRECT_ANSWER:
-        BackEnd::instance->correct_answer = atoi(msg.value);
+        BackEnd::instance->correct_answer = atoi(strtok(msg.value, " "));
+        BackEnd::instance->reward = atoi(strtok(NULL, " "));
+        BackEnd::instance->rewardChanged();
         BackEnd::instance->correctAnswer();
         break;
       case WIN:
         printf("WIN\n", msg.value);
         return NULL;
       case LOSE:
-        printf("LOSE - Correct answer: %d\n", atoi(msg.value));
+        BackEnd::instance->correct_answer = atoi(msg.value);
+        BackEnd::instance->lose();
         return NULL;
       case FIFTY_FIFTY:
         incorrect_answer[0] = atoi(strtok(msg.value, " "));
@@ -142,6 +145,7 @@ BackEnd::BackEnd(QObject *parent) : QObject(parent)
 {
   user_name = "";
   prize = 0;
+  reward = 0;
   question = "";
   a = "";
   b = "";
@@ -207,6 +211,11 @@ QString BackEnd::getCallPhoneAnswer()
 int BackEnd::getCorrectAnswer()
 {
   return correct_answer;
+}
+
+int BackEnd::getReward()
+{
+  return reward;
 }
 
 int BackEnd::getVoteA()
@@ -406,6 +415,21 @@ void BackEnd::changeQuestion()
   int sendBytes;
 
   msg.type = CHANGE_QUESTION;
+  sendBytes = send(sockfd, &msg, sizeof(msg), 0);
+  if (sendBytes < 0)
+  {
+    perror("The server terminated prematurely");
+    exit(0);
+    return;
+  }
+}
+
+void BackEnd::stopGame()
+{
+  Message msg;
+  int sendBytes;
+
+  msg.type = STOP_GAME;
   sendBytes = send(sockfd, &msg, sizeof(msg), 0);
   if (sendBytes < 0)
   {

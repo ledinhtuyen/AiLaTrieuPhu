@@ -294,7 +294,8 @@ Popup {
                 prizeTheme.stop()
                 letsPlayTheme.play()
                 popup.close()
-                menuMain.isMoveUp = 2
+                menuMain.sTatus = 2
+                menuMain.startBtnAnimUp()
                 startSound1To5.start()
                 highLightPrize.stop()
             }
@@ -337,5 +338,11 @@ Popup {
 
     function flickerPrize(){
         flickerPrizeTimer.start()
+    }
+
+    function startHightLightPrize(){
+        prize = 0
+        runningHighLightPrize = true
+        highLightPrize.start()
     }
 }

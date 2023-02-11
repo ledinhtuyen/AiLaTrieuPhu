@@ -7,8 +7,8 @@ Item{
   property var target3
   property var target4
   property var startY
-  property var isMoveUp: false
-  property var isMoveDown: false
+  property bool isMoveUp: false
+  property bool isMoveDown: false
   property var funcAfterBtnAnimUp4Stopped
 
   NumberAnimation {
@@ -112,13 +112,12 @@ Item{
     properties : "y"
     running : false
     onStopped :{
-      if (menuMain.isMoveUp == 1){
+      if (menuMain.sTatus == 1){
         isMoveDown = false
         menuMain.showMenuMain = false
-        menuMain.isPlayGame = true
         prizePopup.open()
       }
-      else if (menuMain.isMoveUp == 2){
+      else if (menuMain.sTatus == 2){
         menuMain.startBtnAnimUp()
         backEnd.changeQuestion()
       }

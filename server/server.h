@@ -592,7 +592,7 @@ recvLabel:
     {
     case STOP_GAME:
       printf("[%d]: Stopped play alone\n", conn_fd);
-      break;
+      return 0;
     case CHOICE_ANSWER:
       if (questions.answer[level - 1] == atoi(msg.value))
       {
@@ -606,12 +606,15 @@ recvLabel:
         {
           sleep(2);
           msg.type = CORRECT_ANSWER;
+          sprintf(str, "%d %d", questions.answer[level - 1], questions.reward[level - 1]);
+          strcpy(msg.value, str);
           send(conn_fd, &msg, sizeof(msg), 0);
           continue;
         }
       }
       else
       {
+        sleep(2);
         msg.type = LOSE;
         sprintf(str, "%d", questions.answer[level - 1]);
         strcpy(msg.value, str);

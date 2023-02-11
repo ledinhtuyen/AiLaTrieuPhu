@@ -25,6 +25,7 @@ public:
     int voteC;
     int voteD;
     int correct_answer;
+    int reward;
     static BackEnd *instance;
     Q_PROPERTY(QString user_name READ getUserName WRITE setUserName NOTIFY userNameChanged);
     Q_PROPERTY(int prize READ getPrize WRITE setPrize NOTIFY prizeChanged);
@@ -39,6 +40,7 @@ public:
     Q_PROPERTY(int voteC READ getVoteC NOTIFY voteCChanged);
     Q_PROPERTY(int voteD READ getVoteD NOTIFY voteDChanged);
     Q_PROPERTY(int correct_answer READ getCorrectAnswer);
+    Q_PROPERTY(int reward READ getReward NOTIFY rewardChanged);
 
     explicit BackEnd(QObject *parent = nullptr);
     ~BackEnd();
@@ -52,6 +54,7 @@ public:
     QString getC();
     QString getD();
     QString getCallPhoneAnswer();
+    int getReward();
     int getCorrectAnswer();
     int getVoteA();
     int getVoteB();
@@ -70,6 +73,7 @@ public:
     Q_INVOKABLE void callPhone();
     Q_INVOKABLE void vote();
     Q_INVOKABLE void changeQuestion();
+    Q_INVOKABLE void stopGame();
 
 signals:
     void userNameChanged();
@@ -96,6 +100,9 @@ signals:
     void voteCChanged();
     void voteDChanged();
     void correctAnswer();
+    void rewardChanged();
+    void lose();
+    void lose2();
 
 private:
     QString user_name;
