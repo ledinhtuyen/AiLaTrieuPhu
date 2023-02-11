@@ -77,6 +77,7 @@ ApplicationWindow {
         }
 
         onCorrectAnswer: {
+            correctAnswerSound.play()
             flicker.start()
         }
     }
@@ -126,6 +127,24 @@ ApplicationWindow {
     SoundEffect {
         id : fiftyFiftySound
         source: applicationDirPath + "/assets/AudioClip/50-50.wav"
+        volume: 1.0
+    }
+
+    SoundEffect {
+        id: finalAnswerSound
+        source: applicationDirPath + "/assets/AudioClip/final answer.wav"
+        volume: 1.0
+    }
+
+    SoundEffect {
+        id: correctAnswerSound
+        source: applicationDirPath + "/assets/AudioClip/correct answer.wav"
+        volume: 1.0
+    }
+
+    SoundEffect {
+        id: wrongAnswerSound
+        source: applicationDirPath + "/assets/AudioClip/wrong answer.wav"
         volume: 1.0
     }
 
@@ -367,13 +386,31 @@ ApplicationWindow {
         onTriggered: {
             menuMain.flickerCorrectAnswer(count)
             count++;
-            if (count == 6) {
+            if (count == 10) {
                 count = 0
                 flicker.stop()
-                startNewQuestion()
+                // delayTimerStartNewQuestion.start()
+                menuMain.showPrizePopup()
             }
         }
     }
+
+    // Timer {
+    //     id: delayTimerStartNewQuestion
+    //     interval: 200
+    //     property var count : 0
+    //     property var endCount : 6
+    //     repeat: true
+    //     running: false
+    //     onTriggered: {
+    //         count++
+    //         if (count == endCount) {
+    //             count = 0
+    //             delayTimerStartNewQuestion.stop()
+    //             startNewQuestion()
+    //         }
+    //     }
+    // }
 
     function startNewQuestion() {
         backEnd.prize++
@@ -384,6 +421,9 @@ ApplicationWindow {
         backEnd.bChanged()
         backEnd.cChanged()
         backEnd.dChanged()
+
+        correctAnswerSound.stop()
+        letsPlayTheme.play()
 
         menuMain.resetBtnToStartY()
         menuMain.startBtnAnimUp()

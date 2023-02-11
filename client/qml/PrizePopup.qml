@@ -311,4 +311,31 @@ Popup {
             quest1To5Theme.play()
         }
     }
+
+    Timer {
+        id : flickerPrizeTimer
+        property var count : 0
+        interval: 300
+        running: false
+        repeat: true
+        onTriggered : {
+            if(count % 2 == 1){
+                prize = backEnd.prize + 1
+            }
+            else {
+                prize = 0
+            }
+            count++
+            if(count > 6){
+                count = 0
+                flickerPrizeTimer.stop()
+                popup.close()
+                rootWindow.startNewQuestion()
+            }
+        }
+    }
+
+    function flickerPrize(){
+        flickerPrizeTimer.start()
+    }
 }

@@ -119,9 +119,22 @@ Item{
     }
   }
 
+  Timer {
+    id : delayTimer
+    interval: 2300
+    repeat: false
+    onTriggered: {
+      letsPlayTheme.stop()
+      quest1To5Theme.play()
+    }
+  }
+
   function startBtnAnimUp(){
     isMoveUp = true
     btnAnimUp1.start()
+    funcAfterBtnAnimUp4Stopped = function(){
+      delayTimer.start()
+    }
   }
 
   function startBtnAnimDown(){

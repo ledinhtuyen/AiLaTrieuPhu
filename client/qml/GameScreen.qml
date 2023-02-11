@@ -21,21 +21,29 @@ Item {
 
     funcBtn1Click: function (){
       hightLightChoice(1)
+      quest1To5Theme.stop()
+      finalAnswerSound.play()
       backEnd.choiceAnswer(1)
     }
 
     funcBtn2Click: function (){
       hightLightChoice(2)
+      quest1To5Theme.stop()
+      finalAnswerSound.play()
       backEnd.choiceAnswer(2)
     }
 
     funcBtn3Click: function (){
       hightLightChoice(3)
+      quest1To5Theme.stop()
+      finalAnswerSound.play()
       backEnd.choiceAnswer(3)
     }
 
     funcBtn4Click: function (){
       hightLightChoice(4)
+      quest1To5Theme.stop()
+      finalAnswerSound.play()
       backEnd.choiceAnswer(4)
     }
 
