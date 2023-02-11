@@ -20,9 +20,9 @@ Project sử dụng:
 
 ## Installation Qt
 
-Project sử dụng [Qt Framework](https://www.qt.io/) v5.12 để chạy
+Project sử dụng [Qt Framework](https://www.qt.io/) v5.12.8 để chạy
 
-Cài đặt Qt trên Ubuntu 20.04 hoặc cài đặt phiên bản 5.12 trên trang chủ của [Qt](https://www.qt.io/)
+Cài đặt Qt trên Ubuntu 20.04 hoặc cài đặt phiên bản 5.12.8 trên trang chủ của [Qt](https://www.qt.io/)
 
 ```sh
 sudo apt install qt5-default
@@ -36,14 +36,16 @@ git clone https://github.com/tuyenldhust/AiLaTrieuPhu.git
 cd AiLaTrieuPhu
 ```
 
-##### _2. Run Server_ #####
+#### _2. Server_ ####
 
-#### Cài đặt MYSQL Server, library Dev MySQL ####
+##### 2.1. Cài đặt MYSQL Server, library Dev MySQL #####
 ```sh
 sudo apt install mysql-server libmysqlclient-dev
 ```
 
-#### Config file config và import database.sql ####
+##### 2.2. Config file config và import database.sql #####
+
+##### 2.3. Run Server #####
 
 ```sh
 cd server/
@@ -51,7 +53,15 @@ make
 ./server <PORT>
 ```
 
-##### _3. Run Client_ #####
+#### _3. Client_ ####
+
+##### 3.1. Install Lib GL #####
+
+```sh
+sudo apt install libgl1-mesa-dev
+```
+
+##### 3.2. Run Client #####
 
 ```sh
 cd client/
