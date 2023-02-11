@@ -88,10 +88,13 @@ Page {
     property bool clickShowPrizeBtn: false
 
     onOpened : {
-      if (!clickShowPrizeBtn){
+      if (!clickShowPrizeBtn && menuMain.isMoveUp != 2){
         mainTheme.stop()
         prizeTheme.play()
         runningHighLightPrize = true
+      }
+      else if (!clickShowPrizeBtn && menuMain.isMoveUp == 2){
+        prizePopup.flickerPrize()
       }
       else {
         prize = backEnd.prize + 1
@@ -109,5 +112,9 @@ Page {
 
   function flickerCorrectAnswer(count){
     gameScreen.flickerCorrectAnswer(count)
+  }
+
+  function showPrizePopup(){
+    prizePopup.open()
   }
 }
