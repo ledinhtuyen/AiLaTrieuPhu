@@ -143,7 +143,8 @@ Item{
     btnAnimUp1.start()
     funcAfterBtnAnimUp4Stopped = function(){
       delayTimer.start()
-      gameScreen.startCountDown()
+      if (menuMain.sTatus == 2)
+        gameScreen.startCountDown()
     }
   }
 

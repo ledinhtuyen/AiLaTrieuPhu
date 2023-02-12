@@ -17,6 +17,7 @@ void *thread_recv(void *arg)
   int recvBytes;
   int incorrect_answer[2];
   int i = 0;
+  int numQuestion = 0;
 
   while (1)
   {
@@ -33,14 +34,14 @@ void *thread_recv(void *arg)
       {
       case CHANGE_QUESTION:
       case QUESTION:
-        strtok(msg.value, "|");
+        numQuestion = atoi(strtok(msg.value, "|"));
         BackEnd::instance->question = strtok(NULL, "|");
         BackEnd::instance->a = strtok(NULL, "|");
         BackEnd::instance->b = strtok(NULL, "|");
         BackEnd::instance->c = strtok(NULL, "|");
         BackEnd::instance->d = strtok(NULL, "|");
 
-        if (i == 0 || msg.type == CHANGE_QUESTION){
+        if ((i == 0) || (BackEnd::instance->prize + 1 == numQuestion)){
           BackEnd::instance->questionChanged();
           BackEnd::instance->aChanged();
           BackEnd::instance->bChanged();

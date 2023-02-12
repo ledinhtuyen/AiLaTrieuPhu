@@ -130,6 +130,7 @@ void *thread_start(void *client_fd);
 int login(int conn_fd, char msg_data[BUFF_SIZE]);
 int signup(char username[BUFF_SIZE], char password[BUFF_SIZE]);
 int change_password(char username[BUFF_SIZE], char msg_data[BUFF_SIZE]);
+int handle_play_game(Message msg, int conn_fd, Question *questions, int level);
 int handle_play_alone(int);
 // int handle_play_pvp(int);
 
@@ -557,20 +558,81 @@ int change_password(char username[], char new_password[])
   return re;
 }
 
+int handle_play_game(Message msg,int conn_fd, Question *questions, int level){
+    char str[100];
+
+    switch (msg.type)
+    {
+    case OVER_TIME:
+      msg.type = OVER_TIME;
+      send(conn_fd, &msg, sizeof(msg), 0);
+      printf("[%d]: Over time\n", conn_fd);
+      break;
+    case STOP_GAME:
+      msg.type = STOP_GAME;
+      send(conn_fd, &msg, sizeof(msg), 0);
+      printf("[%d]: Stopped play alone\n", conn_fd);
+      break;
+    case CHOICE_ANSWER:
+      if (questions->answer[level - 1] == atoi(msg.value))
+      {
+        sleep(2);
+        sprintf(str, "%d %d", questions->answer[level - 1], questions->reward[level - 1]);
+        strcpy(msg.value, str);
+        if (level == 15)
+        {
+          msg.type = WIN;
+          send(conn_fd, &msg, sizeof(msg), 0);
+          printf("[%d]: Win\n", conn_fd);
+        }
+        else{
+          msg.type = CORRECT_ANSWER;
+          send(conn_fd, &msg, sizeof(msg), 0);
+          printf("[%d]: Correct answer question %d\n", conn_fd, level - 1);
+          return 0;
+        }
+      }
+      else
+      {
+        sleep(2);
+        msg.type = LOSE;
+        sprintf(str, "%d", questions->answer[level - 1]);
+        strcpy(msg.value, str);
+        send(conn_fd, &msg, sizeof(msg), 0);
+        printf("[%d]: Lose\n", conn_fd);
+      }
+      break;
+    case FIFTY_FIFTY:
+      help(FIFTY_FIFTY, questions, level, conn_fd);
+      break;
+    case CALL_PHONE:
+      help(CALL_PHONE, questions, level, conn_fd);
+      break;
+    case VOTE:
+      help(VOTE, questions, level, conn_fd);
+      break;
+    case CHANGE_QUESTION:
+      help(CHANGE_QUESTION, questions, level, conn_fd);
+      break;
+    default:
+      break;
+    }
+
+    return 1;
+}
+
 int handle_play_alone(int conn_fd)
 {
   Message msg;
   Question questions = get_questions();
   char str[100];
   int level = 0;
-  int reward = 0;
-  int incorrect_answer[2];
+  int re;
 
   while (level < 15)
   {
-    msg.type = QUESTION;
-
 initQuestion:
+    msg.type = QUESTION;
     sprintf(str, "%d", level + 1);
     strcpy(msg.value, str);
     strcat(msg.value, "|");
@@ -592,63 +654,22 @@ recvLabel:
     switch (msg.type)
     {
     case OVER_TIME:
-      msg.type = OVER_TIME;
-      send(conn_fd, &msg, sizeof(msg), 0);
-      printf("[%d]: Over time\n", conn_fd);
-      return 0;
     case STOP_GAME:
-      msg.type = STOP_GAME;
-      send(conn_fd, &msg, sizeof(msg), 0);
-      printf("[%d]: Stopped play alone\n", conn_fd);
+      handle_play_game(msg, conn_fd, &questions, level);
       return 0;
     case CHOICE_ANSWER:
-      if (questions.answer[level - 1] == atoi(msg.value))
-      {
-        sleep(2);
-        sprintf(str, "%d %d", questions.answer[level - 1], questions.reward[level - 1]);
-        strcpy(msg.value, str);
-        if (level == 15)
-        {
-          msg.type = WIN;
-          send(conn_fd, &msg, sizeof(msg), 0);
-          printf("[%d]: Win\n", conn_fd);
-          return 1;
-        }
-        else{
-          msg.type = CORRECT_ANSWER;
-          send(conn_fd, &msg, sizeof(msg), 0);
-          printf("[%d]: Correct answer question %d\n", conn_fd, level - 1);
-          continue;
-        }
-      }
-      else
-      {
-        sleep(2);
-        msg.type = LOSE;
-        sprintf(str, "%d", questions.answer[level - 1]);
-        strcpy(msg.value, str);
-        send(conn_fd, &msg, sizeof(msg), 0);
-        printf("[%d]: Lose\n", conn_fd);
-        return 0;
-      }
+      re = handle_play_game(msg, conn_fd, &questions, level);
+      if(re == 0) continue;
       break;
     case FIFTY_FIFTY:
-      help(FIFTY_FIFTY, &questions, level, conn_fd);
-      msg.type = -1;
-      goto recvLabel;
     case CALL_PHONE:
-      help(CALL_PHONE, &questions, level, conn_fd);
-      msg.type = -1;
-      goto recvLabel;
     case VOTE:
-      help(VOTE, &questions, level, conn_fd);
+      handle_play_game(msg, conn_fd, &questions, level);
       msg.type = -1;
       goto recvLabel;
     case CHANGE_QUESTION:
-      help(CHANGE_QUESTION, &questions, level, conn_fd);
+      handle_play_game(msg, conn_fd, &questions, level);
       level--;
-      msg.type = CHANGE_QUESTION;
-      msg.type = -1;
       goto initQuestion;
     default:
       break;
@@ -740,6 +761,7 @@ int help(int type, Question *questions, int level, int conn_fd){
 //         is_found = 1;
 //         index_in_room = 0;
 //         index_doi_thu_in_room = 1;
+//         printf("Found opponent for room %d...\n", room->room_id);
 //         break;
 //       }
 //       sleep(1); // sleep 1s.
@@ -747,8 +769,6 @@ int help(int type, Question *questions, int level, int conn_fd){
 //       printf("loop time is: %s", ctime(&start));
 //     }
 //     printf("end time is: %s", ctime(&endwait));
-
-//     printf("Found opponent for room %d...\n", room->room_id);
 //   }
 //   else
 //   {
