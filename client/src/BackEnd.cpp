@@ -142,6 +142,9 @@ void *thread_recv(void *arg)
         BackEnd::instance->voteCChanged();
         BackEnd::instance->voteDChanged();
         break;
+      case FOUND_PLAYER:
+        BackEnd::instance->foundPlayer();
+        break;
       }
     }
   }
@@ -349,6 +352,24 @@ void BackEnd::playAlone()
   int sendBytes;
 
   msg.type = PLAY_ALONE;
+  sendBytes = send(sockfd, &msg, sizeof(msg), 0);
+  if (sendBytes < 0)
+  {
+    perror("The server terminated prematurely");
+    exit(0);
+    return;
+  }
+
+  pthread_t tid;
+  pthread_create(&tid, NULL, thread_recv, NULL);
+}
+
+void BackEnd::playPvP()
+{
+  Message msg;
+  int sendBytes;
+
+  msg.type = PLAY_PVP;
   sendBytes = send(sockfd, &msg, sizeof(msg), 0);
   if (sendBytes < 0)
   {

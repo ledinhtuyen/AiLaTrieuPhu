@@ -76,6 +76,7 @@ public:
     Q_INVOKABLE void changeQuestion();
     Q_INVOKABLE void stopGame();
     Q_INVOKABLE void overTime();
+    Q_INVOKABLE void playPvP();
 
 signals:
     void userNameChanged();
@@ -105,6 +106,7 @@ signals:
     void rewardChanged();
     void lose();
     void lose2();
+    void foundPlayer();
 
 private:
     QString user_name;

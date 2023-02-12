@@ -96,7 +96,7 @@ typedef struct _room
   int status;                    // 0: no player enter, 1: waiting, 2: playing, 3: end
   int play_status[2];            // 0: playing, 1: end or out of room
   int index_current_question[2]; // start from 1 to 15
-  Question questions;
+  Question questions[2];
   int reward[2]; // set default all = 0
   struct _room *next;
 } Room;
@@ -718,206 +718,204 @@ int help(int type, Question *questions, int level, int conn_fd){
   return 1;
 }
 
-// int handle_play_pvp(int conn_fd)
-// {
-//   Message msg, tmp;
-//   int is_found = 0, index_in_room = -1, index_doi_thu_in_room = -1, is_me_win = -1;
-//   Room *room;
-//   char str[BUFF_SIZE];
-//   time_t start, endwait, seconds, start_reply, end_reply;
-//   Question q;
+int handle_play_pvp(int conn_fd)
+{
+  Message msg, tmp;
+  int is_found = 0, index_in_room = -1, index_doi_thu_in_room = -1, is_me_win = -1, re;
+  Room *room;
+  char str[BUFF_SIZE];
+  time_t start, endwait, seconds, start_reply, end_reply;
+  Question questions;
 
-//   msg.type = WAIT_OTHER_PLAYER;
-//   strcpy(msg.value, "Đang tìm kiếm người chơi khác, xin chờ chút...\n");
-//   if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
-//   {
-//     perror("Send error!");
-//     delete_client(conn_fd);
-//     return 0;
-//   }
+  room = find_room_is_blank_or_waiting();
 
-//   room = find_room_is_blank_or_waiting();
+  if (room == NULL)
+  {
+    is_found = 0;
+    room = add_room();
 
-//   if (room == NULL)
-//   {
-//     is_found = 0;
-//     room = add_room();
+    add_client_to_room(conn_fd, room);
+    room->questions[0] = get_questions();
+    room->questions[1] = room->questions[0];
 
-//     add_client_to_room(conn_fd, room);
+    start = time(NULL);
+    seconds = 10; // end loop after this time has elapsed
 
-//     start = time(NULL);
-//     seconds = 10; // end loop after this time has elapsed
+    endwait = start + seconds;
 
-//     endwait = start + seconds;
+    printf("Find opponent for room %d...\n", room->room_id);
 
-//     printf("Find opponent for room %d...\n", room->room_id);
+    printf("start time is: %s - end time is: %s\n", ctime(&start), ctime(&endwait));
 
-//     printf("start time is: %s", ctime(&start));
+    while (start < endwait)
+    {
+      if (room->client_fd[1] != 0)
+      {
+        is_found = 1;
+        index_in_room = 0;
+        index_doi_thu_in_room = 1;
+        printf("Found opponent for room %d...\n", room->room_id);
+        break;
+      }
+      start = time(NULL);
+    }
+  }
+  else
+  {
+    is_found = 1;
+    add_client_to_room(conn_fd, room);
+    index_in_room = 1;
+    index_doi_thu_in_room = 0;
+  }
 
-//     while (start < endwait)
-//     {
-//       if (room->client_fd[1] != 0)
-//       {
-//         is_found = 1;
-//         index_in_room = 0;
-//         index_doi_thu_in_room = 1;
-//         printf("Found opponent for room %d...\n", room->room_id);
-//         break;
-//       }
-//       sleep(1); // sleep 1s.
-//       start = time(NULL);
-//       printf("loop time is: %s", ctime(&start));
-//     }
-//     printf("end time is: %s", ctime(&endwait));
-//   }
-//   else
-//   {
-//     is_found = 1;
-//     add_client_to_room(conn_fd, room);
-//     index_in_room = 1;
-//     index_doi_thu_in_room = 0;
-//   }
+  if (is_found == 1)
+  {
+    msg.type = FOUND_PLAYER;
+    strcpy(msg.value, "Đã tìm thấy người chơi khác, bắt đầu trò chơi!");
+    printf("[%d]: %s\n", conn_fd, msg.value);
+    if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
+    {
+      perror("Send error!");
+      delete_client(conn_fd);
+      return 0;
+    }
 
-//   if (is_found == 1)
-//   {
-//     msg.type = FOUND_PLAYER;
-//     strcpy(msg.value, "Đã tìm thấy người chơi khác, bắt đầu trò chơi!");
-//     if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
-//     {
-//       perror("Send error!");
-//       delete_client(conn_fd);
-//       return 0;
-//     }
+    room->play_status[index_in_room] = 0;
 
-//     room->play_status[index_in_room] = 0;
+    delete_room(room->room_id);
+    printf("Deleted room %d\n", room->room_id);
+    return 1;
 
-//     msg.type = ENTERED_ROOM;
-//     sprintf(str, "%d", room->room_id);
-//     strcpy(msg.value, str);
+    while (room->index_current_question[index_in_room] < 15)
+    {
+initQuestion2:
+      msg.type = QUESTION;
+      sprintf(str, "%d", room->index_current_question[index_in_room] + 1);
+      strcpy(msg.value, str);
+      strcat(msg.value, "|");
+      strcat(msg.value, room->questions[index_in_room].question[room->index_current_question[index_in_room]]);
+      strcat(msg.value, "|");
+      strcat(msg.value, room->questions[index_in_room].a[room->index_current_question[index_in_room]]);
+      strcat(msg.value, "|");
+      strcat(msg.value, room->questions[index_in_room].b[room->index_current_question[index_in_room]]);
+      strcat(msg.value, "|");
+      strcat(msg.value, room->questions[index_in_room].c[room->index_current_question[index_in_room]]);
+      strcat(msg.value, "|");
+      strcat(msg.value, room->questions[index_in_room].d[room->index_current_question[index_in_room]]);
+      send(conn_fd, &msg, sizeof(msg), 0);
+      room->index_current_question[index_in_room]++;
 
-//     if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
-//     {
-//       perror("Send error!");
-//       delete_client(conn_fd);
-//       return 0;
-//     }
+recvLabel2:
+      recv(conn_fd, &msg, sizeof(msg), 0);
 
-//     while (room->index_current_question[index_in_room] < 15)
-//     {
-//       if (room->index_current_question[index_in_room] / 5 == 0)
-//       {
-//         q = room->list_quest.easy_question[room->index_current_question[index_in_room]];
-//       }
-//       else if (room->index_current_question[index_in_room] / 5 == 1)
-//       {
-//         q = room->list_quest.medium_question[room->index_current_question[index_in_room] - 5];
-//       }
-//       else
-//       {
-//         q = room->list_quest.hard_question[room->index_current_question[index_in_room] - 10];
-//       }
+      switch (msg.type)
+      {
+      case OVER_TIME:
+      case STOP_GAME:
+        handle_play_game(msg, conn_fd, &(room->questions[index_in_room]), room->index_current_question[index_in_room]);
+        return 0;
+      case CHOICE_ANSWER:
+        re = handle_play_game(msg, conn_fd, &(room->questions[index_in_room]), room->index_current_question[index_in_room]);
+        if(re == 0) continue;
+        break;
+      case FIFTY_FIFTY:
+      case CALL_PHONE:
+      case VOTE:
+        handle_play_game(msg, conn_fd, &(room->questions[index_in_room]), room->index_current_question[index_in_room]);
+        msg.type = -1;
+        goto recvLabel2;
+      case CHANGE_QUESTION:
+        handle_play_game(msg, conn_fd, &(room->questions[index_in_room]), room->index_current_question[index_in_room]);
+        room->index_current_question[index_in_room]--;
+        goto initQuestion2;
+      default:
+        break;
+      }
 
-//       msg.type = QUESTION;
-//       strcpy(msg.value, "Question ");
-//       sprintf(str, "%d", room->index_current_question[index_in_room] + 1);
-//       strcat(msg.value, str);
-//       strcat(msg.value, ": ");
-//       strcat(msg.value, q.question);
-//       strcat(msg.value, q.choiceA);
-//       strcat(msg.value, q.choiceB);
-//       strcat(msg.value, q.choiceC);
-//       strcat(msg.value, q.choiceD);
-//       send(conn_fd, &msg, sizeof(msg), 0);
-//       start_reply = time(NULL);
-//       room->index_current_question[index_in_room]++;
+      // if (strcmp(msg.value, q.answer) == 0 && seconds <= 15)
+      // {
+      //   room->reward[index_in_room] += 10000;
+      //   if (room->index_current_question[index_in_room] == 15)
+      //   {
+      //     msg.type = WIN;
+      //     strcpy(msg.value, "Chuc mung ban da tra loi dung 15 cau hoi va nhan duoc !");
+      //     sprintf(str, "%dd\n", room->reward[index_in_room]);
+      //     strcat(msg.value, str);
+      //     room->play_status[index_in_room] = 1;
+      //     break;
+      //   }
+      //   else
+      //   {
+      //     msg.type = CORRECT_ANSWER;
+      //     strcpy(msg.value, "Chinh xac!");
+      //     send(conn_fd, &msg, sizeof(msg), 0);
+      //     continue;
+      //   }
+      // }
+      // else
+      // {
+      //   msg.type = LOSE;
+      //   if (seconds > 15)
+      //   {
+      //     strcpy(msg.value, "Het thoi gian tra loi!");
+      //   }
+      //   else
+      //   {
+      //     strcpy(msg.value, "Sai! Dap an la: ");
+      //     strcat(msg.value, q.answer);
+      //   }
 
-//       recv(conn_fd, &msg, sizeof(msg), 0);
-//       end_reply = time(NULL);
-//       seconds = end_reply - start_reply;
-//       if (strcmp(msg.value, q.answer) == 0 && seconds <= 15)
-//       {
-//         room->reward[index_in_room] += 10000;
-//         if (room->index_current_question[index_in_room] == 15)
-//         {
-//           msg.type = WIN;
-//           strcpy(msg.value, "Chuc mung ban da tra loi dung 15 cau hoi va nhan duoc !");
-//           sprintf(str, "%dd\n", room->reward[index_in_room]);
-//           strcat(msg.value, str);
-//           room->play_status[index_in_room] = 1;
-//           break;
-//         }
-//         else
-//         {
-//           msg.type = CORRECT_ANSWER;
-//           strcpy(msg.value, "Chinh xac!");
-//           send(conn_fd, &msg, sizeof(msg), 0);
-//           continue;
-//         }
-//       }
-//       else
-//       {
-//         msg.type = LOSE;
-//         if (seconds > 15)
-//         {
-//           strcpy(msg.value, "Het thoi gian tra loi!");
-//         }
-//         else
-//         {
-//           strcpy(msg.value, "Sai! Dap an la: ");
-//           strcat(msg.value, q.answer);
-//         }
+      //   strcat(msg.value, ". Chuc mung ban da tra loi dung ");
+      //   sprintf(str, "%d cau hoi va nhan duoc %dd\n", room->index_current_question[index_in_room] - 1, room->reward[index_in_room]);
+      //   strcat(msg.value, str);
+      //   room->play_status[index_in_room] = 1;
+      //   break;
+      // }
+    }
 
-//         strcat(msg.value, ". Chuc mung ban da tra loi dung ");
-//         sprintf(str, "%d cau hoi va nhan duoc %dd\n", room->index_current_question[index_in_room] - 1, room->reward[index_in_room]);
-//         strcat(msg.value, str);
-//         room->play_status[index_in_room] = 1;
-//         break;
-//       }
-//     }
+    int sent = 0;
 
-//     int sent = 0;
+    while (room->play_status[index_doi_thu_in_room] == 0)
+    {
+      if (!sent)
+      {
+        tmp.type = OTHER_PLAYER_IS_PLAYING;
+        strcpy(tmp.value, msg.value);
+        strcat(tmp.value, "Đối thủ đang chơi, vui lòng chờ!");
+        send(conn_fd, &tmp, sizeof(tmp), 0);
+        sent = 1;
+      }
+    }
 
-//     while (room->play_status[index_doi_thu_in_room] == 0)
-//     {
-//       if (!sent)
-//       {
-//         tmp.type = OTHER_PLAYER_IS_PLAYING;
-//         strcpy(tmp.value, msg.value);
-//         strcat(tmp.value, "Đối thủ đang chơi, vui lòng chờ!");
-//         send(conn_fd, &tmp, sizeof(tmp), 0);
-//         sent = 1;
-//       }
-//     }
+    if (room->index_current_question[index_in_room] > room->index_current_question[index_doi_thu_in_room])
+      strcpy(msg.value, "Ban da thang doi thu!");
+    else if (room->index_current_question[index_in_room] < room->index_current_question[index_doi_thu_in_room])
+    {
+      strcpy(msg.value, "Ban da thua doi thu!");
+    }
+    else
+      strcpy(msg.value, "Ban va doi thu hoa nhau!");
+    send(conn_fd, &msg, sizeof(msg), 0);
 
-//     if (room->index_current_question[index_in_room] > room->index_current_question[index_doi_thu_in_room])
-//       strcpy(msg.value, "Ban da thang doi thu!");
-//     else if (room->index_current_question[index_in_room] < room->index_current_question[index_doi_thu_in_room])
-//     {
-//       strcpy(msg.value, "Ban da thua doi thu!");
-//     }
-//     else
-//       strcpy(msg.value, "Ban va doi thu hoa nhau!");
-//     send(conn_fd, &msg, sizeof(msg), 0);
+    delete_room(room->room_id);
+    return 1;
+  }
+  else
+  {
+    msg.type = NOT_FOUND_PLAYER;
+    strcpy(msg.value, "Không tìm thấy người chơi khác, vui lòng thử lại sau!");
+    if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
+    {
+      perror("Send error!");
+      delete_client(conn_fd);
+      return 0;
+    }
+    delete_room(room->room_id);
+    return 0;
+  }
 
-//     delete_room(room->room_id);
-//     return 1;
-//   }
-//   else
-//   {
-//     msg.type = NOT_FOUND_PLAYER;
-//     strcpy(msg.value, "Không tìm thấy người chơi khác, vui lòng thử lại sau!");
-//     if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
-//     {
-//       perror("Send error!");
-//       delete_client(conn_fd);
-//       return 0;
-//     }
-//     delete_room(room->room_id);
-//     return 0;
-//   }
-
-//   return 1;
-// }
+  return 1;
+}
 
 void *thread_start(void *client_fd)
 {
@@ -959,9 +957,9 @@ void *thread_start(void *client_fd)
         printf("[%d]: %s is playing alone.\n", conn_fd, cli->login_account);
         handle_play_alone(conn_fd);
         break;
-      // case PLAY_PVP:
-      //   handle_play_pvp(conn_fd);
-      //   break;
+      case PLAY_PVP:
+        handle_play_pvp(conn_fd);
+        break;
       case LOGOUT:
         printf("[%d]: Bye %s\n", conn_fd, cli->login_account);
         cli->login_status = UN_AUTH;

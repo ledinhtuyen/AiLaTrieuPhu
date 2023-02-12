@@ -97,6 +97,11 @@ ApplicationWindow {
                 quest1To5Theme.stop()
             menuMain.showResultPopup()
         }
+
+        onFoundPlayer: {
+            findOpponentPopup.popMessage = "Đã tìm thấy đối thủ"
+            hideCancelFindOpponentBtn()
+        }
     }
 
     MenuMain {
@@ -324,7 +329,108 @@ ApplicationWindow {
             }
         }
 
-        onOpened: waitPopupClose.start()
+        onOpened:waitPopupClose.start()
+    }
+
+    Popup {
+        id: findOpponentPopup
+        property alias popMessage: message2.text
+
+        anchors.centerIn: Overlay.overlay
+        closePolicy: Popup.NoAutoClose
+        modal: true
+
+        background: Image {
+            width: 220
+            height: 220
+            anchors.centerIn: parent
+            source: applicationDirPath + "/assets/Sprite/popup.png"
+                
+            BusyIndicator {
+                id: busyIndicator2
+                running: true
+                anchors.centerIn: parent
+
+                contentItem: Item {
+                    implicitWidth: 64
+                    implicitHeight: 64
+
+                    Item {
+                        id: item2
+                        x: parent.width / 2 - 32
+                        y: parent.height / 2 - 32
+                        width: 64
+                        height: 64
+                        opacity: busyIndicator2.running ? 1 : 0
+
+                        Behavior on opacity {
+                            OpacityAnimator {
+                                duration: 250
+                            }
+                        }
+
+                        RotationAnimator {
+                            target: item2
+                            running: busyIndicator2.visible && busyIndicator2.running
+                            from: 0
+                            to: 360
+                            loops: Animation.Infinite
+                            duration: 1250
+                        }
+
+                        Repeater {
+                            id: repeater2
+                            model: 6
+
+                            Rectangle {
+                                x: item.width / 2 - width / 2
+                                y: item.height / 2 - height / 2
+                                implicitWidth: 10
+                                implicitHeight: 10
+                                radius: 5
+                                color: "white"
+                                transform: [
+                                    Translate {
+                                        y: -Math.min(item.width, item.height) * 0.5 + 5
+                                    },
+                                    Rotation {
+                                        angle: index / repeater2.count * 360
+                                        origin.x: 5
+                                        origin.y: 5
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+
+            Text {
+                id: message2
+                width: 220
+                anchors.top: busyIndicator2.bottom
+                anchors.topMargin: 20
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                font.pointSize: 12
+                font.family: "roboto"
+                color: "white"
+            }
+
+            SelectButton {
+                id: cancelFindOpponent
+                width: 150
+                height: 50
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: -50
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Hủy"
+                onClicked: {
+                    findOpponentPopup.close()
+                    menuMain.startBtnAnimDownInMenuMain()
+                }
+            }
+        }
     }
 
     // Popup will be closed automatically in 2 seconds after its opened
@@ -448,5 +554,13 @@ ApplicationWindow {
 
         menuMain.resetBtnToStartY()
         menuMain.startBtnAnimUp()
+    }
+
+    function hideCancelFindOpponentBtn() {
+        cancelFindOpponent.visible = false
+    }
+
+    function showCancelFindOpponentBtn() {
+        cancelFindOpponent.visible = true
     }
 }

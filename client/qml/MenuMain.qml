@@ -25,6 +25,8 @@ Page {
 
     funcBtn1Click: btn1Click
 
+    funcBtn2Click: btn2Click
+
     funcBtn3Click: btn3Click
 
     funcBtn4Click: btn4Click
@@ -106,6 +108,10 @@ Page {
     menuSelectButton.startBtnAnimUp()
   }
 
+  function startBtnAnimDownInMenuMain(){
+    menuSelectButton.startBtnAnimDown()
+  }
+
   function resetBtnToStartY(){
     gameScreen.resetBtnToStartY()
   }
@@ -132,6 +138,13 @@ Page {
     backEnd.playAlone()
   }
 
+  function btn2Click(){
+    menuMain.sTatus = 3
+    findOpponentPopup.popMessage = "Đang tìm đối thủ..."
+    findOpponentPopup.open()
+    backEnd.playPvP()
+  }
+
   function btn3Click(){
     stackView.push("ChangePasswordPage.qml")
   }
@@ -142,6 +155,8 @@ Page {
   }
 
   function resetToDefaultProperties(){
+    rootWindow.lose = false
+    rootWindow.showCancelFindOpponentBtn()
     menuMain.showMenuMain = true
     menuMain.sTatus = 1
     prizePopup.runningHighLightPrize = false
@@ -150,6 +165,7 @@ Page {
     menuMain.resetBtnToStartYInMenuMain()
     menuMain.startBtnAnimUpInMenuMain()
     menuSelectButton.funcBtn1Click = menuMain.btn1Click
+    menuSelectButton.funcBtn2Click = menuMain.btn2Click
     menuSelectButton.funcBtn3Click = menuMain.btn3Click
     menuSelectButton.funcBtn4Click = menuMain.btn4Click
     backEnd.reward = 0
