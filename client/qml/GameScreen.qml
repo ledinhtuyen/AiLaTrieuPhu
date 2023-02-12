@@ -26,6 +26,7 @@ Item {
       else
         quest1To5Theme.stop()
       finalAnswerSound.play()
+      stopCountDown()
       backEnd.choiceAnswer(1)
     }
 
@@ -36,6 +37,7 @@ Item {
       else
         quest1To5Theme.stop()
       finalAnswerSound.play()
+      stopCountDown()
       backEnd.choiceAnswer(2)
     }
 
@@ -46,6 +48,7 @@ Item {
       else
         quest1To5Theme.stop()
       finalAnswerSound.play()
+      stopCountDown()
       backEnd.choiceAnswer(3)
     }
 
@@ -56,6 +59,7 @@ Item {
       else
         quest1To5Theme.stop()
       finalAnswerSound.play()
+      stopCountDown()
       backEnd.choiceAnswer(4)
     }
 
@@ -93,6 +97,7 @@ Item {
           anchors.fill: parent
           onClicked: {
             clickSound.play()
+            stopCountDown()
             pausePopup.open()
           }
         }
@@ -102,7 +107,6 @@ Item {
     CountDown{
       id: countDown
       visible: sTatus == 2 ? true : false
-      isRunning: sTatus == 2 ? true : false
       anchors.horizontalCenter: parent.horizontalCenter
       anchors.top: parent.top
       anchors.topMargin: 10
@@ -344,5 +348,17 @@ Item {
     x2.visible = false
     x3.visible = false
     x4.visible = false
+  }
+
+  function startCountDown() {
+    countDown.start()
+  }
+
+  function stopCountDown() {
+    countDown.stop()
+  }
+
+  function continueCountDown() {
+    countDown.continueCountDown()
   }
 }

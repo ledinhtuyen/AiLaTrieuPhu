@@ -56,11 +56,18 @@ void *thread_recv(void *arg)
         BackEnd::instance->correctAnswer();
         break;
       case WIN:
-        printf("WIN\n", msg.value);
+        BackEnd::instance->correct_answer = atoi(strtok(msg.value, " "));
+        BackEnd::instance->reward = atoi(strtok(NULL, " "));
+        BackEnd::instance->rewardChanged();
+        BackEnd::instance->prize++;
+        BackEnd::instance->correctAnswer();
         return NULL;
       case LOSE:
         BackEnd::instance->correct_answer = atoi(msg.value);
         BackEnd::instance->lose();
+        return NULL;
+      case STOP_GAME:
+      case OVER_TIME:
         return NULL;
       case FIFTY_FIFTY:
         incorrect_answer[0] = atoi(strtok(msg.value, " "));
@@ -435,6 +442,21 @@ void BackEnd::stopGame()
   int sendBytes;
 
   msg.type = STOP_GAME;
+  sendBytes = send(sockfd, &msg, sizeof(msg), 0);
+  if (sendBytes < 0)
+  {
+    perror("The server terminated prematurely");
+    exit(0);
+    return;
+  }
+}
+
+void BackEnd::overTime()
+{
+  Message msg;
+  int sendBytes;
+
+  msg.type = OVER_TIME;
   sendBytes = send(sockfd, &msg, sizeof(msg), 0);
   if (sendBytes < 0)
   {

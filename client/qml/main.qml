@@ -418,8 +418,13 @@ ApplicationWindow {
             if (count == 10) {
                 count = 0
                 flicker.stop()
-                if (!rootWindow.lose){
+                if (!rootWindow.lose && backEnd.prize != 15){
                     menuMain.showPrizePopup()
+                }
+                else if (!rootWindow.lose && backEnd.prize == 15) {
+                    correctAnswerSound.stop()
+                    mainTheme.play()
+                    menuMain.showResultPopup()
                 }
                 else {
                     menuMain.showResultPopup()

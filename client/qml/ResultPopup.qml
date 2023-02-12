@@ -25,7 +25,7 @@ Popup {
         Image{
           anchors.horizontalCenter: parent.horizontalCenter
           anchors.verticalCenter: parent.verticalCenter
-          source: applicationDirPath + "/assets/Sprite/banggiaithuong_thua.png"
+          source: applicationDirPath + (backEnd.prize + 1 != 15 ? "/assets/Sprite/banggiaithuong_thua.png" : "/assets/Sprite/khung4.png")
           width: 320
           height: 50
 

@@ -55,6 +55,7 @@ Popup {
         text: "Hủy"
         onClick: {
           close()
+          gameScreen.continueCountDown()
         }
       }
     }

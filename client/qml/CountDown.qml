@@ -6,23 +6,23 @@ Item {
 
     property int angle: 0
     property int radius: 30
-    property int time: 30
     property bool stopped: false
-    property bool isRunning: false
 
     Timer {
         id: timer
         interval: 1000
         repeat : true
-        running: isRunning
+        running: false
         onTriggered: {
             if (!stopped) {
-                angle += 12
-                time -= 1
+                angle += 24
+                menuMain.time -= 1
                 canvas.requestPaint()
                 if (time <= 0){
                     stopped = true
                     timer.stop()
+                    backEnd.overTime()
+                    backEnd.lose2()
                 }
             }
         }
@@ -46,13 +46,31 @@ Item {
 
     Text {
         id: timeLabel
-        text: time
+        text: menuMain.time
         font.pointSize: 20
         font.family : "roboto"
         color: "white"
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         anchors.centerIn: parent
+    }
+
+    function start() {
+        stopped = false
+        angle = 0
+        menuMain.time = 15
+        canvas.requestPaint()
+        timer.start()
+    }
+
+    function stop() {
+        stopped = true
+        timer.stop()
+    }
+
+    function continueCountDown() {
+        stopped = false
+        timer.start()
     }
 }
 

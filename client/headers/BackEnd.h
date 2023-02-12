@@ -75,6 +75,7 @@ public:
     Q_INVOKABLE void vote();
     Q_INVOKABLE void changeQuestion();
     Q_INVOKABLE void stopGame();
+    Q_INVOKABLE void overTime();
 
 signals:
     void userNameChanged();

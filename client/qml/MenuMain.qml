@@ -8,6 +8,8 @@ Page {
   property bool showMenuMain: true
   property var sTatus : 0
   property bool clickShowPrizeBtn: false
+  property var time : 15
+  property var angle : 0
   
 
   SelectButtonPage{
