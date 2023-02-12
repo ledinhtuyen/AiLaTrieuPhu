@@ -30,6 +30,7 @@ Popup {
                     onClicked: {
                         clickSound.play()
                         popup.close()
+                        menuMain.clickShowPrizeBtn = false
                     }
                 }
             }
@@ -294,21 +295,10 @@ Popup {
                 prizeTheme.stop()
                 letsPlayTheme.play()
                 popup.close()
-                menuMain.isMoveUp = 2
-                startSound1To5.start()
+                menuMain.sTatus = 2
+                menuMain.startBtnAnimUp()
                 highLightPrize.stop()
             }
-        }
-    }
-
-    Timer {
-        id: startSound1To5
-        interval: 2200
-        running: false
-        repeat: false
-        onTriggered: {
-            letsPlayTheme.stop()
-            quest1To5Theme.play()
         }
     }
 
@@ -337,5 +327,11 @@ Popup {
 
     function flickerPrize(){
         flickerPrizeTimer.start()
+    }
+
+    function startHightLightPrize(){
+        prize = 0
+        runningHighLightPrize = true
+        highLightPrize.start()
     }
 }

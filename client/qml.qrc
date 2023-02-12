@@ -18,5 +18,6 @@
         <file>qml/GameScreen.qml</file>
         <file>qml/VotePopup.qml</file>
         <file>qml/CallPhonePopup.qml</file>
+        <file>qml/ResultPopup.qml</file>
     </qresource>
 </RCC>

@@ -5,11 +5,6 @@ Button {
   id : button
   width: 480
   height: 50
-  
-  property bool isEnabled : false
-  
-
-  enabled: isEnabled
 
   signal click()
 
@@ -25,7 +20,6 @@ Button {
 
   background: Image {
     source: applicationDirPath + "/assets/Sprite/btn.png"
-    opacity: 0.5
   }
 
   onHoveredChanged: {

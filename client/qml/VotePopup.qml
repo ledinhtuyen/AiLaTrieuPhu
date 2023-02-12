@@ -238,7 +238,6 @@ import QtQuick.Controls 2.5
           }
           SelectButton{
             text: "Đóng"
-            isEnabled: true
             onClick: {
               vote.close()
             }

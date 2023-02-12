@@ -3,18 +3,19 @@ import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.12
 
 Page {
-  id: menuMain
   width: 480
   height: 640
   property bool showMenuMain: true
-  property bool isPlayGame: false
-  property var isMoveUp : 0
+  property var sTatus : 0
+  property bool clickShowPrizeBtn: false
+  property var time : 15
+  property var angle : 0
   
 
   SelectButtonPage{
     id : menuSelectButton
-    isVisible: showMenuMain
-    moveUp: isMoveUp == 1 ? true : false
+    _visible: showMenuMain
+    btnMoveUp: sTatus == 1 ? true : false
 
     startY: 640
     textBtn1: "Chơi 1 mình"
@@ -22,19 +23,11 @@ Page {
     textBtn3: "Đổi mật khẩu"
     textBtn4: "Đăng xuất"
 
-    funcBtn1Click: function(){
-      moveDown = true
-      backEnd.playAlone()
-    }
+    funcBtn1Click: btn1Click
 
-    funcBtn3Click: function(){
-      stackView.push("ChangePasswordPage.qml")
-    }
+    funcBtn3Click: btn3Click
 
-    funcBtn4Click: function(){
-      backEnd.logOut()
-      stackView.pop()
-    }
+    funcBtn4Click: btn4Click
   }
 
   Logo {
@@ -78,22 +71,21 @@ Page {
 
   GameScreen {
     id : gameScreen
-    boolMoveUp: isMoveUp == 2 ? true : false
+    btnMoveUp: sTatus == 2 ? true : false
   }
 
   PrizePopup{
     id: prizePopup
     modal : true
 
-    property bool clickShowPrizeBtn: false
-
     onOpened : {
-      if (!clickShowPrizeBtn && menuMain.isMoveUp != 2){
-        mainTheme.stop()
+      if (!menuMain.clickShowPrizeBtn && menuMain.sTatus != 2){
+        commericalBreakSound.stop()
+        menuMain.resetBtnToStartY()
         prizeTheme.play()
-        runningHighLightPrize = true
+        prizePopup.startHightLightPrize()
       }
-      else if (!clickShowPrizeBtn && menuMain.isMoveUp == 2){
+      else if (!menuMain.clickShowPrizeBtn && menuMain.sTatus == 2){
         prizePopup.flickerPrize()
       }
       else {
@@ -102,8 +94,16 @@ Page {
     }
   }
 
+  ResultPopup{
+    id : resultPopup
+  }
+
   function startBtnAnimUp(){
     gameScreen.startBtnAnimUp()
+  }
+
+  function startBtnAnimUpInMenuMain(){
+    menuSelectButton.startBtnAnimUp()
   }
 
   function resetBtnToStartY(){
@@ -116,5 +116,24 @@ Page {
 
   function showPrizePopup(){
     prizePopup.open()
+  }
+
+  function showResultPopup(){
+    resultPopup.open()
+  }
+
+  function btn1Click(){
+    rootWindow.lose = false
+    menuSelectButton.startBtnAnimDown()
+    backEnd.playAlone()
+  }
+
+  function btn3Click(){
+    stackView.push("ChangePasswordPage.qml")
+  }
+
+  function btn4Click(){
+    backEnd.logOut()
+    stackView.pop()
   }
 }

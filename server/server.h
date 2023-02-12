@@ -46,6 +46,7 @@ enum msg_type
   WIN,
   LOSE,
   DRAW,
+  OVER_TIME,
   LOGOUT,
   FIFTY_FIFTY,
   CALL_PHONE,
@@ -590,21 +591,29 @@ recvLabel:
 
     switch (msg.type)
     {
+    case OVER_TIME:
+      msg.type = OVER_TIME;
+      send(conn_fd, &msg, sizeof(msg), 0);
+      printf("[%d]: Over time\n", conn_fd);
+      return 0;
     case STOP_GAME:
+      msg.type = STOP_GAME;
+      send(conn_fd, &msg, sizeof(msg), 0);
       printf("[%d]: Stopped play alone\n", conn_fd);
-      break;
+      return 0;
     case CHOICE_ANSWER:
       if (questions.answer[level - 1] == atoi(msg.value))
       {
+        sleep(2);
+        sprintf(str, "%d %d", questions.answer[level - 1], questions.reward[level - 1]);
+        strcpy(msg.value, str);
         if (level == 15)
         {
           msg.type = WIN;
           send(conn_fd, &msg, sizeof(msg), 0);
           return 1;
         }
-        else
-        {
-          sleep(2);
+        else{
           msg.type = CORRECT_ANSWER;
           send(conn_fd, &msg, sizeof(msg), 0);
           continue;
@@ -612,6 +621,7 @@ recvLabel:
       }
       else
       {
+        sleep(2);
         msg.type = LOSE;
         sprintf(str, "%d", questions.answer[level - 1]);
         strcpy(msg.value, str);

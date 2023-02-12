@@ -40,7 +40,6 @@ Popup {
       }
       SelectButton{
         text: "Đóng"
-        isEnabled: true
         onClick: {
           callPhonePopup.close()
         }

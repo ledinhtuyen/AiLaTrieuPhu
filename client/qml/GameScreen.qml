@@ -6,12 +6,12 @@ Item {
   width: 480
   height: 640
 
-  property bool boolMoveUp : false
+  property bool btnMoveUp : false
 
   SelectButtonPage{
     id: questionPage
-    visible: isPlayGame
-    moveUp: boolMoveUp
+    visible: !showMenuMain
+    btnMoveUp: parent.btnMoveUp
 
     startY: 640
     textBtn1: backEnd.a
@@ -26,6 +26,7 @@ Item {
       else
         quest1To5Theme.stop()
       finalAnswerSound.play()
+      stopCountDown()
       backEnd.choiceAnswer(1)
     }
 
@@ -36,6 +37,7 @@ Item {
       else
         quest1To5Theme.stop()
       finalAnswerSound.play()
+      stopCountDown()
       backEnd.choiceAnswer(2)
     }
 
@@ -46,6 +48,7 @@ Item {
       else
         quest1To5Theme.stop()
       finalAnswerSound.play()
+      stopCountDown()
       backEnd.choiceAnswer(3)
     }
 
@@ -56,6 +59,7 @@ Item {
       else
         quest1To5Theme.stop()
       finalAnswerSound.play()
+      stopCountDown()
       backEnd.choiceAnswer(4)
     }
 
@@ -64,7 +68,7 @@ Item {
       width: 60
       height: 60
       anchors.right: parent.right
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
 
       Image{
         source: applicationDirPath + "/assets/Sprite/btn_xemgiaithuong.png"
@@ -73,7 +77,7 @@ Item {
           anchors.fill: parent
           onClicked: {
             clickSound.play()
-            prizePopup.clickShowPrizeBtn = true
+            menuMain.clickShowPrizeBtn = true
             prizePopup.open()
           }
         }
@@ -84,7 +88,7 @@ Item {
       color: "transparent"
       width: 60
       height: 60
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
 
       Image{
         source: applicationDirPath + "/assets/Sprite/btn_pause.png"
@@ -93,6 +97,7 @@ Item {
           anchors.fill: parent
           onClicked: {
             clickSound.play()
+            stopCountDown()
             pausePopup.open()
           }
         }
@@ -101,8 +106,7 @@ Item {
 
     CountDown{
       id: countDown
-      visible: isMoveUp == 2 ? true : false
-      isRunning: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
       anchors.horizontalCenter: parent.horizontalCenter
       anchors.top: parent.top
       anchors.topMargin: 10
@@ -110,7 +114,7 @@ Item {
 
     Image {
       id: questionImage
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
       width: 400
       height: 200
       source: applicationDirPath + "/assets/Sprite/question_bg.png"
@@ -120,7 +124,7 @@ Item {
 
     Text {
       id : questionNumber
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
       width: 100
       height: 50
       anchors.horizontalCenter: parent.horizontalCenter
@@ -134,7 +138,7 @@ Item {
 
     Text {
       id : questionText
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
       width: 360
       height: 150
       anchors.horizontalCenter: parent.horizontalCenter
@@ -151,7 +155,7 @@ Item {
 
     Image {
       id: fiftyFiftyIcon
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
@@ -190,7 +194,7 @@ Item {
 
     Image {
       id: callPhoneIcon
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
@@ -230,7 +234,7 @@ Item {
 
     Image {
       id: voteIcon
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
@@ -271,7 +275,7 @@ Item {
 
     Image {
       id: changeQuestionIcon
-      visible: isMoveUp == 2 ? true : false
+      visible: sTatus == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
@@ -337,5 +341,24 @@ Item {
 
   function flickerCorrectAnswer(count) {
     questionPage.flickerCorrectAnswer(count)
+  }
+
+  function resetHelperIcon() {
+    x1.visible = false
+    x2.visible = false
+    x3.visible = false
+    x4.visible = false
+  }
+
+  function startCountDown() {
+    countDown.start()
+  }
+
+  function stopCountDown() {
+    countDown.stop()
+  }
+
+  function continueCountDown() {
+    countDown.continueCountDown()
   }
 }

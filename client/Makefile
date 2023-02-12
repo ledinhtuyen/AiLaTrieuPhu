@@ -367,6 +367,7 @@ qrc_qml.cpp: qml.qrc \
 		qml/SelectButtonPage.qml \
 		qml/CallPhonePopup.qml \
 		qml/CountDown.qml \
+		qml/ResultPopup.qml \
 		qml/BackGround.qml \
 		qml/VotePopup.qml \
 		qml/LoginPage.qml \

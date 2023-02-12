@@ -7,8 +7,8 @@ Item{
   property var target3
   property var target4
   property var startY
-  property var isMoveUp: false
-  property var isMoveDown: false
+  property bool btnMoveUp: false
+  property bool btnMoveDown: false
   property var funcAfterBtnAnimUp4Stopped
 
   NumberAnimation {
@@ -18,7 +18,7 @@ Item{
     from : startY
     to: 350
     property : "y"
-    running: isMoveUp
+    running: btnMoveUp
     onStopped :{
       btnAnimUp2.start()
     }
@@ -71,7 +71,7 @@ Item{
     from : 545
     to: startY
     properties : "y"
-    running : isMoveDown
+    running : parent.btnMoveDown
     onStopped :{
       btnAnimDown2.start()
     }
@@ -112,13 +112,12 @@ Item{
     properties : "y"
     running : false
     onStopped :{
-      if (menuMain.isMoveUp == 1){
-        isMoveDown = false
+      if (menuMain.sTatus == 1){
+        parent.btnMoveDown = false
         menuMain.showMenuMain = false
-        menuMain.isPlayGame = true
         prizePopup.open()
       }
-      else if (menuMain.isMoveUp == 2){
+      else if (menuMain.sTatus == 2){
         menuMain.startBtnAnimUp()
         backEnd.changeQuestion()
       }
@@ -130,24 +129,25 @@ Item{
     interval: 2300
     repeat: false
     onTriggered: {
-      letsPlayTheme.stop()
-      if (backEnd.prize > 5)
-        quest5To15Theme.play()
-      else
-        quest1To5Theme.play()
+      if (menuMain.sTatus == 2){
+        letsPlayTheme.stop()
+        if (backEnd.prize > 5)
+          quest5To15Theme.play()
+        else
+          quest1To5Theme.play()
+      }
     }
   }
 
   function startBtnAnimUp(){
-    isMoveUp = true
     btnAnimUp1.start()
     funcAfterBtnAnimUp4Stopped = function(){
       delayTimer.start()
+      gameScreen.startCountDown()
     }
   }
 
   function startBtnAnimDown(){
-    isMoveDown = true
     btnAnimDown1.start()
   }
 }

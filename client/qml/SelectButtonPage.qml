@@ -10,15 +10,15 @@ Item{
   property var textBtn2
   property var textBtn3
   property var textBtn4
-  property bool moveDown : false
-  property bool moveUp : false
+  property bool btnMoveDown : false
+  property bool btnMoveUp : false
   property var funcBtn1Click
   property var funcBtn2Click
   property var funcBtn3Click
   property var funcBtn4Click
-  property bool isVisible : false
+  property bool _visible : false
 
-  visible: isVisible
+  visible: _visible
 
   BackGround{
     id: bg
@@ -76,19 +76,11 @@ Item{
     target3: btn3
     target4: btn4
     startY: 640
-    isMoveUp: moveUp
-    isMoveDown: moveDown
+    btnMoveUp: parent.btnMoveUp
+    btnMoveDown: parent.btnMoveDown
 
     funcAfterBtnAnimUp4Stopped : function (){
-      moveUp = false
-      btn1.background.opacity = 1
-      btn2.background.opacity = 1
-      btn3.background.opacity = 1
-      btn4.background.opacity = 1
-      btn1.enabled = true
-      btn2.enabled = true
-      btn3.enabled = true
-      btn4.enabled = true
+      btnMoveUp = false
     }
   }
 
@@ -111,19 +103,15 @@ Item{
     switch(choice){
       case 1:
         btn1.background.source = applicationDirPath + "/assets/Sprite/btn_choose2.png"
-        btn1.background.enabled = false
         break;
       case 2:
         btn2.background.source = applicationDirPath + "/assets/Sprite/btn_choose2.png"
-        btn2.background.enabled = false
         break;
       case 3:
         btn3.background.source = applicationDirPath + "/assets/Sprite/btn_choose2.png"
-        btn3.background.enabled = false
         break;
       case 4:
         btn4.background.source = applicationDirPath + "/assets/Sprite/btn_choose2.png"
-        btn4.background.enabled = false
         break;
     }
   }

@@ -44,6 +44,7 @@ enum msg_type
   WIN,
   LOSE,
   DRAW,
+  OVER_TIME,
   LOGOUT,
   FIFTY_FIFTY,
   CALL_PHONE,
