@@ -6,12 +6,12 @@ Item {
   width: 480
   height: 640
 
-  property bool boolMoveUp : false
+  property bool btnMoveUp : false
 
   SelectButtonPage{
     id: questionPage
     visible: !showMenuMain
-    btnMoveUp: boolMoveUp
+    btnMoveUp: parent.btnMoveUp
 
     startY: 640
     textBtn1: backEnd.a
@@ -73,7 +73,7 @@ Item {
           anchors.fill: parent
           onClicked: {
             clickSound.play()
-            prizePopup.clickShowPrizeBtn = true
+            menuMain.clickShowPrizeBtn = true
             prizePopup.open()
           }
         }
@@ -337,5 +337,12 @@ Item {
 
   function flickerCorrectAnswer(count) {
     questionPage.flickerCorrectAnswer(count)
+  }
+
+  function resetHelperIcon() {
+    x1.visible = false
+    x2.visible = false
+    x3.visible = false
+    x4.visible = false
   }
 }

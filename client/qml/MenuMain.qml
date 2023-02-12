@@ -7,6 +7,7 @@ Page {
   height: 640
   property bool showMenuMain: true
   property var sTatus : 0
+  property bool clickShowPrizeBtn: false
   
 
   SelectButtonPage{
@@ -68,23 +69,21 @@ Page {
 
   GameScreen {
     id : gameScreen
-    boolMoveUp: sTatus == 2 ? true : false
+    btnMoveUp: sTatus == 2 ? true : false
   }
 
   PrizePopup{
     id: prizePopup
     modal : true
 
-    property bool clickShowPrizeBtn: false
-
     onOpened : {
-      if (!clickShowPrizeBtn && menuMain.sTatus != 2){
+      if (!menuMain.clickShowPrizeBtn && menuMain.sTatus != 2){
         commericalBreakSound.stop()
         menuMain.resetBtnToStartY()
         prizeTheme.play()
         prizePopup.startHightLightPrize()
       }
-      else if (!clickShowPrizeBtn && menuMain.sTatus == 2){
+      else if (!menuMain.clickShowPrizeBtn && menuMain.sTatus == 2){
         prizePopup.flickerPrize()
       }
       else {

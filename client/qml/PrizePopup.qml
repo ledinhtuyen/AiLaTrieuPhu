@@ -30,6 +30,7 @@ Popup {
                     onClicked: {
                         clickSound.play()
                         popup.close()
+                        menuMain.clickShowPrizeBtn = false
                     }
                 }
             }
@@ -296,20 +297,8 @@ Popup {
                 popup.close()
                 menuMain.sTatus = 2
                 menuMain.startBtnAnimUp()
-                startSound1To5.start()
                 highLightPrize.stop()
             }
-        }
-    }
-
-    Timer {
-        id: startSound1To5
-        interval: 2200
-        running: false
-        repeat: false
-        onTriggered: {
-            letsPlayTheme.stop()
-            quest1To5Theme.play()
         }
     }
 

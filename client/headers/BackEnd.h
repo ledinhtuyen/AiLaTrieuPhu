@@ -40,7 +40,7 @@ public:
     Q_PROPERTY(int voteC READ getVoteC NOTIFY voteCChanged);
     Q_PROPERTY(int voteD READ getVoteD NOTIFY voteDChanged);
     Q_PROPERTY(int correct_answer READ getCorrectAnswer);
-    Q_PROPERTY(int reward READ getReward NOTIFY rewardChanged);
+    Q_PROPERTY(int reward READ getReward WRITE setReward NOTIFY rewardChanged);
 
     explicit BackEnd(QObject *parent = nullptr);
     ~BackEnd();
@@ -55,6 +55,7 @@ public:
     QString getD();
     QString getCallPhoneAnswer();
     int getReward();
+    void setReward(int value);
     int getCorrectAnswer();
     int getVoteA();
     int getVoteB();

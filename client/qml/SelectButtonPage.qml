@@ -76,8 +76,8 @@ Item{
     target3: btn3
     target4: btn4
     startY: 640
-    isMoveUp: btnMoveUp
-    isMoveDown: btnMoveDown
+    btnMoveUp: parent.btnMoveUp
+    btnMoveDown: parent.btnMoveDown
 
     funcAfterBtnAnimUp4Stopped : function (){
       btnMoveUp = false
@@ -103,19 +103,15 @@ Item{
     switch(choice){
       case 1:
         btn1.background.source = applicationDirPath + "/assets/Sprite/btn_choose2.png"
-        btn1.background.enabled = false
         break;
       case 2:
         btn2.background.source = applicationDirPath + "/assets/Sprite/btn_choose2.png"
-        btn2.background.enabled = false
         break;
       case 3:
         btn3.background.source = applicationDirPath + "/assets/Sprite/btn_choose2.png"
-        btn3.background.enabled = false
         break;
       case 4:
         btn4.background.source = applicationDirPath + "/assets/Sprite/btn_choose2.png"
-        btn4.background.enabled = false
         break;
     }
   }

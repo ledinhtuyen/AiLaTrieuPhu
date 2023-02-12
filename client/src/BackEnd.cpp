@@ -218,6 +218,11 @@ int BackEnd::getReward()
   return reward;
 }
 
+void BackEnd::setReward(int value)
+{
+  reward = value;
+}
+
 int BackEnd::getVoteA()
 {
   return voteA;
