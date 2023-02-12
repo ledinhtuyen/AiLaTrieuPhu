@@ -110,6 +110,10 @@ Page {
     gameScreen.resetBtnToStartY()
   }
 
+  function resetBtnToStartYInMenuMain(){
+    menuSelectButton.resetBtnToStartY()
+  }
+
   function flickerCorrectAnswer(count){
     gameScreen.flickerCorrectAnswer(count)
   }
@@ -135,5 +139,22 @@ Page {
   function btn4Click(){
     backEnd.logOut()
     stackView.pop()
+  }
+
+  function resetToDefaultProperties(){
+    menuMain.showMenuMain = true
+    menuMain.sTatus = 1
+    prizePopup.runningHighLightPrize = false
+    prizePopup.prize = 0
+    gameScreen.resetHelperIcon()
+    menuMain.resetBtnToStartYInMenuMain()
+    menuMain.startBtnAnimUpInMenuMain()
+    menuSelectButton.funcBtn1Click = menuMain.btn1Click
+    menuSelectButton.funcBtn3Click = menuMain.btn3Click
+    menuSelectButton.funcBtn4Click = menuMain.btn4Click
+    backEnd.reward = 0
+    backEnd.rewardChanged()
+    backEnd.prize = 0
+    backEnd.prizeChanged()
   }
 }

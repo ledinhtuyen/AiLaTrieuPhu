@@ -611,11 +611,13 @@ recvLabel:
         {
           msg.type = WIN;
           send(conn_fd, &msg, sizeof(msg), 0);
+          printf("[%d]: Win\n", conn_fd);
           return 1;
         }
         else{
           msg.type = CORRECT_ANSWER;
           send(conn_fd, &msg, sizeof(msg), 0);
+          printf("[%d]: Correct answer question %d\n", conn_fd, level - 1);
           continue;
         }
       }
@@ -626,27 +628,28 @@ recvLabel:
         sprintf(str, "%d", questions.answer[level - 1]);
         strcpy(msg.value, str);
         send(conn_fd, &msg, sizeof(msg), 0);
+        printf("[%d]: Lose\n", conn_fd);
         return 0;
       }
       break;
     case FIFTY_FIFTY:
       help(FIFTY_FIFTY, &questions, level, conn_fd);
+      msg.type = -1;
       goto recvLabel;
-      break;
     case CALL_PHONE:
       help(CALL_PHONE, &questions, level, conn_fd);
+      msg.type = -1;
       goto recvLabel;
-      break;
     case VOTE:
       help(VOTE, &questions, level, conn_fd);
+      msg.type = -1;
       goto recvLabel;
-      break;
     case CHANGE_QUESTION:
       help(CHANGE_QUESTION, &questions, level, conn_fd);
       level--;
       msg.type = CHANGE_QUESTION;
+      msg.type = -1;
       goto initQuestion;
-      break;
     default:
       break;
     }
@@ -691,6 +694,7 @@ int help(int type, Question *questions, int level, int conn_fd){
       change_question(questions, level);
       break;
   }
+  return 1;
 }
 
 // int handle_play_pvp(int conn_fd)

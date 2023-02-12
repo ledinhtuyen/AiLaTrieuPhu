@@ -359,7 +359,7 @@ ApplicationWindow {
                 if (loginStatus == "LOGIN_SUCCESS") {
                     backEnd.userNameChanged()
                     stackView.push(menuMain)
-                    menuMain.sTatus = 1
+                    menuMain.resetToDefaultProperties()
                 }
                 else if (loginStatus == "LOGGED_IN")
                 {

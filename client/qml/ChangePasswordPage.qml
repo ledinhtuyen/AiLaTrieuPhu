@@ -262,7 +262,7 @@ Page {
             onClick: 
             {
               stackView.pop()
-              stackView.replace("MenuMain.qml")
+              menuMain.resetToDefaultProperties()
             }
         }
     }

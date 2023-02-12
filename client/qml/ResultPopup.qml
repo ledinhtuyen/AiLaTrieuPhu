@@ -47,19 +47,7 @@ Popup {
           onClick: {
             mainTheme.stop()
             close()
-            menuMain.showMenuMain = true
-            menuMain.sTatus = 1
-            prizePopup.runningHighLightPrize = false
-            prizePopup.prize = 0
-            gameScreen.resetHelperIcon()
-            menuMain.startBtnAnimUpInMenuMain()
-            menuSelectButton.funcBtn1Click = menuMain.btn1Click
-            menuSelectButton.funcBtn3Click = menuMain.btn3Click
-            menuSelectButton.funcBtn4Click = menuMain.btn4Click
-            backEnd.reward = 0
-            backEnd.rewardChanged()
-            backEnd.prize = 0
-            backEnd.prizeChanged()
+            menuMain.resetToDefaultProperties()
           }
         }
       }
