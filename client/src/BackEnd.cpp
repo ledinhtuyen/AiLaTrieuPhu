@@ -17,6 +17,7 @@ void *thread_recv(void *arg)
   int recvBytes;
   int incorrect_answer[2];
   int i = 0;
+  int numQuestion = 0;
 
   while (1)
   {
@@ -33,14 +34,14 @@ void *thread_recv(void *arg)
       {
       case CHANGE_QUESTION:
       case QUESTION:
-        strtok(msg.value, "|");
+        numQuestion = atoi(strtok(msg.value, "|"));
         BackEnd::instance->question = strtok(NULL, "|");
         BackEnd::instance->a = strtok(NULL, "|");
         BackEnd::instance->b = strtok(NULL, "|");
         BackEnd::instance->c = strtok(NULL, "|");
         BackEnd::instance->d = strtok(NULL, "|");
 
-        if (i == 0 || msg.type == CHANGE_QUESTION){
+        if ((i == 0) || (BackEnd::instance->prize + 1 == numQuestion)){
           BackEnd::instance->questionChanged();
           BackEnd::instance->aChanged();
           BackEnd::instance->bChanged();
@@ -140,6 +141,11 @@ void *thread_recv(void *arg)
         BackEnd::instance->voteBChanged();
         BackEnd::instance->voteCChanged();
         BackEnd::instance->voteDChanged();
+        break;
+      case FOUND_PLAYER:
+        BackEnd::instance->setEnemyName(msg.value);
+        BackEnd::instance->enemyNameChanged();
+        BackEnd::instance->foundPlayer();
         break;
       }
     }
@@ -255,6 +261,16 @@ void BackEnd::setUserName(const QString &value)
   user_name = value;
 }
 
+QString BackEnd::getEnemyName() const
+{
+  return enemy_name;
+}
+
+void BackEnd::setEnemyName(const QString &value)
+{
+  enemy_name = value;
+}
+
 void BackEnd::connectToServer()
 {
   char ip[16];
@@ -348,6 +364,24 @@ void BackEnd::playAlone()
   int sendBytes;
 
   msg.type = PLAY_ALONE;
+  sendBytes = send(sockfd, &msg, sizeof(msg), 0);
+  if (sendBytes < 0)
+  {
+    perror("The server terminated prematurely");
+    exit(0);
+    return;
+  }
+
+  pthread_t tid;
+  pthread_create(&tid, NULL, thread_recv, NULL);
+}
+
+void BackEnd::playPvP()
+{
+  Message msg;
+  int sendBytes;
+
+  msg.type = PLAY_PVP;
   sendBytes = send(sockfd, &msg, sizeof(msg), 0);
   if (sendBytes < 0)
   {

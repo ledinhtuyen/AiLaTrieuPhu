@@ -19,5 +19,6 @@
         <file>qml/VotePopup.qml</file>
         <file>qml/CallPhonePopup.qml</file>
         <file>qml/ResultPopup.qml</file>
+        <file>qml/FoundOpponentPopup.qml</file>
     </qresource>
 </RCC>

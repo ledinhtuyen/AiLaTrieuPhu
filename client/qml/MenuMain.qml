@@ -25,6 +25,8 @@ Page {
 
     funcBtn1Click: btn1Click
 
+    funcBtn2Click: btn2Click
+
     funcBtn3Click: btn3Click
 
     funcBtn4Click: btn4Click
@@ -98,6 +100,10 @@ Page {
     id : resultPopup
   }
 
+  FoundOpponentPopup{
+    id : foundOpponentPopup
+  }
+
   function startBtnAnimUp(){
     gameScreen.startBtnAnimUp()
   }
@@ -106,8 +112,16 @@ Page {
     menuSelectButton.startBtnAnimUp()
   }
 
+  function startBtnAnimDownInMenuMain(){
+    menuSelectButton.startBtnAnimDown()
+  }
+
   function resetBtnToStartY(){
     gameScreen.resetBtnToStartY()
+  }
+
+  function resetBtnToStartYInMenuMain(){
+    menuSelectButton.resetBtnToStartY()
   }
 
   function flickerCorrectAnswer(count){
@@ -128,6 +142,13 @@ Page {
     backEnd.playAlone()
   }
 
+  function btn2Click(){
+    menuMain.sTatus = 3
+    findOpponentPopup.popMessage = "Đang tìm đối thủ..."
+    findOpponentPopup.open()
+    backEnd.playPvP()
+  }
+
   function btn3Click(){
     stackView.push("ChangePasswordPage.qml")
   }
@@ -135,5 +156,32 @@ Page {
   function btn4Click(){
     backEnd.logOut()
     stackView.pop()
+  }
+
+  function resetToDefaultProperties(){
+    rootWindow.lose = false
+    rootWindow.showCancelFindOpponentBtn()
+    menuMain.showMenuMain = true
+    menuMain.sTatus = 1
+    prizePopup.runningHighLightPrize = false
+    prizePopup.prize = 0
+    gameScreen.resetHelperIcon()
+    menuMain.resetBtnToStartYInMenuMain()
+    menuMain.startBtnAnimUpInMenuMain()
+    menuSelectButton.funcBtn1Click = menuMain.btn1Click
+    menuSelectButton.funcBtn2Click = menuMain.btn2Click
+    menuSelectButton.funcBtn3Click = menuMain.btn3Click
+    menuSelectButton.funcBtn4Click = menuMain.btn4Click
+    backEnd.reward = 0
+    backEnd.rewardChanged()
+    backEnd.prize = 0
+    backEnd.prizeChanged()
+  }
+
+  function showFoundOpponentPopup(){
+    foundOpponentPopup.open()
+    delay(3000, function(){
+      foundOpponentPopup.close()
+    })
   }
 }

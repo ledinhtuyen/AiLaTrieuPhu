@@ -28,6 +28,7 @@ public:
     int reward;
     static BackEnd *instance;
     Q_PROPERTY(QString user_name READ getUserName WRITE setUserName NOTIFY userNameChanged);
+    Q_PROPERTY(QString enemy_name READ getEnemyName WRITE setEnemyName NOTIFY enemyNameChanged);
     Q_PROPERTY(int prize READ getPrize WRITE setPrize NOTIFY prizeChanged);
     Q_PROPERTY(QString question READ getQuestion NOTIFY questionChanged);
     Q_PROPERTY(QString a READ getA NOTIFY aChanged);
@@ -46,6 +47,8 @@ public:
     ~BackEnd();
     QString getUserName() const;
     void setUserName(const QString &value);
+    QString getEnemyName() const;
+    void setEnemyName(const QString &value);
     int getPrize();
     void setPrize(int value);
     QString getQuestion();
@@ -76,9 +79,11 @@ public:
     Q_INVOKABLE void changeQuestion();
     Q_INVOKABLE void stopGame();
     Q_INVOKABLE void overTime();
+    Q_INVOKABLE void playPvP();
 
 signals:
     void userNameChanged();
+    void enemyNameChanged();
     void prizeChanged();
     void questionChanged();
     void aChanged();
@@ -105,8 +110,10 @@ signals:
     void rewardChanged();
     void lose();
     void lose2();
+    void foundPlayer();
 
 private:
     QString user_name;
+    QString enemy_name;
 };
 #endif // BACKEND_H

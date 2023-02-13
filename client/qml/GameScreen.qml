@@ -348,6 +348,11 @@ Item {
     x2.visible = false
     x3.visible = false
     x4.visible = false
+
+    fiftyFiftyIcon.enabled = true
+    callPhoneIcon.enabled = true
+    voteIcon.enabled = true
+    changeQuestionIcon.enabled = true
   }
 
   function startCountDown() {
