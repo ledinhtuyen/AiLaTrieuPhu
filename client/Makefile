@@ -372,6 +372,7 @@ qrc_qml.cpp: qml.qrc \
 		qml/VotePopup.qml \
 		qml/LoginPage.qml \
 		qml/ChangePasswordPage.qml \
+		qml/FoundOpponentPopup.qml \
 		qml/ButtonAnimation.qml \
 		qml/CButton.qml \
 		qml/PrizePopup.qml \

@@ -39,7 +39,6 @@ enum msg_type
   CHOICE_ANSWER,
   CORRECT_ANSWER,
   FOUND_PLAYER,
-  ENTERED_ROOM,
   WAIT_OTHER_PLAYER,
   NOT_FOUND_PLAYER,
   OTHER_PLAYER_IS_PLAYING,
@@ -103,7 +102,7 @@ typedef struct _room
 Room *head_room = NULL;
 int current_id_room = 0;
 
-// pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex;
 
 MYSQL *conn;
 
@@ -125,6 +124,7 @@ void delete_room(int room_id);
 Room *find_room_is_blank_or_waiting();
 void delete_client(int conn_fd);
 int add_client_to_room(int conn_fd, Room *room);
+Client *find_client(int conn_fd);
 int is_number(const char *s);
 void *thread_start(void *client_fd);
 int login(int conn_fd, char msg_data[BUFF_SIZE]);
@@ -343,6 +343,18 @@ void delete_client(int conn_fd)
     prev = tmp;
     tmp = tmp->next;
   }
+}
+
+Client *find_client(int conn_fd)
+{
+  Client *tmp = head_client;
+  while (tmp != NULL)
+  {
+    if (tmp->conn_fd == conn_fd)
+      return tmp;
+    tmp = tmp->next;
+  }
+  return NULL;
 }
 
 Room *add_room()
@@ -770,8 +782,13 @@ int handle_play_pvp(int conn_fd)
 
   if (is_found == 1)
   {
+    sleep(2);
+
+    Client *client = find_client(room->client_fd[index_doi_thu_in_room]);
+
     msg.type = FOUND_PLAYER;
-    strcpy(msg.value, "Đã tìm thấy người chơi khác, bắt đầu trò chơi!");
+    sprintf(str, "%s", client->login_account);
+    strcpy(msg.value, str);
     printf("[%d]: %s\n", conn_fd, msg.value);
     if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
     {
@@ -782,9 +799,14 @@ int handle_play_pvp(int conn_fd)
 
     room->play_status[index_in_room] = 0;
 
-    delete_room(room->room_id);
-    printf("Deleted room %d\n", room->room_id);
-    return 1;
+    // printf("Deleted room %d\n", room->room_id);
+
+    while (1)
+    {
+      sleep(2);
+      printf("%d\n", conn_fd);
+    }
+    
 
     while (room->index_current_question[index_in_room] < 15)
     {

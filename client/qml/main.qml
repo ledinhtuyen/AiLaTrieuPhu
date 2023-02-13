@@ -101,6 +101,10 @@ ApplicationWindow {
         onFoundPlayer: {
             findOpponentPopup.popMessage = "Đã tìm thấy đối thủ"
             hideCancelFindOpponentBtn()
+            delay(3000, function() {
+                findOpponentPopup.close()
+                menuMain.showFoundOpponentPopup()
+            })
         }
     }
 
@@ -539,6 +543,10 @@ ApplicationWindow {
         }
     }
 
+    Timer {
+        id: timerDelay
+    }
+
     function startNewQuestion() {
         backEnd.prize++
         backEnd.prizeChanged()
@@ -562,5 +570,12 @@ ApplicationWindow {
 
     function showCancelFindOpponentBtn() {
         cancelFindOpponent.visible = true
+    }
+
+    function delay(delayTime, cb){
+        timerDelay.interval = delayTime
+        timerDelay.repeat = false
+        timerDelay.triggered.connect(cb)
+        timerDelay.start()
     }
 }

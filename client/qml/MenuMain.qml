@@ -100,6 +100,10 @@ Page {
     id : resultPopup
   }
 
+  FoundOpponentPopup{
+    id : foundOpponentPopup
+  }
+
   function startBtnAnimUp(){
     gameScreen.startBtnAnimUp()
   }
@@ -172,5 +176,12 @@ Page {
     backEnd.rewardChanged()
     backEnd.prize = 0
     backEnd.prizeChanged()
+  }
+
+  function showFoundOpponentPopup(){
+    foundOpponentPopup.open()
+    delay(3000, function(){
+      foundOpponentPopup.close()
+    })
   }
 }

@@ -143,6 +143,8 @@ void *thread_recv(void *arg)
         BackEnd::instance->voteDChanged();
         break;
       case FOUND_PLAYER:
+        BackEnd::instance->setEnemyName(msg.value);
+        BackEnd::instance->enemyNameChanged();
         BackEnd::instance->foundPlayer();
         break;
       }
@@ -257,6 +259,16 @@ int BackEnd::getVoteD()
 void BackEnd::setUserName(const QString &value)
 {
   user_name = value;
+}
+
+QString BackEnd::getEnemyName() const
+{
+  return enemy_name;
+}
+
+void BackEnd::setEnemyName(const QString &value)
+{
+  enemy_name = value;
 }
 
 void BackEnd::connectToServer()

@@ -13,20 +13,53 @@ Popup {
   }
 
   contentItem : Item {
-    anchors.horizontalCenter: parent.horizontalCenter
     Image{
       anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: parent.verticalCenter
       source: applicationDirPath + "/assets/Sprite/popup_75.png"
       width: 400
       height: 200
 
-      Text {
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        text: "Đã tìm thấy đối thủ"
-        font.pixelSize: 23
-        font.family: "roboto"
-        color: "white"
+      Column{
+        Text {
+          width: 400
+          height: 40
+        }
+        Text {
+          width: 400
+          text: backEnd.user_name
+          horizontalAlignment: Text.AlignHCenter
+          verticalAlignment: Text.AlignVCenter
+          font.pixelSize: 30
+          font.family: "roboto"
+          color: "white"
+        }
+        Item {
+          width: 400
+          height: 15
+        }
+        Text {
+          width: 400
+          horizontalAlignment: Text.AlignHCenter
+          verticalAlignment: Text.AlignVCenter
+          text: "VS"
+          font.pixelSize: 17
+          font.family: "roboto"
+          color: "red"
+        }
+        Item {
+          width: 400
+          height: 15
+        }
+        Text {
+          width: 400
+          horizontalAlignment: Text.AlignHCenter
+          verticalAlignment: Text.AlignVCenter
+          text: backEnd.enemy_name
+          font.pixelSize: 30
+          font.family: "roboto"
+          color: "white"
+        }
       }
     }
   }
