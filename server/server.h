@@ -705,6 +705,10 @@ int help(int type, Question *questions, int level, int conn_fd){
   return 1;
 }
 
+void *cancel_play_pvp(void *client_fd){
+
+}
+
 int handle_play_pvp(int conn_fd)
 {
   Message msg, tmp;
@@ -725,7 +729,10 @@ int handle_play_pvp(int conn_fd)
     room->questions[0] = get_questions();
     room->questions[1] = room->questions[0];
 
-    while (1)
+    start = time(NULL);
+    endwait = start + 10;
+
+    while (start < endwait)
     {
       if (room->client_fd[1] != 0)
       {
@@ -735,6 +742,7 @@ int handle_play_pvp(int conn_fd)
         printf("Found opponent for room %d...\n", room->room_id);
         break;
       }
+      start = time(NULL);
     }
   }
   else
@@ -850,6 +858,7 @@ recvLabel2:
       //   break;
       // }
     }
+  }
 
   //   int sent = 0;
 
@@ -878,21 +887,19 @@ recvLabel2:
   //   delete_room(room->room_id);
   //   return 1;
   // }
-  // else
-  // {
-  //   msg.type = NOT_FOUND_PLAYER;
-  //   strcpy(msg.value, "Không tìm thấy người chơi khác, vui lòng thử lại sau!");
-  //   if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
-  //   {
-  //     perror("Send error!");
-  //     delete_client(conn_fd);
-  //     return 0;
-  //   }
-  //   delete_room(room->room_id);
-  //   return 0;
-  // }
+  else {
+    msg.type = NOT_FOUND_PLAYER;
+    printf("[%d]: Not found player\n", conn_fd);
+    if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
+    {
+      perror("Send error!");
+      delete_client(conn_fd);
+      return 0;
+    }
+    if(room != NULL)
+      delete_room(room->room_id);
+    return 0;
   }
-  
   return 1;
 }
 

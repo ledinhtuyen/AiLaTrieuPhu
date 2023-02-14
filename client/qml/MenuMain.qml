@@ -174,7 +174,6 @@ Page {
   function resetToDefaultProperties(){
     rootWindow.click_change_question = false
     rootWindow.lose = false
-    rootWindow.showCancelFindOpponentBtn()
     menuMain.showMenuMain = true
     menuMain.sTatus = 1
     prizePopup.runningHighLightPrize = false

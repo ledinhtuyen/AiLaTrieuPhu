@@ -151,6 +151,9 @@ void *thread_recv(void *arg)
         BackEnd::instance->enemyNameChanged();
         BackEnd::instance->foundPlayer();
         break;
+      case NOT_FOUND_PLAYER:
+        BackEnd::instance->notFoundPlayer();
+        break;
       }
     }
   }

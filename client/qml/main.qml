@@ -112,6 +112,13 @@ ApplicationWindow {
         onOpenCallPhone: {
             menuMain.openCallPhonePopup()
         }
+
+        onNotFoundPlayer: {
+            findOpponentPopup.close()
+            act = "none"
+            notifyErrPopup.popMessage = "Không tìm thấy đối thủ"
+            notifyErrPopup.open()
+        }
     }
 
     MenuMain {
@@ -426,20 +433,6 @@ ApplicationWindow {
                 font.family: "roboto"
                 color: "white"
             }
-
-            SelectButton {
-                id: cancelFindOpponent
-                width: 150
-                height: 50
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: -50
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: "Hủy"
-                onClicked: {
-                    findOpponentPopup.close()
-                    menuMain.startBtnAnimDownInMenuMain()
-                }
-            }
         }
     }
 
@@ -573,13 +566,5 @@ ApplicationWindow {
 
         menuMain.resetBtnToStartY()
         menuMain.startBtnAnimUp()
-    }
-
-    function hideCancelFindOpponentBtn() {
-        cancelFindOpponent.visible = false
-    }
-
-    function showCancelFindOpponentBtn() {
-        cancelFindOpponent.visible = true
     }
 }
