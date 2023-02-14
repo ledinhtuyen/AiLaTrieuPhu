@@ -118,6 +118,7 @@ Item{
         prizePopup.open()
       }
       else if (menuMain.sTatus == 2 && rootWindow.click_change_question == true){
+        rootWindow.click_change_question = false
         menuMain.startBtnAnimUp()
         backEnd.changeQuestion()
       }

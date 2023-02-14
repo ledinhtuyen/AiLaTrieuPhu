@@ -750,16 +750,7 @@ int handle_play_pvp(int conn_fd)
     room->questions[0] = get_questions();
     room->questions[1] = room->questions[0];
 
-    start = time(NULL);
-    seconds = 10; // end loop after this time has elapsed
-
-    endwait = start + seconds;
-
-    printf("Find opponent for room %d...\n", room->room_id);
-
-    printf("start time is: %s - end time is: %s\n", ctime(&start), ctime(&endwait));
-
-    while (start < endwait)
+    while (1)
     {
       if (room->client_fd[1] != 0)
       {
@@ -769,7 +760,6 @@ int handle_play_pvp(int conn_fd)
         printf("Found opponent for room %d...\n", room->room_id);
         break;
       }
-      start = time(NULL);
     }
   }
   else
@@ -798,9 +788,6 @@ int handle_play_pvp(int conn_fd)
     }
 
     room->play_status[index_in_room] = 0;
-
-    // printf("Deleted room %d\n", room->room_id);
-    
 
     while (room->index_current_question[index_in_room] < 15)
     {
