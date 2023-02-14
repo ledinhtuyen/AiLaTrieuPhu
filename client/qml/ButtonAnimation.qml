@@ -112,12 +112,13 @@ Item{
     properties : "y"
     running : false
     onStopped :{
-      if (menuMain.sTatus == 1){
+      if (menuMain.sTatus == 1 || menuMain.sTatus == 3){
         parent.btnMoveDown = false
         menuMain.showMenuMain = false
         prizePopup.open()
       }
-      else if (menuMain.sTatus == 2){
+      else if (menuMain.sTatus == 2 && rootWindow.click_change_question == true){
+        rootWindow.click_change_question = false
         menuMain.startBtnAnimUp()
         backEnd.changeQuestion()
       }
@@ -143,7 +144,7 @@ Item{
     btnAnimUp1.start()
     funcAfterBtnAnimUp4Stopped = function(){
       delayTimer.start()
-      if (menuMain.sTatus == 2)
+      if(menuMain.sTatus == 2)
         gameScreen.startCountDown()
     }
   }

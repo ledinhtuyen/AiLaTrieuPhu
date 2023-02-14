@@ -104,6 +104,19 @@ Page {
     id : foundOpponentPopup
   }
 
+  Timer {
+    id : delayStartPvP
+    interval: 3000
+    repeat: false
+    running: false
+    
+    onTriggered : {
+      foundOpponentPopup.close()
+      rootWindow.lose = false
+      menuSelectButton.startBtnAnimDown()
+    }
+  }
+
   function startBtnAnimUp(){
     gameScreen.startBtnAnimUp()
   }
@@ -159,6 +172,7 @@ Page {
   }
 
   function resetToDefaultProperties(){
+    rootWindow.click_change_question = false
     rootWindow.lose = false
     rootWindow.showCancelFindOpponentBtn()
     menuMain.showMenuMain = true
@@ -180,8 +194,6 @@ Page {
 
   function showFoundOpponentPopup(){
     foundOpponentPopup.open()
-    delay(3000, function(){
-      foundOpponentPopup.close()
-    })
+    delayStartPvP.start()
   }
 }
