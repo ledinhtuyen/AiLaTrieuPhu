@@ -92,6 +92,7 @@ ApplicationWindow {
         }
 
         onLose2: {
+            rootWindow.lose = true
             if (backEnd.prize > 5)
                 quest5To15Theme.stop()
             else
@@ -101,7 +102,6 @@ ApplicationWindow {
 
         onFoundPlayer: {
             findOpponentPopup.popMessage = "Đã tìm thấy đối thủ"
-            hideCancelFindOpponentBtn()
             delayOpenFoundOpponentPopup.start()
         }
 

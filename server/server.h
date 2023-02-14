@@ -558,7 +558,7 @@ int handle_play_game(Message msg,int conn_fd, Question *questions, int level){
     case STOP_GAME:
       msg.type = STOP_GAME;
       send(conn_fd, &msg, sizeof(msg), 0);
-      printf("[%d]: Stopped play alone\n", conn_fd);
+      printf("[%d]: Stopped play\n", conn_fd);
       break;
     case CHOICE_ANSWER:
       if (questions->answer[level - 1] == atoi(msg.value))
