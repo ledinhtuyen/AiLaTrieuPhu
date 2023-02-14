@@ -29,6 +29,7 @@ public:
     int enemy_current_question;
     int enemy_seconds;
     QString enemy_status;
+    int status_game;
     static BackEnd *instance;
     Q_PROPERTY(QString user_name READ getUserName WRITE setUserName NOTIFY userNameChanged);
     Q_PROPERTY(QString enemy_name READ getEnemyName WRITE setEnemyName NOTIFY enemyNameChanged);
@@ -48,6 +49,7 @@ public:
     Q_PROPERTY(int voteD READ getVoteD NOTIFY voteDChanged);
     Q_PROPERTY(int correct_answer READ getCorrectAnswer);
     Q_PROPERTY(int reward READ getReward WRITE setReward NOTIFY rewardChanged);
+    Q_PROPERTY(int status_game READ getStatusGame WRITE setStatusGame NOTIFY statusGameChanged);
 
     explicit BackEnd(QObject *parent = nullptr);
     ~BackEnd();
@@ -76,6 +78,8 @@ public:
     void setEnemySeconds(int value);
     QString getEnemyStatus();
     void setEnemyStatus(QString value);
+    int getStatusGame();
+    void setStatusGame(int value);
 
     Q_INVOKABLE void connectToServer();
     Q_INVOKABLE void disconnectToServer();
@@ -129,6 +133,8 @@ signals:
     void enemyCurrentQuestionChanged();
     void enemySecondsChanged();
     void enemyStatusChanged();
+    void statusGameChanged();
+    void showResultPvP();
 
 private:
     QString user_name;

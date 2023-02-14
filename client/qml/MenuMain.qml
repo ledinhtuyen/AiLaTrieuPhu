@@ -54,22 +54,22 @@ Page {
     color: "white"
   }
 
-  Text {
-    id: text2
-    visible: showMenuMain
-    width: 220
-    height: 50
-    anchors.top: parent.top
-    anchors.topMargin: 295
-    anchors.horizontalCenter: parent.horizontalCenter
-    font.bold: true
-    font.pointSize: 16
-    font.family: "roboto"
-    text: "Score PvP:"
-    verticalAlignment: Text.AlignVCenter
-    horizontalAlignment: Text.AlignHCenter
-    color: "white"
-  }
+  // Text {
+  //   id: text2
+  //   visible: showMenuMain
+  //   width: 220
+  //   height: 50
+  //   anchors.top: parent.top
+  //   anchors.topMargin: 295
+  //   anchors.horizontalCenter: parent.horizontalCenter
+  //   font.bold: true
+  //   font.pointSize: 16
+  //   font.family: "roboto"
+  //   text: "Score PvP:"
+  //   verticalAlignment: Text.AlignVCenter
+  //   horizontalAlignment: Text.AlignHCenter
+  //   color: "white"
+  // }
 
   GameScreen {
     id : gameScreen
@@ -203,5 +203,9 @@ Page {
 
   function openCallPhonePopup(){
     gameScreen.openCallPhonePopup()
+  }
+
+  function stopCountDown(){
+    gameScreen.stopCountDown()
   }
 }

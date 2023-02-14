@@ -27,7 +27,7 @@ Popup {
           anchors.horizontalCenter: parent.horizontalCenter
           anchors.top: parent.top
           anchors.topMargin: 70
-          text: rootWindow.lose ? "Bạn đã thua" : "Bạn đã thắng"
+          text: (backEnd.status_game == 24 ? "Bạn đã thua " : "Bạn đã thắng ") + (rootWindow.isPlayPvP ? backEnd.enemy_name : "")
           font.pixelSize: 30
           font.family: "roboto"
           font.bold: true
@@ -39,7 +39,7 @@ Popup {
         Image{
           anchors.horizontalCenter: parent.horizontalCenter
           anchors.verticalCenter: parent.verticalCenter
-          source: applicationDirPath + (backEnd.prize + 1 != 15 ? "/assets/Sprite/banggiaithuong_thua.png" : "/assets/Sprite/khung4.png")
+          source: applicationDirPath + (backEnd.status_game == 24 ? "/assets/Sprite/banggiaithuong_thua.png" : "/assets/Sprite/khung4.png")
           width: 320
           height: 50
 
