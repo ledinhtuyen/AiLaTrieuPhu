@@ -154,6 +154,15 @@ void *thread_recv(void *arg)
       case NOT_FOUND_PLAYER:
         BackEnd::instance->notFoundPlayer();
         break;
+      case ENEMY_CURRENT_DATA:
+        BackEnd::instance->enemy_current_question = atoi(strtok(msg.value, " "));
+        BackEnd::instance->enemy_seconds = atoi(strtok(NULL, " "));
+        BackEnd::instance->enemy_status = strtok(NULL, " ");
+
+        BackEnd::instance->enemyCurrentQuestionChanged();
+        BackEnd::instance->enemySecondsChanged();
+        BackEnd::instance->enemyStatusChanged();
+        break;
       }
     }
   }
@@ -280,6 +289,36 @@ void BackEnd::setEnemyName(const QString &value)
   enemy_name = value;
 }
 
+int BackEnd::getEnemyCurrentQuestion()
+{
+  return enemy_current_question;
+}
+
+void BackEnd::setEnemyCurrentQuestion(int value)
+{
+  enemy_current_question = value;
+}
+
+int BackEnd::getEnemySeconds()
+{
+  return enemy_seconds;
+}
+
+void BackEnd::setEnemySeconds(int value)
+{
+  enemy_seconds = value;
+}
+
+QString BackEnd::getEnemyStatus()
+{
+  return enemy_status;
+}
+
+void BackEnd::setEnemyStatus(QString value)
+{
+  enemy_status = value;
+}
+
 void BackEnd::connectToServer()
 {
   char ip[16];
@@ -403,13 +442,15 @@ void BackEnd::playPvP()
   pthread_create(&tid, NULL, thread_recv, NULL);
 }
 
-void BackEnd::choiceAnswer(int answer)
+void BackEnd::choiceAnswer(int answer, int thoi_gian_tra_loi)
 {
   Message msg;
   int sendBytes;
+  char str[100];
+
   msg.type = CHOICE_ANSWER;
-  msg.value[0] = answer + '0';
-  msg.value[1] = '\0';
+  sprintf(str, "%d|%d", answer, thoi_gian_tra_loi);
+  strcpy(msg.value, str);
   sendBytes = send(sockfd, &msg, sizeof(msg), 0);
   if (sendBytes < 0)
   {

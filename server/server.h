@@ -41,6 +41,7 @@ enum msg_type
   FOUND_PLAYER,
   WAIT_OTHER_PLAYER,
   NOT_FOUND_PLAYER,
+  ENEMY_CURRENT_DATA,
   OTHER_PLAYER_IS_PLAYING,
   WIN,
   LOSE,
@@ -93,10 +94,10 @@ typedef struct _room
   int room_id;
   int client_fd[2];              // set default all = 0
   int status;                    // 0: no player enter, 1: waiting, 2: playing, 3: end
-  int play_status[2];            // 0: playing, 1: end or out of room
+  int play_status[2];            // 0: playing, 1: out of room, 2: lose, 3: win, 4: draw
   int index_current_question[2]; // start from 1 to 15
   Question questions[2];
-  int reward[2]; // set default all = 0
+  int seconds[2];                // set default all = 0
   struct _room *next;
 } Room;
 Room *head_room = NULL;
@@ -287,8 +288,8 @@ Room *new_room()
   new->index_current_question[1] = 0;
   new->play_status[0] = -1;
   new->play_status[1] = -1;
-  new->reward[0] = 0;
-  new->reward[1] = 0;
+  new->seconds[0] = 0;
+  new->seconds[1] = 0;
   new->next = NULL;
   return new;
 }
@@ -547,6 +548,7 @@ int change_password(char username[], char new_password[])
 
 int handle_play_game(Message msg,int conn_fd, Question *questions, int level){
     char str[100];
+    int dap_an;
 
     switch (msg.type)
     {
@@ -561,7 +563,8 @@ int handle_play_game(Message msg,int conn_fd, Question *questions, int level){
       printf("[%d]: Stopped play\n", conn_fd);
       break;
     case CHOICE_ANSWER:
-      if (questions->answer[level - 1] == atoi(msg.value))
+      dap_an = atoi(strtok(msg.value, "|"));
+      if (questions->answer[level - 1] == dap_an)
       {
         sleep(2);
         sprintf(str, "%d %d", questions->answer[level - 1], questions->reward[level - 1]);
@@ -705,18 +708,73 @@ int help(int type, Question *questions, int level, int conn_fd){
   return 1;
 }
 
-void *cancel_play_pvp(void *client_fd){
+void *send_data(void *arg){
+  Message msg;
+  Room *room = (Room *)arg;
+  msg.type = ENEMY_CURRENT_DATA;
+  char str[2][BUFF_SIZE], status[2][100];
+
+  while(1){
+    if(room != NULL){
+      switch (room->play_status[0])
+      {
+      case 0:
+        strcpy(status[0], "PLAYING");
+        break;
+      case 1:
+        strcpy(status[0], "QUIT");
+        break;
+      case 2:
+        strcpy(status[0], "LOSE");
+        break;
+      case 3:
+        strcpy(status[0], "WIN");
+        break;
+      default:
+        break;
+      }
+
+      switch (room->play_status[1])
+      {
+      case 0:
+        strcpy(status[1], "PLAYING");
+        break;
+      case 1:
+        strcpy(status[1], "QUIT");
+        break;
+      case 2:
+        strcpy(status[1], "LOSE");
+        break;
+      // case 3:
+      //   strcpy(status[1], "WIN");
+        break;
+      default:
+        break;
+      }
+      sprintf(str[0], "%d %d %s", room->index_current_question[0], room->seconds[0], status[0]);
+      sprintf(str[1], "%d %d %s", room->index_current_question[1], room->seconds[1], status[1]);
+
+      strcpy(msg.value, str[0]);
+      send(room->client_fd[1], &msg, sizeof(msg), 0);
+
+      strcpy(msg.value, str[1]);
+      send(room->client_fd[0], &msg, sizeof(msg), 0);
+
+      sleep(2);
+    }
+  }
 
 }
 
 int handle_play_pvp(int conn_fd)
 {
   Message msg, tmp;
-  int is_found = 0, index_in_room = -1, index_doi_thu_in_room = -1, is_me_win = -1, re;
+  int is_found = 0, index_in_room = -1, index_doi_thu_in_room = -1, is_me_win = -1, re, thoi_gian_tra_loi = 0;
   Room *room;
   char str[BUFF_SIZE];
   time_t start, endwait, seconds, start_reply, end_reply;
   Question questions;
+  pthread_t tid;
 
   room = find_room_is_blank_or_waiting();
 
@@ -772,6 +830,8 @@ int handle_play_pvp(int conn_fd)
 
     room->play_status[index_in_room] = 0;
 
+    pthread_create(&tid, NULL, send_data, (void *)room);
+
     while (room->index_current_question[index_in_room] < 15)
     {
 initQuestion2:
@@ -797,12 +857,21 @@ recvLabel2:
       switch (msg.type)
       {
       case OVER_TIME:
+        room->play_status[index_in_room] = 2;
+        handle_play_game(msg, conn_fd, &(room->questions[index_in_room]), room->index_current_question[index_in_room]);
+        return 0;
       case STOP_GAME:
+        room->play_status[index_in_room] = 1;
         handle_play_game(msg, conn_fd, &(room->questions[index_in_room]), room->index_current_question[index_in_room]);
         return 0;
       case CHOICE_ANSWER:
+        strtok(msg.value, "|");
+        thoi_gian_tra_loi = atoi(strtok(NULL, "|"));
         re = handle_play_game(msg, conn_fd, &(room->questions[index_in_room]), room->index_current_question[index_in_room]);
-        if(re == 0) continue;
+        if(re == 0){
+          room->seconds[index_in_room] += thoi_gian_tra_loi;
+          continue;
+        }
         break;
       case FIFTY_FIFTY:
       case CALL_PHONE:

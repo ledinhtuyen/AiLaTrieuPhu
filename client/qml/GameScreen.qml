@@ -125,16 +125,21 @@ Item {
       wrapMode: Text.WordWrap
     }
 
+    Row {
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.top: questionImage.bottom
+      anchors.topMargin: 15
+      spacing: 15
     Image {
       id: fiftyFiftyIcon
       visible: sTatus == 2 ? true : false
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
-      anchors.left: parent.left
-      anchors.top: questionImage.bottom
-      anchors.topMargin: 15
-      anchors.leftMargin: 45
+      // anchors.left: parent.left
+      // anchors.top: questionImage.bottom
+      // anchors.topMargin: 15
+      // anchors.leftMargin: 45
 
       Image {
         width: 40
@@ -170,10 +175,10 @@ Item {
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
-      anchors.left: fiftyFiftyIcon.right
-      anchors.top: questionImage.bottom
-      anchors.topMargin: 15
-      anchors.leftMargin: 15
+      // anchors.left: fiftyFiftyIcon.right
+      // anchors.top: questionImage.bottom
+      // anchors.topMargin: 15
+      // anchors.leftMargin: 15
 
       Image {
         width: 30
@@ -209,10 +214,10 @@ Item {
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
-      anchors.left: callPhoneIcon.right
-      anchors.top: questionImage.bottom
-      anchors.topMargin: 15
-      anchors.leftMargin: 15
+      // anchors.left: callPhoneIcon.right
+      // anchors.top: questionImage.bottom
+      // anchors.topMargin: 15
+      // anchors.leftMargin: 15
 
       Image {
         width: 30
@@ -248,10 +253,10 @@ Item {
       width: 70
       height: 40
       source: applicationDirPath + "/assets/Sprite/btn_trogiup.png"
-      anchors.left: voteIcon.right
-      anchors.top: questionImage.bottom
-      anchors.topMargin: 15
-      anchors.leftMargin: 15
+      // anchors.left: voteIcon.right
+      // anchors.top: questionImage.bottom
+      // anchors.topMargin: 15
+      // anchors.leftMargin: 15
 
       Image {
         width: 30
@@ -281,6 +286,32 @@ Item {
         }
       }
     }
+
+    Column{
+      width: 70
+      height: 40
+      Text {
+        width: 70
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        font.family: "roboto"
+        font.pointSize: 13
+        color: "white"
+        text: isPlayPvP ? backEnd.enemy_name + "|" + backEnd.enemy_current_question + "/15" : ""
+        visible: isPlayPvP ? true : false
+      }
+      Text {
+        width: 70
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        font.family: "roboto"
+        font.pointSize: 13
+        color: "white"
+        text: isPlayPvP ? backEnd.enemy_seconds + "s|" + backEnd.enemy_status : ""
+        visible: isPlayPvP ? true : false
+      }
+    }
+  }
   }
 
   VotePopup{
@@ -345,7 +376,7 @@ Item {
         quest1To5Theme.stop()
       finalAnswerSound.play()
       stopCountDown()
-      backEnd.choiceAnswer(choice)
+      backEnd.choiceAnswer(choice, menuMain.time)
   }
 
   function openVotePopup() {
