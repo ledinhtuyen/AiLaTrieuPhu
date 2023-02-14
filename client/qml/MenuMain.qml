@@ -172,6 +172,7 @@ Page {
   }
 
   function resetToDefaultProperties(){
+    rootWindow.isPlayPvP = false
     rootWindow.click_change_question = false
     rootWindow.lose = false
     menuMain.showMenuMain = true

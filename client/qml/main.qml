@@ -30,6 +30,7 @@ ApplicationWindow {
     property string changePasswordStatus : "none"
     property bool lose : false
     property bool click_change_question : false
+    property bool isPlayPvP : false
 
     BackEnd{
         id: backEnd
@@ -101,6 +102,7 @@ ApplicationWindow {
         }
 
         onFoundPlayer: {
+            isPlayPvP = true
             findOpponentPopup.popMessage = "Đã tìm thấy đối thủ"
             delayOpenFoundOpponentPopup.start()
         }

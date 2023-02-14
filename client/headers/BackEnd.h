@@ -26,6 +26,9 @@ public:
     int voteD;
     int correct_answer;
     int reward;
+    int enemy_current_question;
+    int enemy_seconds;
+    QString enemy_status;
     static BackEnd *instance;
     Q_PROPERTY(QString user_name READ getUserName WRITE setUserName NOTIFY userNameChanged);
     Q_PROPERTY(QString enemy_name READ getEnemyName WRITE setEnemyName NOTIFY enemyNameChanged);
@@ -36,6 +39,9 @@ public:
     Q_PROPERTY(QString c READ getC NOTIFY cChanged);
     Q_PROPERTY(QString d READ getD NOTIFY dChanged);
     Q_PROPERTY(QString call_phone_answer READ getCallPhoneAnswer NOTIFY callPhoneAnswerChanged);
+    Q_PROPERTY(int enemy_current_question READ getEnemyCurrentQuestion WRITE setEnemyCurrentQuestion NOTIFY enemyCurrentQuestionChanged);
+    Q_PROPERTY(int enemy_seconds READ getEnemySeconds WRITE setEnemySeconds NOTIFY enemySecondsChanged);
+    Q_PROPERTY(QString enemy_status READ getEnemyStatus WRITE setEnemyStatus NOTIFY enemyStatusChanged);
     Q_PROPERTY(int voteA READ getVoteA NOTIFY voteAChanged);
     Q_PROPERTY(int voteB READ getVoteB NOTIFY voteBChanged);
     Q_PROPERTY(int voteC READ getVoteC NOTIFY voteCChanged);
@@ -64,6 +70,12 @@ public:
     int getVoteB();
     int getVoteC();
     int getVoteD();
+    int getEnemyCurrentQuestion();
+    void setEnemyCurrentQuestion(int value);
+    int getEnemySeconds();
+    void setEnemySeconds(int value);
+    QString getEnemyStatus();
+    void setEnemyStatus(QString value);
 
     Q_INVOKABLE void connectToServer();
     Q_INVOKABLE void disconnectToServer();
@@ -72,7 +84,7 @@ public:
     Q_INVOKABLE void logOut();
     Q_INVOKABLE void changePassword(QString newPassword);
     Q_INVOKABLE void playAlone();
-    Q_INVOKABLE void choiceAnswer(int answer);
+    Q_INVOKABLE void choiceAnswer(int answer, int time);
     Q_INVOKABLE void fiftyFifty();
     Q_INVOKABLE void callPhone();
     Q_INVOKABLE void vote();
@@ -114,6 +126,9 @@ signals:
     void openVote();
     void openCallPhone();
     void notFoundPlayer();
+    void enemyCurrentQuestionChanged();
+    void enemySecondsChanged();
+    void enemyStatusChanged();
 
 private:
     QString user_name;
