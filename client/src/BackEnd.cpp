@@ -131,16 +131,20 @@ void *thread_recv(void *arg)
           BackEnd::instance->call_phone_answer = "D";
         }
         BackEnd::instance->callPhoneAnswerChanged();
+        BackEnd::instance->openCallPhone();
         break;
       case VOTE:
         BackEnd::instance->voteA = atoi(strtok(msg.value, " "));
         BackEnd::instance->voteB = atoi(strtok(NULL, " "));
         BackEnd::instance->voteC = atoi(strtok(NULL, " "));
         BackEnd::instance->voteD = atoi(strtok(NULL, " "));
+
         BackEnd::instance->voteAChanged();
         BackEnd::instance->voteBChanged();
         BackEnd::instance->voteCChanged();
         BackEnd::instance->voteDChanged();
+
+        BackEnd::instance->openVote();
         break;
       case FOUND_PLAYER:
         BackEnd::instance->setEnemyName(msg.value);

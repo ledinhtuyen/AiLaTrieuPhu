@@ -132,7 +132,7 @@ int signup(char username[BUFF_SIZE], char password[BUFF_SIZE]);
 int change_password(char username[BUFF_SIZE], char msg_data[BUFF_SIZE]);
 int handle_play_game(Message msg, int conn_fd, Question *questions, int level);
 int handle_play_alone(int);
-// int handle_play_pvp(int);
+int handle_play_pvp(int);
 
 /*---------------- Utilities -------------------*/
 int connect_to_database()
@@ -421,31 +421,6 @@ int add_client_to_room(int conn_fd, Room *room)
   }
   return -1;
 }
-// {
-//   Room *tmp = head_room;
-//   while (tmp != NULL)
-//   {
-//     if (tmp->room_id == room_id)
-//     {
-//       if (tmp->client_fd[0] == 0)
-//       {
-//         tmp->client_fd[0] = conn_fd;
-//         tmp->status = 1;
-//         return 0;
-//       }
-//       else if (tmp->client_fd[1] == 0)
-//       {
-//         tmp->client_fd[1] = conn_fd;
-//         tmp->status = 2;
-//         return 1;
-//       }
-//       else
-//         return -1;
-//     }
-//     tmp = tmp->next;
-//   }
-//   return -1;
-// }
 
 int is_number(const char *s)
 {

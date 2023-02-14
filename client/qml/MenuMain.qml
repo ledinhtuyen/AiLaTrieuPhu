@@ -196,4 +196,12 @@ Page {
     foundOpponentPopup.open()
     delayStartPvP.start()
   }
+
+  function openVotePopup(){
+    gameScreen.openVotePopup()
+  }
+
+  function openCallPhonePopup(){
+    gameScreen.openCallPhonePopup()
+  }
 }
