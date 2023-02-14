@@ -1,6 +1,6 @@
 extern "C"
 {
-#include "../headers/Utils.h"
+  #include "../headers/Utils.h"
 }
 
 extern "C" int sockfd;
@@ -57,15 +57,33 @@ void *thread_recv(void *arg)
         BackEnd::instance->correctAnswer();
         break;
       case WIN:
+        BackEnd::instance->status_game = WIN;
         BackEnd::instance->correct_answer = atoi(strtok(msg.value, " "));
         BackEnd::instance->reward = atoi(strtok(NULL, " "));
         BackEnd::instance->rewardChanged();
         BackEnd::instance->prize++;
         BackEnd::instance->correctAnswer();
         return NULL;
+      case WIN_PVP:
+        BackEnd::instance->status_game = WIN;
+        BackEnd::instance->statusGameChanged();
+        if(strlen(msg.value) > 0){
+          BackEnd::instance->correct_answer = atoi(msg.value);
+          BackEnd::instance->lose();
+        } else {
+          BackEnd::instance->showResultPvP();
+        }
+        return NULL;
       case LOSE:
+        BackEnd::instance->status_game = LOSE;
+        BackEnd::instance->statusGameChanged();
         BackEnd::instance->correct_answer = atoi(msg.value);
         BackEnd::instance->lose();
+        return NULL;
+      case LOSE_PVP:
+        BackEnd::instance->status_game = LOSE;
+        BackEnd::instance->statusGameChanged();
+        BackEnd::instance->showResultPvP();
         return NULL;
       case STOP_GAME:
       case OVER_TIME:
@@ -317,6 +335,16 @@ QString BackEnd::getEnemyStatus()
 void BackEnd::setEnemyStatus(QString value)
 {
   enemy_status = value;
+}
+
+int BackEnd::getStatusGame()
+{
+  return status_game;
+}
+
+void BackEnd::setStatusGame(int value)
+{
+  status_game = value;
 }
 
 void BackEnd::connectToServer()

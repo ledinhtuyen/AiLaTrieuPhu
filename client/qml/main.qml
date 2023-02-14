@@ -121,6 +121,10 @@ ApplicationWindow {
             notifyErrPopup.popMessage = "Không tìm thấy đối thủ"
             notifyErrPopup.open()
         }
+
+        onShowResultPvP: {
+            menuMain.showResultPopup()
+        }
     }
 
     MenuMain {
@@ -568,5 +572,9 @@ ApplicationWindow {
 
         menuMain.resetBtnToStartY()
         menuMain.startBtnAnimUp()
+    }
+
+    function stopCountDown() {
+        menuMain.stopCountDown()
     }
 }
