@@ -20,47 +20,19 @@ Item {
     textBtn4: backEnd.d
 
     funcBtn1Click: function (){
-      hightLightChoice(1)
-      if (backEnd.prize > 5)
-        quest5To15Theme.stop()
-      else
-        quest1To5Theme.stop()
-      finalAnswerSound.play()
-      stopCountDown()
-      backEnd.choiceAnswer(1)
+      choice_answer(1)
     }
 
     funcBtn2Click: function (){
-      hightLightChoice(2)
-      if (backEnd.prize > 5)
-        quest5To15Theme.stop()
-      else
-        quest1To5Theme.stop()
-      finalAnswerSound.play()
-      stopCountDown()
-      backEnd.choiceAnswer(2)
+      choice_answer(2)
     }
 
     funcBtn3Click: function (){
-      hightLightChoice(3)
-      if (backEnd.prize > 5)
-        quest5To15Theme.stop()
-      else
-        quest1To5Theme.stop()
-      finalAnswerSound.play()
-      stopCountDown()
-      backEnd.choiceAnswer(3)
+      choice_answer(3)
     }
 
     funcBtn4Click: function (){
-      hightLightChoice(4)
-      if (backEnd.prize > 5)
-        quest5To15Theme.stop()
-      else
-        quest1To5Theme.stop()
-      finalAnswerSound.play()
-      stopCountDown()
-      backEnd.choiceAnswer(4)
+      choice_answer(4)
     }
 
     Rectangle{
@@ -365,5 +337,16 @@ Item {
 
   function continueCountDown() {
     countDown.continueCountDown()
+  }
+
+  function choice_answer(choice) {
+      hightLightChoice(choice)
+      if (backEnd.prize > 5)
+        quest5To15Theme.stop()
+      else
+        quest1To5Theme.stop()
+      finalAnswerSound.play()
+      stopCountDown()
+      backEnd.choiceAnswer(choice)
   }
 }

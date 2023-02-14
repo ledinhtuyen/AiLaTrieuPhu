@@ -124,27 +124,19 @@ Item{
     }
   }
 
-  Timer {
-    id : delayTimer
-    interval: 2300
-    repeat: false
-    onTriggered: {
-      if (menuMain.sTatus == 2){
-        letsPlayTheme.stop()
-        if (backEnd.prize > 5)
-          quest5To15Theme.play()
-        else
-          quest1To5Theme.play()
-      }
-    }
-  }
-
   function startBtnAnimUp(){
     btnAnimUp1.start()
     funcAfterBtnAnimUp4Stopped = function(){
-      delayTimer.start()
-      if (menuMain.sTatus == 2)
-        gameScreen.startCountDown()
+      delay(2300, function(){
+        if (menuMain.sTatus == 2){
+          letsPlayTheme.stop()
+          if (backEnd.prize > 5)
+            quest5To15Theme.play()
+          else
+            quest1To5Theme.play()
+          gameScreen.startCountDown()
+        }
+      })
     }
   }
 
