@@ -113,6 +113,7 @@ signals:
     void foundPlayer();
     void openVote();
     void openCallPhone();
+    void notFoundPlayer();
 
 private:
     QString user_name;
