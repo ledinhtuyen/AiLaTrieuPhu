@@ -789,7 +789,7 @@ int handle_play_pvp(int conn_fd)
     msg.type = FOUND_PLAYER;
     sprintf(str, "%s", client->login_account);
     strcpy(msg.value, str);
-    printf("[%d]: %s\n", conn_fd, msg.value);
+    printf("[%d]: Found opponent %s\n", conn_fd, msg.value);
     if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
     {
       perror("Send error!");
@@ -800,12 +800,6 @@ int handle_play_pvp(int conn_fd)
     room->play_status[index_in_room] = 0;
 
     // printf("Deleted room %d\n", room->room_id);
-
-    while (1)
-    {
-      sleep(2);
-      printf("%d\n", conn_fd);
-    }
     
 
     while (room->index_current_question[index_in_room] < 15)
@@ -895,47 +889,48 @@ recvLabel2:
       // }
     }
 
-    int sent = 0;
+  //   int sent = 0;
 
-    while (room->play_status[index_doi_thu_in_room] == 0)
-    {
-      if (!sent)
-      {
-        tmp.type = OTHER_PLAYER_IS_PLAYING;
-        strcpy(tmp.value, msg.value);
-        strcat(tmp.value, "Đối thủ đang chơi, vui lòng chờ!");
-        send(conn_fd, &tmp, sizeof(tmp), 0);
-        sent = 1;
-      }
-    }
+  //   while (room->play_status[index_doi_thu_in_room] == 0)
+  //   {
+  //     if (!sent)
+  //     {
+  //       tmp.type = OTHER_PLAYER_IS_PLAYING;
+  //       strcpy(tmp.value, msg.value);
+  //       strcat(tmp.value, "Đối thủ đang chơi, vui lòng chờ!");
+  //       send(conn_fd, &tmp, sizeof(tmp), 0);
+  //       sent = 1;
+  //     }
+  //   }
 
-    if (room->index_current_question[index_in_room] > room->index_current_question[index_doi_thu_in_room])
-      strcpy(msg.value, "Ban da thang doi thu!");
-    else if (room->index_current_question[index_in_room] < room->index_current_question[index_doi_thu_in_room])
-    {
-      strcpy(msg.value, "Ban da thua doi thu!");
-    }
-    else
-      strcpy(msg.value, "Ban va doi thu hoa nhau!");
-    send(conn_fd, &msg, sizeof(msg), 0);
+  //   if (room->index_current_question[index_in_room] > room->index_current_question[index_doi_thu_in_room])
+  //     strcpy(msg.value, "Ban da thang doi thu!");
+  //   else if (room->index_current_question[index_in_room] < room->index_current_question[index_doi_thu_in_room])
+  //   {
+  //     strcpy(msg.value, "Ban da thua doi thu!");
+  //   }
+  //   else
+  //     strcpy(msg.value, "Ban va doi thu hoa nhau!");
+  //   send(conn_fd, &msg, sizeof(msg), 0);
 
-    delete_room(room->room_id);
-    return 1;
+  //   delete_room(room->room_id);
+  //   return 1;
+  // }
+  // else
+  // {
+  //   msg.type = NOT_FOUND_PLAYER;
+  //   strcpy(msg.value, "Không tìm thấy người chơi khác, vui lòng thử lại sau!");
+  //   if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
+  //   {
+  //     perror("Send error!");
+  //     delete_client(conn_fd);
+  //     return 0;
+  //   }
+  //   delete_room(room->room_id);
+  //   return 0;
+  // }
   }
-  else
-  {
-    msg.type = NOT_FOUND_PLAYER;
-    strcpy(msg.value, "Không tìm thấy người chơi khác, vui lòng thử lại sau!");
-    if (send(conn_fd, &msg, sizeof(msg), 0) < 0)
-    {
-      perror("Send error!");
-      delete_client(conn_fd);
-      return 0;
-    }
-    delete_room(room->room_id);
-    return 0;
-  }
-
+  
   return 1;
 }
 

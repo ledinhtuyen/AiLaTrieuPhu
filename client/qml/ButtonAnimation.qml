@@ -112,14 +112,29 @@ Item{
     properties : "y"
     running : false
     onStopped :{
-      if (menuMain.sTatus == 1){
+      if (menuMain.sTatus == 1 || menuMain.sTatus == 3){
         parent.btnMoveDown = false
         menuMain.showMenuMain = false
         prizePopup.open()
       }
-      else if (menuMain.sTatus == 2){
+      else if (menuMain.sTatus == 2 && rootWindow.click_change_question == true){
         menuMain.startBtnAnimUp()
         backEnd.changeQuestion()
+      }
+    }
+  }
+
+  Timer {
+    id : delayTimer
+    interval: 2300
+    repeat: false
+    onTriggered: {
+      if (menuMain.sTatus == 2){
+        letsPlayTheme.stop()
+        if (backEnd.prize > 5)
+          quest5To15Theme.play()
+        else
+          quest1To5Theme.play()
       }
     }
   }
@@ -127,16 +142,9 @@ Item{
   function startBtnAnimUp(){
     btnAnimUp1.start()
     funcAfterBtnAnimUp4Stopped = function(){
-      delay(2300, function(){
-        if (menuMain.sTatus == 2){
-          letsPlayTheme.stop()
-          if (backEnd.prize > 5)
-            quest5To15Theme.play()
-          else
-            quest1To5Theme.play()
-          gameScreen.startCountDown()
-        }
-      })
+      delayTimer.start()
+      if(menuMain.sTatus == 2)
+        gameScreen.startCountDown()
     }
   }
 

@@ -159,6 +159,7 @@ Page {
   }
 
   function resetToDefaultProperties(){
+    rootWindow.click_change_question = false
     rootWindow.lose = false
     rootWindow.showCancelFindOpponentBtn()
     menuMain.showMenuMain = true
@@ -182,6 +183,8 @@ Page {
     foundOpponentPopup.open()
     delay(3000, function(){
       foundOpponentPopup.close()
+      rootWindow.lose = false
+      menuSelectButton.startBtnAnimDown()
     })
   }
 }

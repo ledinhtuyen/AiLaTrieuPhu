@@ -29,6 +29,7 @@ ApplicationWindow {
     property string signupStatus : "none"
     property string changePasswordStatus : "none"
     property bool lose : false
+    property bool click_change_question : false
 
     BackEnd{
         id: backEnd

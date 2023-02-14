@@ -150,6 +150,8 @@ void *thread_recv(void *arg)
       }
     }
   }
+
+  pthread_exit(NULL);
 }
 
 BackEnd *BackEnd::instance = nullptr;

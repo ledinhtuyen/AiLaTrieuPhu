@@ -280,6 +280,7 @@ Item {
           x4.visible = true
           changeQuestionIcon.enabled = false
           questionPage.startBtnAnimDown()
+          rootWindow.click_change_question = true
         }
       }
     }
