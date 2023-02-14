@@ -22,6 +22,20 @@ Popup {
         width: 400
         height: 400
 
+        Text {
+          width: 400
+          anchors.horizontalCenter: parent.horizontalCenter
+          anchors.top: parent.top
+          anchors.topMargin: 70
+          text: rootWindow.lose ? "Bạn đã thua" : "Bạn đã thắng"
+          font.pixelSize: 30
+          font.family: "roboto"
+          font.bold: true
+          color: "white"
+          horizontalAlignment: Text.AlignHCenter
+          verticalAlignment: Text.AlignVCenter
+        }
+
         Image{
           anchors.horizontalCenter: parent.horizontalCenter
           anchors.verticalCenter: parent.verticalCenter
