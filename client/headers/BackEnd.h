@@ -111,6 +111,8 @@ signals:
     void lose();
     void lose2();
     void foundPlayer();
+    void openVote();
+    void openCallPhone();
 
 private:
     QString user_name;

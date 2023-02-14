@@ -104,6 +104,14 @@ ApplicationWindow {
             hideCancelFindOpponentBtn()
             delayOpenFoundOpponentPopup.start()
         }
+
+        onOpenVote: {
+            menuMain.openVotePopup()
+        }
+
+        onOpenCallPhone: {
+            menuMain.openCallPhonePopup()
+        }
     }
 
     MenuMain {

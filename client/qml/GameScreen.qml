@@ -199,7 +199,6 @@ Item {
           x2.visible = true
           callPhoneIcon.enabled = false
           backEnd.callPhone()
-          callPhonePopup.open()
         }
       }
     }
@@ -236,8 +235,6 @@ Item {
         onClicked : {
           clickSound.play()
           fiftyFiftySound.play()
-          votePopup.open()
-          votePopup.isShow = true
           x3.visible = true
           voteIcon.enabled = false
           backEnd.vote()
@@ -349,5 +346,14 @@ Item {
       finalAnswerSound.play()
       stopCountDown()
       backEnd.choiceAnswer(choice)
+  }
+
+  function openVotePopup() {
+    votePopup.open()
+    votePopup.isShow = true
+  }
+
+  function openCallPhonePopup(){
+    callPhonePopup.open()
   }
 }
