@@ -87,6 +87,8 @@ void *thread_recv(void *arg)
         return NULL;
       case STOP_GAME:
       case OVER_TIME:
+        BackEnd::instance->status_game = LOSE;
+        BackEnd::instance->statusGameChanged();
         return NULL;
       case FIFTY_FIFTY:
         incorrect_answer[0] = atoi(strtok(msg.value, " "));
