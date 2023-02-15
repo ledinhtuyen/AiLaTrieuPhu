@@ -424,7 +424,7 @@ void BackEnd::logOut()
 void BackEnd::changePassword(QString newPassword)
 {
   char password[100];
-  strcpy(password, newPassword.toStdString().c_str());
+  strcpy(password, newPassword.toLocal8Bit().constData());
   int re = change_password(password);
   if (re == CHANGE_PASSWORD_SUCCESS)
   {
