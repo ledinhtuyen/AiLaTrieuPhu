@@ -69,3 +69,22 @@ qmake
 make install
 ./client <ip server> <port>
 ```
+
+## Demo
+#### Đăng ký, Đăng nhập
+![image](https://user-images.githubusercontent.com/19906050/224227476-ea8f96bf-460e-4242-8b6f-4fd7e15c8943.png)![image](https://user-images.githubusercontent.com/19906050/224227700-723a954d-93b6-4c08-9243-8c391236997b.png)
+#### Menu Game
+![image](https://user-images.githubusercontent.com/19906050/224227594-34ea50c7-8b1d-4c9c-b568-a1b3662e6e79.png)
+#### Chế độ chơi 1 mình
+![image](https://user-images.githubusercontent.com/19906050/224228120-eb16e341-b86e-431d-b465-923bff1bb241.png)![image](https://user-images.githubusercontent.com/19906050/224228783-14a90032-1a39-46db-80be-0dd95a904e24.png)
+
+#### Quyền trợ giúp tư vấn tại chỗ
+![image](https://user-images.githubusercontent.com/19906050/224228516-72b8a37b-ebed-4bea-9899-2050ba0fd375.png)
+#### Thi đấu online
+![image](https://user-images.githubusercontent.com/19906050/224228655-ddc19cc5-ce6f-44ad-b4f4-c5533c98f64e.png)![image](https://user-images.githubusercontent.com/19906050/224228702-d0eb971c-1b4e-4346-8af7-a79b0fe6ccc1.png)![image](https://user-images.githubusercontent.com/19906050/224228854-6d282b1f-7afb-4230-92b3-b37dc5e31917.png)![image](https://user-images.githubusercontent.com/19906050/224228916-5fcf326e-68eb-4f59-ac11-e64f8160858b.png)
+![image](https://user-images.githubusercontent.com/19906050/224228932-7c69a04d-be09-440d-a27f-2cab2cb75707.png)
+
+
+
+
+
