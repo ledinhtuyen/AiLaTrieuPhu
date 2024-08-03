@@ -3,7 +3,8 @@
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
 Ai là triệu phú là 1 project của môn Lập trình mạng IT4062
-Author: Me
+
+**Author: Me**
 
 ## Features
 
